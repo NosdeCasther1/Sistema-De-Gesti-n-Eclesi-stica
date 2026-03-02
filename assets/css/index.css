@@ -1,0 +1,365 @@
+/* Estilos generales del dashboard */
+.wrapper {
+    display: flex;
+    width: 100%;
+    min-height: 100vh;
+}
+
+main {
+    width: 100%;
+    padding: 2rem;
+    padding-top: 2rem;
+    /* The margin is handled by .wrapper */
+    background-color: #f8f9fa;
+    min-height: calc(100vh - 70px);
+}
+
+/* Estilos para las tarjetas de resumen */
+.dashboard-summary {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.summary-card {
+    background: white;
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    /* Flatter shadow */
+    transition: transform 0.2s ease;
+    border: 1px solid #e3e6f0;
+}
+
+.summary-card:hover {
+    transform: translateY(-2px);
+}
+
+.summary-card .card-body {
+    padding: 1.5rem;
+}
+
+.stat-icon {
+    width: 80px;
+    /* Much larger circle */
+    height: 80px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    /* Larger icon */
+    opacity: 0.85;
+    /* Slight opacity like in the screenshot */
+}
+
+/* Estilos para la sección de contenido principal */
+.dashboard-content {
+    display: grid;
+    grid-template-columns: 3fr 2fr;
+    gap: 1.5rem;
+    height: 400px;
+}
+
+.statistics-section {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+}
+
+/* Contenedor específico para el canvas del gráfico */
+.chart-container {
+    position: relative;
+    /* Dejamos espacio para el título y el selector de período */
+    height: calc(100% - 80px);
+    width: 100%;
+    margin-top: 1rem;
+}
+
+.transactions-section {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+/* Estilos para las tarjetas de transacciones */
+.transaction-card {
+    background: white;
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e3e6f0;
+}
+
+.card-header-custom {
+    padding: 1rem 1.5rem;
+    border-radius: 4px 4px 0 0;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+    letter-spacing: 0.5px;
+}
+
+.bg-purple.card-header-custom {
+    background-color: #ab47bc !important;
+    /* Softwys Purple */
+    color: white;
+}
+
+.bg-danger.card-header-custom {
+    background-color: #ff5252 !important;
+    /* Softwys Red */
+    color: white;
+}
+
+/* =========================================
+   ESTILO DE TABLAS PREMIUM (SOFTWYS)
+   ========================================= */
+.table-responsive {
+    padding: 1.5rem;
+}
+
+.table-softwys {
+    margin-bottom: 0;
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table-softwys thead th {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 700;
+    color: #8c98a4;
+    border-bottom: 2px solid #e3e6f0;
+    padding: 1rem 1.5rem;
+    vertical-align: middle;
+    background-color: transparent;
+}
+
+.table-softwys tbody td {
+    padding: 1rem 1.5rem;
+    vertical-align: middle;
+    color: #5a5c69;
+    font-weight: 500;
+    font-size: 0.9rem;
+    border-bottom: 1px solid #e3e6f0;
+}
+
+/* Fila interactiva al hacer hover */
+.table-hover tbody tr {
+    transition: background-color 0.2s ease;
+}
+
+.table-hover tbody tr:hover {
+    background-color: #f8f9fa;
+    /* Gris muy suave, casi blanco */
+}
+
+/* Estilo para los Badges (Estados) dentro de la tabla */
+.table-softwys .badge-soft {
+    padding: 0.4rem 0.8rem;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 0.75rem;
+    letter-spacing: 0.3px;
+}
+
+.badge-soft-success {
+    background-color: #d1fae5;
+    color: #065f46;
+}
+
+.badge-soft-danger {
+    background-color: #fee2e2;
+    color: #991b1b;
+}
+
+.badge-soft-warning {
+    background-color: #fef3c7;
+    color: #92400e;
+}
+
+.badge-soft-info {
+    background-color: #e0f2fe;
+    color: #075985;
+}
+
+/* Botones de acción minimalistas */
+.table-softwys .btn-action {
+    padding: 0.3rem 0.6rem;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    margin-right: 4px;
+    box-shadow: none !important;
+    transition: all 0.2s;
+}
+
+.table-softwys .btn-action-edit {
+    background-color: #fffbeb;
+    color: #d97706;
+    border: 1px solid #fcd34d;
+}
+
+.table-softwys .btn-action-edit:hover {
+    background-color: #fef3c7;
+    color: #b45309;
+}
+
+.table-softwys .btn-action-delete {
+    background-color: #fef2f2;
+    color: #dc2626;
+    border: 1px solid #fca5a5;
+}
+
+.table-softwys .btn-action-delete:hover {
+    background-color: #fee2e2;
+    color: #b91c1c;
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+    .dashboard-content {
+        grid-template-columns: 1fr;
+    }
+
+    .statistics-section {
+        margin-bottom: 1.5rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .dashboard-summary {
+        grid-template-columns: 1fr;
+    }
+
+    main {
+        padding: 1rem;
+    }
+}
+
+/* Removed global premium aesthetics */
+
+.table th,
+.table td {
+    padding: 1.25rem 1rem !important;
+    vertical-align: middle;
+}
+
+.table thead th {
+    background-color: #f8fafc;
+    color: #64748b;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.8px;
+    border-bottom: 2px solid #e2e8f0;
+    border-top: none;
+}
+
+.table tbody tr {
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.table tbody tr:hover {
+    background-color: #f8fafc !important;
+}
+
+.table tbody td {
+    color: #334155;
+    font-size: 0.95rem;
+    font-weight: 500;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+/* Botones con Gradientes y Sombras */
+.btn {
+    border-radius: 8px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    padding: 0.6rem 1.5rem;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #0d6efd, #0056b3);
+    border: none;
+    box-shadow: 0 4px 12px rgba(13, 110, 253, 0.3);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(13, 110, 253, 0.5);
+    background: linear-gradient(135deg, #0b5ed7, #004494);
+}
+
+.btn-secondary {
+    background: linear-gradient(135deg, #6c757d, #495057);
+    border: none;
+    box-shadow: 0 4px 12px rgba(108, 117, 125, 0.2);
+}
+
+.btn-secondary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(108, 117, 125, 0.4);
+    background: linear-gradient(135deg, #5c636a, #343a40);
+}
+
+/* Icon Buttons en Tablas */
+.btn-sm {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.85rem;
+    border-radius: 6px;
+    box-shadow: none;
+    margin-right: 4px;
+}
+
+.btn-warning {
+    background: linear-gradient(135deg, #f59f00, #d97706);
+    color: white !important;
+    border: none;
+}
+
+.btn-warning:hover {
+    background: linear-gradient(135deg, #d97706, #b45309);
+    transform: translateY(-1px);
+}
+
+.btn-danger {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    border: none;
+}
+
+.btn-danger:hover {
+    background: linear-gradient(135deg, #dc2626, #b91c1c);
+    transform: translateY(-1px);
+}
+
+/* Controles de Formulario Premium */
+.form-control,
+.form-select {
+    border-radius: 8px;
+    border: 1px solid #cbd5e1;
+    padding: 0.7rem 1.2rem;
+    font-size: 0.95rem;
+    color: #334155;
+    background-color: #f8fafc;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus,
+.form-select:focus {
+    background-color: #ffffff;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
+}
+
+/* Buscador específico */
+input[placeholder="Buscar Nombre/DPI"],
+input[placeholder="Buscar por Nombre"] {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%2364748b' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: 1rem center;
+    padding-left: 2.75rem;
+    border-radius: 50px;
+}

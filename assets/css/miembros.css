@@ -1,0 +1,121 @@
+/* Reset inicial importante */
+body {
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+/* Contenedor principal */
+.wrapper {
+    display: flex;
+    width: 100%;
+    height: 100%;
+}
+
+/* Estilos específicos para el sidebar */
+#sidebar {
+    position: fixed !important; /* Forzar posición fija */
+    top: 0;
+    left: 0;
+    width: 280px;
+    height: 100vh;
+    background: #fff;
+    z-index: 1050; /* Mayor que el z-index de Bootstrap modal backdrop */
+    box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+/* Eliminar cualquier posicionamiento sticky de Bootstrap */
+#sidebar .position-sticky {
+    position: static !important;
+    height: auto;
+    padding: 1rem;
+}
+
+/* Contenedor del contenido principal */
+.main-content {
+    position: relative;
+    margin-left: 280px;
+    width: calc(100% - 280px);
+    min-height: 100vh;
+    padding: 20px;
+    transition: margin-left .3s ease-in-out;
+    background-color: #f8f9fa;
+}
+
+/* Asegurar que el contenido principal tenga el ancho correcto */
+main.main-content {
+    flex: 1;
+    width: calc(100% - 280px) !important;
+    margin-left: 280px !important;
+    padding: 1rem;
+}
+
+/* Restablecer cualquier padding o margin no deseado */
+.container, 
+.container-fluid {
+    width: 100% !important;
+    padding-right: 15px !important;
+    padding-left: 15px !important;
+    margin-right: auto !important;
+    margin-left: auto !important;
+}
+
+/* Eliminar cualquier scroll horizontal */
+.table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    max-width: 100%;
+}
+
+/* Estilos para el contenido del sidebar */
+#sidebar nav {
+    height: 100%;
+}
+
+#sidebar ul.nav {
+    padding-left: 0;
+}
+
+#sidebar .nav-link {
+    padding: 0.5rem 1rem;
+    color: #333;
+}
+
+/* Media queries para responsive */
+@media (max-width: 768px) {
+    #sidebar {
+        width: 60px;
+        min-width: 60px;
+    }
+    
+    .main-content,
+    main.main-content {
+        margin-left: 60px !important;
+        width: calc(100% - 60px) !important;
+    }
+}
+
+/* Prevenir que el modal afecte al sidebar */
+.modal-open #sidebar {
+    padding-right: 0 !important;
+}
+
+/* Asegurar que el sidebar permanezca visible sobre modales */
+#sidebar {
+    z-index: 1050 !important;
+}
+
+/* Fix para cualquier overflow causado por Bootstrap */
+.row {
+    margin-right: 0;
+    margin-left: 0;
+}
+
+/* Asegurar que los elementos del sidebar no causen scroll horizontal */
+#sidebar * {
+    max-width: 100%;
+    box-sizing: border-box;
+}

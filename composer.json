@@ -1,0 +1,18 @@
+{
+    "name": "nosde/proyecto-iglesia",
+    "autoload": {
+        "psr-4": {
+            "Nosde\\ProyectoIglesia\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Nosde Casther",
+            "email": "edsoncastilloh@outlook.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {
+        "dompdf/dompdf": "^3.0"
+    }
+}
