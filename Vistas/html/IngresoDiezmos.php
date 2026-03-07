@@ -1,162 +1,10 @@
-<?php
-include 'header.php';
-// Incluir conexión a la base de datos
-require_once __DIR__ . '/../../Config/conexion.php';
-
-// Llamar a la función getDBConnection para obtener la conexión
-$conn = getDBConnection();
-
-// Verificar la conexión
-if (!$conn) {
-    die("La conexión a la base de datos no está disponible.");
-}
-
-// Procesar el formulario cuando se envía
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $id = $_POST['id'] ?? null;
-    $miembro_id = $_POST['miembro_id']; // ID del miembro
-
-    // Obtener el nombre completo del miembro desde la base de datos
-    $stmt = mysqli_prepare($conn, "SELECT CONCAT(nombres, ' ', apellidos) as nombre_completo FROM miembros WHERE miembro_id = ?");
-    mysqli_stmt_bind_param($stmt, "s", $miembro_id);
-    mysqli_stmt_execute($stmt);
-    mysqli_stmt_bind_result($stmt, $nombre_completo);
-    mysqli_stmt_fetch($stmt);
-    mysqli_stmt_close($stmt);
-
-    // Generar referencia automática
-    $año = date('Y');
-    $mes = date('m');
-    $dia = date('d');
-    $letras = chr(rand(65, 90)) . chr(rand(65, 90)) . chr(rand(65, 90)) . chr(rand(65, 90));
-    $numeros = str_pad(rand(0, 9999), 4, '0', STR_PAD_LEFT);
-    $referencia = "{$año}{$mes}{$dia}-{$letras}-{$numeros}";
-
-    $modo_pago = $_POST['modo_pago'];
-    $monto = $_POST['monto'];
-    $fecha = $_POST['fecha'];
-
-    try {
-        mysqli_begin_transaction($conn);
-
-        if ($id) {
-            // Definir la query antes de usarla
-            $query = "UPDATE diezmos SET miembro = ?, nombre_completo = ?, modo_pago = ?, monto = ?, fecha = ? WHERE id = ?";
-            if (!$stmt = mysqli_prepare($conn, $query)) {
-                throw new Exception("Error preparando la consulta: " . mysqli_error($conn));
-            }
-            mysqli_stmt_bind_param($stmt, "sssdsi", $miembro_id, $nombre_completo, $modo_pago, $monto, $fecha, $id);
-
-            // Obtener referencia existente
-            $stmt = mysqli_prepare($conn, "SELECT referencia FROM diezmos WHERE id = ?");
-            mysqli_stmt_bind_param($stmt, "i", $id);
-            mysqli_stmt_execute($stmt);
-            mysqli_stmt_bind_result($stmt, $referencia_actual);
-            mysqli_stmt_fetch($stmt);
-            mysqli_stmt_close($stmt);
-
-            // Query de actualización
-            $query = "UPDATE diezmos SET miembro = ?, nombre_completo = ?, modo_pago = ?, monto = ?, fecha = ? WHERE id = ?";
-            $stmt = mysqli_prepare($conn, $query);
-            mysqli_stmt_bind_param($stmt, "sssdsi", $miembro_id, $nombre_completo, $modo_pago, $monto, $fecha, $id);
-
-            if (mysqli_stmt_execute($stmt)) {
-                mysqli_stmt_close($stmt);
-                mysqli_commit($conn);
-                $response = [
-                    'status' => 'success',
-                    'message' => "Diezmo actualizado exitosamente.",
-                    'referencia' => $referencia_actual
-                ];
-            } else {
-                throw new Exception(mysqli_error($conn));
-            }
-        } else {
-            // Insertar nuevo diezmo
-            $query = "INSERT INTO diezmos (
-                miembro, 
-                nombre_completo,
-                referencia, 
-                modo_pago, 
-                monto, 
-                fecha
-                ) VALUES (?, ?, ?, ?, ?, ?)";
-            $stmt = mysqli_prepare($conn, $query);
-            mysqli_stmt_bind_param(
-                $stmt,
-                "ssssds",
-                $miembro_id,
-                $nombre_completo,
-                $referencia,
-                $modo_pago,
-                $monto,
-                $fecha
-            );
-        }
-        if (mysqli_stmt_execute($stmt)) {
-            mysqli_commit($conn);
-            $response = [
-                'status' => 'success',
-                'message' => $id ? "Diezmo actualizado exitosamente." : "Diezmo agregado exitosamente.",
-                'referencia' => $referencia
-            ];
-        } else {
-            throw new Exception(mysqli_error($conn));
-        }
-
-        mysqli_stmt_close($stmt);
-    } catch (Exception $e) {
-        mysqli_rollback($conn);
-        $response = [
-            'status' => 'error',
-            'message' => "Error: " . $e->getMessage()
-        ];
-    }
-
-    // Devolver respuesta en formato JSON
-    header('Content-Type: application/json');
-    echo json_encode($response);
-    exit;
-}
-
-// Procesamiento de la eliminación de diezmo
-if (isset($_GET['delete'])) {
-    $id = filter_var($_GET['delete'], FILTER_VALIDATE_INT);
-    if ($id === false) {
-        $mensaje = "ID inválido.";
-    } else {
-        $query = "DELETE FROM diezmos WHERE id = ?";
-        $stmt = mysqli_prepare($conn, $query);
-        mysqli_stmt_bind_param($stmt, "i", $id);
-        if (mysqli_stmt_execute($stmt)) {
-            $mensaje = "Diezmo eliminado exitosamente.";
-        } else {
-            $mensaje = "Error al eliminar diezmo: " . mysqli_error($conn);
-        }
-        mysqli_stmt_close($stmt);
-    }
-}
-
-// Consulta para obtener todos los diezmos / Consulta principal
-
-$query = "SELECT d.*, 
-         m.miembro_id,
-         m.nombres,
-         m.apellidos,
-         m.tel_celular,
-         m.email,
-         m.no_dpi
-         FROM diezmos d
-         LEFT JOIN miembros m ON d.miembro = m.miembro_id
-         ORDER BY d.fecha DESC";
-
-// Al final del archivo, después de la última consulta
-$result = mysqli_query($conn, $query);
-if (!$result) {
-    die("Error en la consulta: " . mysqli_error($conn));
-}
-
-
+﻿<?php
+/**
+ * IngresoDiezmos.php — Vista
+ * La lógica de negocio vive en components/ingreso_diezmos_logica.php
+ */
+require_once __DIR__ . '/components/ingreso_diezmos_logica.php';
+include __DIR__ . '/header.php';
 ?>
 <!-- Estructura principal de la página -->
 <div class="wrapper">
@@ -172,6 +20,10 @@ if (!$result) {
                     <p class="text-muted">Gestione y registre los diezmos recibidos de los miembros.</p>
                 </div>
                 <div>
+                    <button class="btn btn-info text-white px-3 py-2 me-2" style="border-radius: 8px; font-weight: 500;"
+                        onclick="imprimirTablaFiltrada()">
+                        <i class="fas fa-print me-2"></i>Imprimir Resultados
+                    </button>
                     <a href="reporte_ingresos.php" class="btn btn-secondary px-3 py-2 me-2"
                         style="border-radius: 8px; font-weight: 500;">
                         <i class="fas fa-file-alt me-2"></i>Reporte
@@ -204,7 +56,8 @@ if (!$result) {
                                 <span class="input-group-text bg-white border-end-0"><i
                                         class="fas fa-search text-muted"></i></span>
                                 <input type="text" id="searchInput" class="form-control border-start-0"
-                                    placeholder="Nombre, referencia..." style="box-shadow: none;">
+                                    placeholder="Nombre, referencia..." autocomplete="nope" readonly
+                                    onfocus="this.removeAttribute('readonly');" style="box-shadow: none;">
                             </div>
                         </div>
                         <div class="col-md-4 mb-2 mb-md-0">
@@ -251,12 +104,22 @@ if (!$result) {
                                                 class="fas fa-barcode me-1"></i><?php echo $row['referencia']; ?></td>
                                         <td>
                                             <div class="d-flex align-items-center">
-                                                <div class="rounded-circle d-flex align-items-center justify-content-center me-2"
-                                                    style="width: 32px; height: 32px; background-color: #e0f2fe; color: #0284c7; font-weight: bold; font-size: 0.8rem;">
+                                                <div class="rounded-circle d-flex align-items-center justify-content-center me-3 shadow-sm flex-shrink-0"
+                                                    style="width: 40px; height: 40px; background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%); color: #0284c7; font-weight: bold; font-size: 1.1rem; border: 2px solid #fff;">
                                                     <?php echo strtoupper(substr($row['nombre_completo'], 0, 1)); ?>
                                                 </div>
-                                                <span
-                                                    class="fw-bold text-dark"><?php echo htmlspecialchars($row['nombre_completo']); ?></span>
+                                                <div>
+                                                    <span class="fw-bold text-dark d-block mb-1 member-name"
+                                                        style="font-size: 0.95rem; line-height: 1;"><?php echo htmlspecialchars($row['nombre_completo']); ?></span>
+                                                    <small class="text-muted d-block"
+                                                        style="font-size: 0.8rem; line-height: 1;">
+                                                        <i class="fas fa-id-card me-1 text-primary opacity-75"></i>DPI:
+                                                        <?php echo !empty($row['no_dpi']) ? htmlspecialchars($row['no_dpi']) : 'N/A'; ?>
+                                                        <span class="mx-1 text-light">|</span>
+                                                        <i
+                                                            class="fas fa-phone-alt me-1 text-success opacity-75"></i><?php echo !empty($row['tel_celular']) ? htmlspecialchars($row['tel_celular']) : 'N/A'; ?>
+                                                    </small>
+                                                </div>
                                             </div>
                                         </td>
                                         <td class="text-success fw-bold">Q <?php echo number_format($row['monto'], 2); ?>
@@ -313,7 +176,8 @@ if (!$result) {
                                     <td colspan="2" class="text-end fw-bold text-dark pe-4 fs-5">Monto Total Registrado:
                                     </td>
                                     <td class="text-success fw-bold fs-5" id="totalMonto">Q
-                                        <?php echo number_format($total_diezmos, 2); ?></td>
+                                        <?php echo number_format($total_diezmos, 2); ?>
+                                    </td>
                                     <td colspan="3"></td>
                                 </tr>
                             </tfoot>
@@ -366,8 +230,8 @@ if (!$result) {
                                         <span class="input-group-text bg-white border-end-0"><i
                                                 class="fas fa-search text-muted"></i></span>
                                         <input type="text" class="form-control border-start-0" id="buscar_miembro"
-                                            placeholder="Escriba para buscar miembro..." autocomplete="off"
-                                            style="box-shadow: none;">
+                                            placeholder="Escriba para buscar miembro..." autocomplete="nope" readonly
+                                            onfocus="this.removeAttribute('readonly');" style="box-shadow: none;">
                                     </div>
                                     <div id="resultados_miembros"
                                         class="position-absolute w-100 bg-white shadow-sm border mt-1"
@@ -451,8 +315,6 @@ if (!$result) {
         </div>
     </div>
 </div>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     function addDiezmo() {
@@ -671,54 +533,153 @@ if (!$result) {
         // ventanaRecibo.close();
     }
 
+    function imprimirTablaFiltrada() {
+        var ventanaImpresion = window.open('', '_blank');
+        var fechaActual = new Date().toLocaleDateString('es-ES');
+
+        // Obtener los datos visibles de la tabla
+        var filasHTML = '';
+        $('#diezmosTable tbody tr:not(.d-none)').each(function () {
+            var cod = $(this).find('td:eq(0)').text().trim();
+            // Extraer únicamente el nombre que ahora está con la clase .member-name
+            var miembro = $(this).find('td:eq(1) .member-name').text().trim();
+            var monto = $(this).find('td:eq(2)').text().trim();
+            var fecha = $(this).find('td:eq(3)').text().trim();
+            var modoPago = $(this).find('td:eq(4)').text().trim();
+
+            filasHTML += `
+                <tr>
+                    <td style="padding: 10px; border-bottom: 1px solid #ddd;">${cod}</td>
+                    <td style="padding: 10px; border-bottom: 1px solid #ddd;"><strong>${miembro}</strong></td>
+                    <td style="padding: 10px; border-bottom: 1px solid #ddd; color: #28a745; font-weight: bold;">${monto}</td>
+                    <td style="padding: 10px; border-bottom: 1px solid #ddd;">${fecha}</td>
+                    <td style="padding: 10px; border-bottom: 1px solid #ddd;">${modoPago}</td>
+                </tr>
+            `;
+        });
+
+        var totalGenerado = $('#totalMonto').text();
+
+        var contenidoHTML = `
+        <html>
+        <head>
+            <title>Reporte de Diezmos</title>
+            <style>
+                body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0; padding: 25px; color: #333; }
+                .encabezado { display: flex; align-items: center; border-bottom: 3px solid #0056b3; padding-bottom: 20px; margin-bottom: 25px; }
+                .logo { width: 90px; height: auto; margin-right: 25px; }
+                .info-iglesia h1 { margin: 0; color: #0056b3; font-size: 26px; text-transform: uppercase; font-weight: 800; letter-spacing: 1px;}
+                .info-iglesia p { margin: 5px 0 0 0; color: #555; font-size: 15px; }
+                h2 { text-align: center; color: #333; margin-bottom: 25px; font-weight: 700; }
+                .meta { display: flex; justify-content: space-between; margin-bottom: 20px; font-size: 14px; color: #666; background: #f8f9fa; padding: 15px; border-radius: 8px; border: 1px solid #eee; }
+                table { width: 100%; border-collapse: collapse; margin-bottom: 25px; font-size: 14px; }
+                th { background-color: #f1f5f9; padding: 12px 10px; text-align: left; border-bottom: 2px solid #cbd5e1; color: #334155; font-weight: bold; text-transform: uppercase; font-size: 12px; }
+                .total { text-align: right; font-size: 20px; font-weight: bold; color: #15803d; padding-top: 15px; border-top: 2px solid #ccc; margin-top: 20px;}
+                .pie { text-align: center; margin-top: 50px; font-size: 12px; color: #94a3b8; border-top: 1px dashed #cbd5e1; padding-top: 15px; }
+                @media print {
+                    body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+                }
+            </style>
+        </head>
+        <body>
+            <div class="encabezado">
+                <img src="/ProyectoIglesia/assets/img/logo.png" alt="Logo" class="logo" onerror="this.src='/ProyectoIglesia/img/logo.png'; this.onerror=null;">
+                <div class="info-iglesia">
+                    <h1>Iglesia AD Rey de Reyes</h1>
+                    <p>Reporte Oficial de Control de Diezmos</p>
+                </div>
+            </div>
+            
+            <h2>Registro de Diezmos</h2>
+            
+            <div class="meta">
+                <div><strong>Fecha de Emisión:</strong> <span style="color: #0f172a;">${fechaActual}</span></div>
+                <div><strong>Criterio:</strong> <span style="color: #0f172a;">Filtro en Vista Dinámica</span></div>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Código de Ref.</th>
+                        <th>Miembro Aportante</th>
+                        <th>Monto Aportado</th>
+                        <th>Fecha</th>
+                        <th>Modo de Pago</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${filasHTML}
+                </tbody>
+            </table>
+            
+            <div class="total">Total de Ingresos Listados: ${totalGenerado}</div>
+            
+            <div class="pie">
+                <p style="margin:0;">Generado automáticamente por el Sistema de Administración Ministerial - Proyecto Iglesia</p>
+                <p style="margin:5px 0 0 0;">Documento impreso con fines administrativos.</p>
+            </div>
+        </body>
+        </html>
+        `;
+
+        ventanaImpresion.document.write(contenidoHTML);
+        ventanaImpresion.document.close();
+
+        // Retraso para dar tiempo a que las imágenes (y CSS) carguen antes de imprimir y no salgan en blanco
+        setTimeout(function () {
+            ventanaImpresion.focus();
+            ventanaImpresion.print();
+        }, 500);
+    }
+
 
     $(document).ready(function () {
-
         // Función principal de búsqueda
         function searchDiezmos() {
             var searchText = $('#searchInput').val().toLowerCase();
             var startDate = $('#startDate').val();
             var endDate = $('#endDate').val();
 
-            // Convertir fechas a objetos Date para comparación
-            var start = startDate ? new Date(startDate) : null;
-            var end = endDate ? new Date(endDate) : null;
+            // Convertir fechas (inputs vienen en YYYY-MM-DD)
+            var start = startDate ? new Date(startDate + "T00:00:00") : null;
+            var end = endDate ? new Date(endDate + "T23:59:59") : null;
 
-            // Si hay una fecha final, ajustarla al final del día
-            if (end) {
-                end.setHours(23, 59, 59, 999);
-            }
-
-            $('.table tbody tr').each(function () {
+            $('#diezmosTable tbody tr').each(function () {
                 var row = $(this);
                 var showRow = true;
 
-                // Búsqueda por texto
+                // Búsqueda por texto general en la fila completa
                 if (searchText) {
-                    var textFound = false;
-                    row.find('td').each(function () {
-                        if ($(this).text().toLowerCase().includes(searchText)) {
-                            textFound = true;
-                            return false; // Salir del bucle each
-                        }
-                    });
-                    showRow = textFound;
+                    var rowText = row.text().toLowerCase();
+                    if (!rowText.includes(searchText)) {
+                        showRow = false;
+                    }
                 }
 
                 // Filtrado por fechas
                 if (showRow && (start || end)) {
-                    var fechaDiezmo = new Date(row.find('td:eq(4)')
-                        .text()); // Ajusta el índice según tu tabla
+                    // El texto de fecha está en el td índice 3 (empezando de 0) y su formato es dd/mm/yyyy
+                    var fechaTexto = row.find('td:eq(3)').text().trim();
+                    if (fechaTexto) {
+                        var partes = fechaTexto.split('/'); // [dd, mm, yyyy]
+                        if (partes.length === 3) {
+                            var fechaDiezmo = new Date(partes[2] + '-' + partes[1] + '-' + partes[0] + "T12:00:00");
 
-                    if (start && fechaDiezmo < start) {
-                        showRow = false;
-                    }
-                    if (end && fechaDiezmo > end) {
-                        showRow = false;
+                            if (start && fechaDiezmo < start) {
+                                showRow = false;
+                            }
+                            if (end && fechaDiezmo > end) {
+                                showRow = false;
+                            }
+                        }
                     }
                 }
 
-                row.toggle(showRow);
+                if (showRow) {
+                    row.removeClass('d-none');
+                } else {
+                    row.addClass('d-none');
+                }
             });
 
             // Actualizar el total después de filtrar
@@ -728,27 +689,21 @@ if (!$result) {
         // Función para actualizar el total
         function updateTotal() {
             var total = 0;
-            $('.table tbody tr:visible').each(function () {
-                var montoText = $(this).find('td:eq(3)').text(); // Ajusta el índice según tu tabla
-                var monto = parseFloat(montoText.replace('Q', '').replace(',', ''));
+            $('#diezmosTable tbody tr:not(.d-none)').each(function () {
+                // El monto está en el td índice 2
+                var montoText = $(this).find('td:eq(2)').text().trim();
+                var monto = parseFloat(montoText.replace(/Q/g, '').replace(/,/g, '').trim());
                 if (!isNaN(monto)) {
                     total += monto;
                 }
             });
 
             // Actualizar el total en el footer de la tabla
-            $('#totalMonto').html('Q ' + total.toFixed(2).replace(/\d(?=(\d{3})+\.)/g,
-                '$&,'));
+            $('#totalMonto').html('Q ' + total.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ','));
         }
 
         // Event listeners para los campos de búsqueda
-        $('#searchInput').on('keyup', function (e) {
-            if (e.key === 'Enter' || $(this).val() === '') {
-                searchDiezmos();
-            }
-        });
-
-        $('#searchButton').on('click', function () {
+        $('#searchInput').on('input', function () {
             searchDiezmos();
         });
 
@@ -766,6 +721,89 @@ if (!$result) {
 
         // Realizar búsqueda inicial
         searchDiezmos();
+
+        // FUNCIONALIDAD DE AUTOCOMPLETADO DE MIEMBROS
+        let typingTimer;
+        const doneTypingInterval = 300;
+
+        $('#buscar_miembro').on('input', function () {
+            clearTimeout(typingTimer);
+            const inputValue = $(this).val();
+
+            if (inputValue.length > 2) {
+                typingTimer = setTimeout(() => buscarMiembrosAjax(inputValue), doneTypingInterval);
+            } else {
+                $('#resultados_miembros').empty().hide();
+            }
+        });
+
+        function buscarMiembrosAjax(query) {
+            $.ajax({
+                url: 'buscar_miembros.php',
+                method: 'GET',
+                data: { q: query },
+                success: function (response) {
+                    const miembros = typeof response === 'string' ? JSON.parse(response) : response;
+                    let html = '';
+                    if (miembros.length === 0) {
+                        html = '<div class="p-2 text-muted text-center"><small>No se encontraron resultados.</small></div>';
+                    } else {
+                        miembros.forEach(miembro => {
+                            const dpi = miembro.no_dpi ? miembro.no_dpi : 'N/A';
+                            const tel = miembro.tel_celular ? miembro.tel_celular : 'N/A';
+                            html += `
+                            <div class="p-2 border-bottom miembro-item cursor-pointer" 
+                                 data-id="${miembro.id}" 
+                                 data-fullname="${miembro.nombres} ${miembro.apellidos}"
+                                 data-dpi="${dpi}"
+                                 data-tel="${tel}"
+                                 data-email="${miembro.email}">
+                                <div class="fw-bold">${miembro.nombres} ${miembro.apellidos}</div>
+                                <small class="text-muted"><i class="fas fa-id-card me-1"></i> DPI: ${dpi} &nbsp;|&nbsp; <i class="fas fa-phone-alt me-1"></i> Tel: ${tel}</small>
+                            </div>`;
+                        });
+                    }
+                    $('#resultados_miembros').html(html).show();
+                }
+            });
+        }
+
+        $(document).on('click', '.miembro-item', function () {
+            const $item = $(this);
+            $('#miembro_id').val($item.data('id'));
+            $('#miembro_seleccionado').val($item.data('fullname'));
+            $('#buscar_miembro').val('');
+
+            // Si estuviéramos inyectando la caja extra de información:
+            const infoMiembro = `
+            <div class="alert alert-info mb-3">
+                <h6 class="alert-heading"><i class="fas fa-user-circle me-1"></i>Miembro Vinculado</h6>
+                <div class="row">
+                    <div class="col-md-6">
+                        <p class="mb-1"><strong>DPI:</strong> ${$item.data('dpi')}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p class="mb-1"><strong>Teléfono:</strong> ${$item.data('tel')}</p>
+                    </div>
+                </div>
+            </div>`;
+            const infoContainer = document.getElementById('member-info') || (function () {
+                let div = document.createElement('div');
+                div.id = 'member-info';
+                document.querySelector('label[for="buscar_miembro"]').parentNode.insertBefore(div, document.querySelector('label[for="buscar_miembro"]'));
+                return div;
+            })();
+            infoContainer.innerHTML = infoMiembro;
+
+            $('#resultados_miembros').hide();
+        });
+
+        // Cerrar resultados si se hace click fuera
+        $(document).click(function (e) {
+            if (!$(e.target).closest('#buscar_miembro, #resultados_miembros').length) {
+                $('#resultados_miembros').hide();
+            }
+        });
     });
 
     document.getElementById('diezmoForm').addEventListener('submit', async function (e) {
@@ -786,9 +824,35 @@ if (!$result) {
                     modalInstance.hide();
                 }
 
+                // Construir objeto para imprimir y lanzarlo
+                const diezmoParaImprimir = {
+                    id: String(data.inserted_id),
+                    miembro: document.getElementById('miembro_seleccionado').value,
+                    monto: document.getElementById('monto').value,
+                    fecha: document.getElementById('fecha').value,
+                    modo_pago: document.getElementById('modo_pago').value,
+                    referencia: document.getElementById('referencia').value || data.referencia
+                };
+
                 setTimeout(() => {
-                    alert(data.message);
-                    window.location.reload();
+                    Swal.fire({
+                        title: '¡Guardado Exitosamente!',
+                        html: data.message + "<br><br>¿Desea imprimir el recibo ahora?",
+                        icon: 'success',
+                        showCancelButton: true,
+                        confirmButtonColor: '#0d6efd',
+                        cancelButtonColor: '#6c757d',
+                        confirmButtonText: '<i class="fas fa-print me-2"></i>Imprimir Recibo',
+                        cancelButtonText: 'No imprimir',
+                        reverseButtons: true
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            imprimirRecibo(diezmoParaImprimir);
+                            setTimeout(() => window.location.reload(), 500); // Dar tiempo a que abra la ventana
+                        } else {
+                            window.location.reload();
+                        }
+                    });
                 }, 200);
             } else {
                 alert(data.message);
@@ -799,11 +863,6 @@ if (!$result) {
         }
     });
 
-    // Event listeners para la búsqueda
-    document.getElementById("searchInput").addEventListener("keyup", searchDiezmos);
-    document.getElementById("searchButton").addEventListener("click", searchDiezmos);
-    document.getElementById("startDate").addEventListener("change", searchDiezmos);
-    document.getElementById("endDate").addEventListener("change", searchDiezmos);
 </script>
 </body>
 

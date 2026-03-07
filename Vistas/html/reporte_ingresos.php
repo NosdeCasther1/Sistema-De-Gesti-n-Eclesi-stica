@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 include 'header.php';
 // Incluir conexión a la base de datos
 require_once __DIR__ . '/../../Config/conexion.php';
@@ -77,6 +77,9 @@ $stmt->bind_param($types, ...$params);
 $stmt->execute();
 $result = $stmt->get_result();
 ?>
+
+<!-- Dependencias Globales del Reporte -->
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
 
 <!-- Estructura principal de la página -->
 <div class="wrapper">
@@ -178,7 +181,8 @@ $result = $stmt->get_result();
                                                 </div>
                                                 <div>
                                                     <div class="fw-bold text-dark">
-                                                        <?php echo htmlspecialchars($row['miembro']); ?></div>
+                                                        <?php echo htmlspecialchars($row['miembro']); ?>
+                                                    </div>
                                                     <div class="small text-muted">
                                                         <?php if (!empty($row['tel_celular']))
                                                             echo "<i class='fas fa-phone me-1'></i>" . htmlspecialchars($row['tel_celular']); ?>
@@ -232,7 +236,8 @@ $result = $stmt->get_result();
                                             </div>
                                         </td>
                                         <td class="text-success fw-bold fs-6">Q
-                                            <?php echo number_format($row['monto'], 2); ?></td>
+                                            <?php echo number_format($row['monto'], 2); ?>
+                                        </td>
                                     </tr>
                                 <?php endwhile; ?>
 
@@ -265,7 +270,6 @@ $result = $stmt->get_result();
 </div>
 
 <!-- Scripts -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/jquery/latest/jquery.min.js"></script>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>

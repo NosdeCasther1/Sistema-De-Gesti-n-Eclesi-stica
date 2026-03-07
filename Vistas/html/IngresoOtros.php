@@ -1,11 +1,10 @@
 ﻿<?php
 /**
- * IngresoOfrendas.php — Vista
- * La lógica de negocio vive en components/ingreso_ofrendas_logica.php
+ * IngresoOtros.php — Vista
+ * La lógica de negocio vive en components/ingreso_otros_logica.php
  */
-require_once __DIR__ . '/components/ingreso_ofrendas_logica.php';
+require_once __DIR__ . '/components/ingreso_otros_logica.php';
 include __DIR__ . '/header.php';
-// Placeholder to maintain line below
 $x_placeholder = true;
 ?>
 <!-- Estructura principal de la página -->
@@ -19,20 +18,16 @@ $x_placeholder = true;
         <div class="container-fluid py-4 px-4">
             <div class="page-header mb-4 d-flex justify-content-between align-items-center">
                 <div>
-                    <h1 class="h2 text-dark font-weight-bold">Control de Ofrendas</h1>
-                    <p class="text-muted">Gestione y registre las ofrendas recibidas de los miembros.</p>
+                    <h1 class="h2 text-dark font-weight-bold">Control de Otros Ingresos</h1>
+                    <p class="text-muted">Gestione y registre las otros ingresos recibidos de los miembros.</p>
                 </div>
                 <div>
-                    <button class="btn btn-info text-white px-3 py-2 me-2" style="border-radius: 8px; font-weight: 500;"
-                        onclick="imprimirTablaFiltrada()">
-                        <i class="fas fa-print me-2"></i>Imprimir Resultados
-                    </button>
                     <button class="btn btn-secondary px-3 py-2 me-2" style="border-radius: 8px; font-weight: 500;">
                         <i class="fas fa-file-alt me-2"></i>Reporte
                     </button>
                     <button class="btn btn-primary px-4 py-2" style="border-radius: 8px; font-weight: 500;"
-                        onclick="addOfrenda()">
-                        <i class="fas fa-plus me-2"></i>Nueva Ofrenda
+                        onclick="addIngreso()">
+                        <i class="fas fa-plus me-2"></i>Nuevo Ingreso
                     </button>
                 </div>
             </div>
@@ -53,7 +48,7 @@ $x_placeholder = true;
                         setTimeout(() => {
                             Swal.fire({
                                 title: '¡Guardado Exitosamente!',
-                                html: "<?php echo $mensaje; ?><br><br>¿Desea imprimir el recibo de esta ofrenda?",
+                                html: "<?php echo $mensaje; ?><br><br>¿Desea imprimir el recibo de este ingreso?",
                                 icon: 'success',
                                 showCancelButton: true,
                                 confirmButtonColor: '#0d6efd',
@@ -76,7 +71,7 @@ $x_placeholder = true;
                     <!-- Barra de búsqueda y filtros -->
                     <div class="row mb-4 bg-light p-3 rounded" style="border: 1px solid #f0f0f0;">
                         <div class="col-md-4 mb-2 mb-md-0">
-                            <label class="form-label text-muted small fw-bold mb-1">Buscar ofrenda</label>
+                            <label class="form-label text-muted small fw-bold mb-1">Buscar ingreso</label>
                             <div class="input-group"
                                 style="box-shadow: 0 2px 4px rgba(0,0,0,0.02); border-radius: 8px; overflow: hidden;">
                                 <span class="input-group-text bg-white border-end-0"><i
@@ -108,7 +103,7 @@ $x_placeholder = true;
 
                     <!-- Tabla de ofrendas -->
                     <div class="table-responsive">
-                        <table class="table-softwys table-hover w-100" id="ofrendasTable">
+                        <table class="table-softwys table-hover w-100" id="ingresosTable">
                             <thead>
                                 <tr>
                                     <th>Cód. Ref.</th>
@@ -121,31 +116,21 @@ $x_placeholder = true;
                             </thead>
                             <tbody>
                                 <?php
-                                $total_ofrendas = 0;
+                                $total_ingresos = 0;
                                 while ($row = mysqli_fetch_assoc($result)) {
-                                    $total_ofrendas += $row['monto'];
+                                    $total_ingresos += $row['monto'];
                                     ?>
                                     <tr>
                                         <td class="text-muted fw-bold small"><i
                                                 class="fas fa-barcode me-1"></i><?php echo $row['referencia']; ?></td>
                                         <td>
                                             <div class="d-flex align-items-center">
-                                                <div class="rounded-circle d-flex align-items-center justify-content-center me-3 shadow-sm flex-shrink-0"
-                                                    style="width: 40px; height: 40px; background: linear-gradient(135deg, #f0ecff 0%, #d8b4fe 100%); color: #6b21a8; font-weight: bold; font-size: 1.1rem; border: 2px solid #fff;">
+                                                <div class="rounded-circle d-flex align-items-center justify-content-center me-2"
+                                                    style="width: 32px; height: 32px; background-color: #f0ecff; color: #6b21a8; font-weight: bold; font-size: 0.8rem;">
                                                     <?php echo strtoupper(substr($row['nombres'], 0, 1)); ?>
                                                 </div>
-                                                <div>
-                                                    <span class="fw-bold text-dark d-block mb-1 member-name"
-                                                        style="font-size: 0.95rem; line-height: 1;"><?php echo htmlspecialchars($row['nombres'] . ' ' . $row['apellidos']); ?></span>
-                                                    <small class="text-muted d-block"
-                                                        style="font-size: 0.8rem; line-height: 1;">
-                                                        <i class="fas fa-id-card me-1 text-primary opacity-75"></i>DPI:
-                                                        <?php echo !empty($row['no_dpi']) ? htmlspecialchars($row['no_dpi']) : 'N/A'; ?>
-                                                        <span class="mx-1 text-light">|</span>
-                                                        <i
-                                                            class="fas fa-phone-alt me-1 text-success opacity-75"></i><?php echo !empty($row['tel_celular']) ? htmlspecialchars($row['tel_celular']) : 'N/A'; ?>
-                                                    </small>
-                                                </div>
+                                                <span
+                                                    class="fw-bold text-dark"><?php echo htmlspecialchars($row['nombres']); ?></span>
                                             </div>
                                         </td>
                                         <td class="text-success fw-bold">Q <?php echo number_format($row['monto'], 2); ?>
@@ -177,18 +162,12 @@ $x_placeholder = true;
                                         <td class="text-center">
                                             <div class="d-flex justify-content-center">
                                                 <button class="btn btn-action btn-action-edit me-1" title="Editar"
-                                                    onclick='editOfrenda(<?php echo htmlspecialchars(json_encode($row), ENT_QUOTES, "UTF-8"); ?>)'>
+                                                    onclick='editIngreso(<?php echo htmlspecialchars(json_encode($row), ENT_QUOTES, "UTF-8"); ?>)'>
                                                     <i class="fas fa-edit"></i>
                                                 </button>
-                                                <button class="btn btn-action btn-action-delete me-1" title="Eliminar"
-                                                    onclick="deleteOfrenda(<?php echo $row['ofrenda_id']; ?>)">
+                                                <button class="btn btn-action btn-action-delete" title="Eliminar"
+                                                    onclick="deleteIngreso(<?php echo $row['ingreso_id']; ?>)">
                                                     <i class="fas fa-trash"></i>
-                                                </button>
-                                                <button
-                                                    class="btn btn-action bg-info bg-opacity-10 text-info border border-info border-opacity-25 btn-sm px-2 py-1"
-                                                    title="Imprimir Recibo" style="border-radius: 6px;"
-                                                    onclick='imprimirRecibo(<?php echo htmlspecialchars(json_encode($row), ENT_QUOTES, "UTF-8"); ?>)'>
-                                                    <i class="fas fa-print"></i>
                                                 </button>
                                             </div>
                                         </td>
@@ -199,8 +178,8 @@ $x_placeholder = true;
                                 <tr>
                                     <td colspan="2" class="text-end fw-bold text-dark pe-4 fs-5">Monto Total Registrado:
                                     </td>
-                                    <td class="text-success fw-bold fs-5" id="totalMonto">Q
-                                        <?php echo number_format($total_ofrendas, 2); ?>
+                                    <td class="text-success fw-bold fs-5">Q
+                                        <?php echo number_format($total_ingresos, 2); ?>
                                     </td>
                                     <td colspan="3"></td>
                                 </tr>
@@ -217,17 +196,17 @@ $x_placeholder = true;
 </div>
 
 <!-- Modal para agregar/editar ofrenda -->
-<div class="modal fade" id="ofrendaModal" tabindex="-1" aria-labelledby="ofrendaModalLabel" aria-hidden="true">
+<div class="modal fade" id="ingresoModal" tabindex="-1" aria-labelledby="ingresoModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content border-0 shadow" style="border-radius: 12px;">
             <div class="modal-header bg-light border-bottom-0" style="border-radius: 12px 12px 0 0;">
-                <h5 class="modal-title fw-bold text-dark" id="ofrendaModalLabel"><i
-                        class="fas fa-hand-holding-usd text-primary me-2"></i>Nueva Ofrenda</h5>
+                <h5 class="modal-title fw-bold text-dark" id="ingresoModalLabel"><i
+                        class="fas fa-hand-holding-usd text-primary me-2"></i>Nuevo Ingreso</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body p-4 p-md-5">
-                <form id="ofrendaForm" action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
-                    <input type="hidden" id="ofrenda_id" name="ofrenda_id">
+                <form id="ingresoForm" action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
+                    <input type="hidden" id="ingreso_id" name="ingreso_id">
                     <input type="hidden" id="miembro_id" name="miembro_id">
 
                     <div class="row">
@@ -285,9 +264,14 @@ $x_placeholder = true;
                             <select class="form-select" id="categoria" name="categoria" required
                                 style="border-radius: 8px;">
                                 <option value="" selected disabled>Seleccione...</option>
-                                <option value="Diezmo">Diezmo</option>
-                                <option value="Ofrenda">Ofrenda</option>
-                                <option value="Primicia">Primicia</option>
+                                <?php
+                                mysqli_data_seek($resultado_cat, 0); // Para poder reutilizar la consulta si hay más de 1 select
+                                while ($cat = mysqli_fetch_assoc($resultado_cat)):
+                                    ?>
+                                    <option value="<?php echo htmlspecialchars($cat['nombre']); ?>">
+                                        <?php echo htmlspecialchars($cat['nombre']); ?>
+                                    </option>
+                                <?php endwhile; ?>
                             </select>
                         </div>
                         <div class="col-md-4 mb-3">
@@ -340,7 +324,7 @@ $x_placeholder = true;
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-4 bg-light">
-                <p class="text-muted small mb-3">Se requiere contraseña de administrador para editar ofrendas.</p>
+                <p class="text-muted small mb-3">Se requiere contraseña de administrador para editar ingresos.</p>
                 <div class="mb-3">
                     <label for="adminPassword" class="form-label fw-bold text-dark">Contraseña:</label>
                     <input type="password" class="form-control text-center fs-5" id="adminPassword"
@@ -430,18 +414,18 @@ $x_placeholder = true;
         }
     });
 
-    function addOfrenda() {
-        document.getElementById('ofrendaModalLabel').textContent = 'Nueva Ofrenda';
-        document.getElementById('ofrendaForm').reset();
-        document.getElementById('ofrenda_id').value = '';
-        var modal = new bootstrap.Modal(document.getElementById('ofrendaModal'));
+    function addIngreso() {
+        document.getElementById('ingresoModalLabel').textContent = 'Nuevo Ingreso';
+        document.getElementById('ingresoForm').reset();
+        document.getElementById('ingreso_id').value = '';
+        var modal = new bootstrap.Modal(document.getElementById('ingresoModal'));
         modal.show();
 
     }
 
-    function editOfrenda(ofrenda) {
-        document.getElementById('ofrendaModalLabel').textContent = 'Editar Ofrenda';
-        document.getElementById('ofrenda_id').value = ofrenda.ofrenda_id;
+    function editIngreso(ofrenda) {
+        document.getElementById('ingresoModalLabel').textContent = 'Editar Ingreso';
+        document.getElementById('ingreso_id').value = ofrenda.ingreso_id;
         document.getElementById('miembro_id').value = ofrenda.miembro_id;
         document.getElementById('nombre').value = ofrenda.nombres + '' + ofrenda.apellidos;
         document.getElementById('referencia').value = ofrenda.referencia;
@@ -451,29 +435,29 @@ $x_placeholder = true;
         document.getElementById('fecha').value = ofrenda.fecha;
         document.getElementById('observacion').value = ofrenda.observacion;
 
-        var modal = new bootstrap.Modal(document.getElementById('ofrendaModal'));
+        var modal = new bootstrap.Modal(document.getElementById('ingresoModal'));
         modal.show();
     }
 
-    function deleteOfrenda(ofrenda_id) {
-        if (confirm('¿Estás seguro de que quieres eliminar esta ofrenda?')) {
-            window.location.href = '?delete=' + ofrenda_id;
+    function deleteIngreso(ingreso_id) {
+        if (confirm('¿Estás seguro de que quieres eliminar este ingreso?')) {
+            window.location.href = '?delete=' + ingreso_id;
         }
     }
 
     // Función para agregar modal de validación
-    function editOfrenda(ofrenda) {
+    function editIngreso(ofrenda) {
         const adminPasswordModal = new bootstrap.Modal(document.getElementById('adminPasswordModal'));
         adminPasswordModal.show();
-        window.ofrendaToEdit = ofrenda;
+        window.ingresoToEdit = ofrenda;
     }
 
     // Función para mostrar modal de edición después de la validación
     function showEditModal(ofrenda) {
-        document.getElementById('ofrendaModalLabel').textContent = 'Editar Ofrenda';
+        document.getElementById('ingresoModalLabel').textContent = 'Editar Ingreso';
 
         // Establecer valores del formulario
-        document.getElementById('ofrenda_id').value = ofrenda.ofrenda_id;
+        document.getElementById('ingreso_id').value = ofrenda.ingreso_id;
         document.getElementById('miembro_id').value = ofrenda.miembro_id;
         document.getElementById('nombre').value = ofrenda.miembro_id;
         document.getElementById('referencia').value = ofrenda.referencia;
@@ -506,8 +490,62 @@ $x_placeholder = true;
             labelBuscarMiembro
         );
 
-        const modal = new bootstrap.Modal(document.getElementById('ofrendaModal'));
+        const modal = new bootstrap.Modal(document.getElementById('ingresoModal'));
         modal.show();
+    }
+
+    function imprimirRecibo(ingreso) {
+        var ventanaRecibo = window.open('', '_blank');
+        var fechaActual = new Date().toLocaleDateString('es-ES');
+        var nombreCompleto = ingreso.nombres + (ingreso.apellidos ? ' ' + ingreso.apellidos : '');
+
+        var contenidoRecibo = `
+        <html>
+        <head>
+            <title>Recibo de Ingreso</title>
+            <style>
+                body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background-color: #f0f0f0; }
+                .recibo { width: 80mm; margin: 0 auto; padding: 10mm; background-color: white; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+                .encabezado { text-align: center; margin-bottom: 10mm; border-bottom: 1px solid #ddd; padding-bottom: 5mm; }
+                .logo { font-size: 24px; font-weight: bold; color: #333; margin-bottom: 5mm; }
+                .detalle { margin-bottom: 10mm; }
+                .detalle p { margin: 2mm 0; font-size: 14px;}
+                .pie { text-align: center; margin-top: 10mm; font-size: 12px; color: #666; }
+                .numero-recibo { font-size: 14px; color: #888; margin-bottom: 5mm; }
+            </style>
+        </head>
+        <body>
+            <div class="recibo">
+                <div class="encabezado">
+                    <div class="logo">Iglesia AD Rey de Reyes</div>
+                    <div>Recibo de Ingreso</div>
+                    <div class="numero-recibo">No. ${String(ingreso.ingreso_id).padStart(6, '0')}</div>
+                </div>
+                <div class="detalle">
+                    <p><strong>Fecha de emisión:</strong> ${fechaActual}</p>
+                    <p><strong>Aportante:</strong> ${nombreCompleto}</p>
+                    <p><strong>Categoría:</strong> ${ingreso.categoria || 'Varios'}</p>
+                    <p><strong>Monto:</strong> Q${parseFloat(ingreso.monto).toFixed(2)}</p>
+                    <p><strong>Fecha de aporte:</strong> ${ingreso.fecha}</p>
+                    <p><strong>Modo de Pago:</strong> ${ingreso.modo_pago}</p>
+                    <p><strong>Referencia:</strong> ${ingreso.referencia}</p>
+                </div>
+                <div class="pie">
+                    <p>Gracias por su generosa contribución</p>
+                    <p>Este recibo es un comprobante válido de su ingreso</p>
+                </div>
+            </div>
+        </body>
+        </html>
+        `;
+
+        ventanaRecibo.document.write(contenidoRecibo);
+        ventanaRecibo.document.close();
+
+        setTimeout(function () {
+            ventanaRecibo.focus();
+            ventanaRecibo.print();
+        }, 500);
     }
 
     // Manejador de validación de contraseña
@@ -528,7 +566,7 @@ $x_placeholder = true;
                         .hide();
                     inputPassword.val('');
                     inputPassword.removeClass('is-invalid');
-                    showEditModal(window.ofrendaToEdit);
+                    showEditModal(window.ingresoToEdit);
                 } else {
                     inputPassword.addClass('is-invalid');
                     errorPassword.text(resultado.message);
@@ -633,230 +671,12 @@ $x_placeholder = true;
         }
 
         // Generar referencia al abrir el modal de nueva ofrenda
-        $('#ofrendaModal').on('shown.bs.modal', function () {
-            if (!$('#ofrenda_id').val()) { // Solo para nuevas ofrendas
+        $('#ingresoModal').on('shown.bs.modal', function () {
+            if (!$('#ingreso_id').val()) { // Solo para nuevas ofrendas
                 generarReferencia();
             }
         });
-
-        // BÚSQUEDA Y FILTRADO DE OFRENDAS EN LA TABLA
-        function searchOfrendas() {
-            var searchText = $('#searchInput').val().toLowerCase();
-            var startDate = $('#startDate').val();
-            var endDate = $('#endDate').val();
-
-            var start = startDate ? new Date(startDate + "T00:00:00") : null;
-            var end = endDate ? new Date(endDate + "T23:59:59") : null;
-
-            $('#ofrendasTable tbody tr:not(#noResultsRow)').each(function () {
-                var row = $(this);
-                // Si la fila está oculta por d-none pero no por filtro nuestro, igual la procesamos
-                var showRow = true;
-
-                if (searchText) {
-                    var rowText = row.text().toLowerCase();
-                    if (!rowText.includes(searchText)) {
-                        showRow = false;
-                    }
-                }
-
-                if (showRow && (start || end)) {
-                    var fechaTexto = row.find('td:eq(3)').text().trim();
-                    if (fechaTexto) {
-                        var partes = fechaTexto.split('/');
-                        if (partes.length === 3) {
-                            var fechaOfrenda = new Date(partes[2] + '-' + partes[1] + '-' + partes[0] + "T12:00:00");
-
-                            if (start && fechaOfrenda < start) {
-                                showRow = false;
-                            }
-                            if (end && fechaOfrenda > end) {
-                                showRow = false;
-                            }
-                        }
-                    }
-                }
-
-                if (showRow) {
-                    row.removeClass('d-none');
-                } else {
-                    row.addClass('d-none');
-                }
-            });
-
-            updateTotal();
-        }
-
-        function updateTotal() {
-            var total = 0;
-            $('#ofrendasTable tbody tr:not(.d-none):not(#noResultsRow)').each(function () {
-                var montoText = $(this).find('td:eq(2)').text().trim();
-                var monto = parseFloat(montoText.replace(/Q/g, '').replace(/,/g, '').trim());
-                if (!isNaN(monto)) {
-                    total += monto;
-                }
-            });
-
-            $('#totalMonto').html('Q ' + total.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ','));
-        }
-
-        $('#searchInput').on('input', function () {
-            searchOfrendas();
-        });
-
-        $('#startDate, #endDate').on('change', function () {
-            searchOfrendas();
-        });
     });
-
-    function imprimirRecibo(ofrenda) {
-        var ventanaRecibo = window.open('', '_blank');
-        var fechaActual = new Date().toLocaleDateString('es-ES');
-        var nombreCompleto = ofrenda.nombres + (ofrenda.apellidos ? ' ' + ofrenda.apellidos : '');
-
-        var contenidoRecibo = `
-        <html>
-        <head>
-            <title>Recibo de Ofrenda</title>
-            <style>
-                body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background-color: #f0f0f0; }
-                .recibo { width: 80mm; margin: 0 auto; padding: 10mm; background-color: white; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-                .encabezado { text-align: center; margin-bottom: 10mm; border-bottom: 1px solid #ddd; padding-bottom: 5mm; }
-                .logo { font-size: 24px; font-weight: bold; color: #333; margin-bottom: 5mm; }
-                .detalle { margin-bottom: 10mm; }
-                .detalle p { margin: 2mm 0; font-size: 14px;}
-                .pie { text-align: center; margin-top: 10mm; font-size: 12px; color: #666; }
-                .numero-recibo { font-size: 14px; color: #888; margin-bottom: 5mm; }
-            </style>
-        </head>
-        <body>
-            <div class="recibo">
-                <div class="encabezado">
-                    <div class="logo">Iglesia AD Rey de Reyes</div>
-                    <div>Recibo de Ofrenda</div>
-                    <div class="numero-recibo">No. ${String(ofrenda.ofrenda_id).padStart(6, '0')}</div>
-                </div>
-                <div class="detalle">
-                    <p><strong>Fecha de emisión:</strong> ${fechaActual}</p>
-                    <p><strong>Aportante:</strong> ${nombreCompleto}</p>
-                    <p><strong>Monto:</strong> Q${parseFloat(ofrenda.monto).toFixed(2)}</p>
-                    <p><strong>Fecha de ofrenda:</strong> ${ofrenda.fecha}</p>
-                    <p><strong>Modo de Pago:</strong> ${ofrenda.modo_pago}</p>
-                    <p><strong>Referencia:</strong> ${ofrenda.referencia}</p>
-                </div>
-                <div class="pie">
-                    <p>Gracias por su generosa contribución</p>
-                    <p>Este recibo es un comprobante válido de su ofrenda</p>
-                </div>
-            </div>
-        </body>
-        </html>
-        `;
-
-        ventanaRecibo.document.write(contenidoRecibo);
-        ventanaRecibo.document.close();
-
-        setTimeout(function () {
-            ventanaRecibo.focus();
-            ventanaRecibo.print();
-        }, 500);
-    }
-
-    function imprimirTablaFiltrada() {
-        var ventanaImpresion = window.open('', '_blank');
-        var fechaActual = new Date().toLocaleDateString('es-ES');
-
-        var filasHTML = '';
-        $('#ofrendasTable tbody tr:not(.d-none)').each(function () {
-            var cod = $(this).find('td:eq(0)').text().trim();
-            var miembro = $(this).find('td:eq(1) .member-name').text().trim();
-            var monto = $(this).find('td:eq(2)').text().trim();
-            var fecha = $(this).find('td:eq(3)').text().trim();
-            var modoPago = $(this).find('td:eq(4)').text().trim();
-
-            filasHTML += `
-                <tr>
-                    <td style="padding: 10px; border-bottom: 1px solid #ddd;">${cod}</td>
-                    <td style="padding: 10px; border-bottom: 1px solid #ddd;"><strong>${miembro}</strong></td>
-                    <td style="padding: 10px; border-bottom: 1px solid #ddd; color: #28a745; font-weight: bold;">${monto}</td>
-                    <td style="padding: 10px; border-bottom: 1px solid #ddd;">${fecha}</td>
-                    <td style="padding: 10px; border-bottom: 1px solid #ddd;">${modoPago}</td>
-                </tr>
-            `;
-        });
-
-        var totalGenerado = $('#totalMonto').text();
-
-        var contenidoHTML = `
-        <html>
-        <head>
-            <title>Reporte de Ofrendas</title>
-            <style>
-                body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0; padding: 25px; color: #333; }
-                .encabezado { display: flex; align-items: center; border-bottom: 3px solid #0056b3; padding-bottom: 20px; margin-bottom: 25px; }
-                .logo { width: 90px; height: auto; margin-right: 25px; }
-                .info-iglesia h1 { margin: 0; color: #0056b3; font-size: 26px; text-transform: uppercase; font-weight: 800; letter-spacing: 1px;}
-                .info-iglesia p { margin: 5px 0 0 0; color: #555; font-size: 15px; }
-                h2 { text-align: center; color: #333; margin-bottom: 25px; font-weight: 700; }
-                .meta { display: flex; justify-content: space-between; margin-bottom: 20px; font-size: 14px; color: #666; background: #f8f9fa; padding: 15px; border-radius: 8px; border: 1px solid #eee; }
-                table { width: 100%; border-collapse: collapse; margin-bottom: 25px; font-size: 14px; }
-                th { background-color: #f1f5f9; padding: 12px 10px; text-align: left; border-bottom: 2px solid #cbd5e1; color: #334155; font-weight: bold; text-transform: uppercase; font-size: 12px; }
-                .total { text-align: right; font-size: 20px; font-weight: bold; color: #15803d; padding-top: 15px; border-top: 2px solid #ccc; margin-top: 20px;}
-                .pie { text-align: center; margin-top: 50px; font-size: 12px; color: #94a3b8; border-top: 1px dashed #cbd5e1; padding-top: 15px; }
-                @media print {
-                    body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-                }
-            </style>
-        </head>
-        <body>
-            <div class="encabezado">
-                <img src="/ProyectoIglesia/assets/img/logo.png" alt="Logo" class="logo" onerror="this.src='/ProyectoIglesia/img/logo.png'; this.onerror=null;">
-                <div class="info-iglesia">
-                    <h1>Iglesia AD Rey de Reyes</h1>
-                    <p>Reporte Oficial de Control de Ofrendas</p>
-                </div>
-            </div>
-            
-            <h2>Registro de Ofrendas</h2>
-            
-            <div class="meta">
-                <div><strong>Fecha de Emisión:</strong> <span style="color: #0f172a;">${fechaActual}</span></div>
-                <div><strong>Criterio:</strong> <span style="color: #0f172a;">Filtro en Vista Dinámica</span></div>
-            </div>
-
-            <table>
-                <thead>
-                    <tr>
-                        <th>Código de Ref.</th>
-                        <th>Miembro Aportante</th>
-                        <th>Monto Aportado</th>
-                        <th>Fecha</th>
-                        <th>Modo de Pago</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    ${filasHTML}
-                </tbody>
-            </table>
-            
-            <div class="total">Total de Ingresos Listados: ${totalGenerado}</div>
-            
-            <div class="pie">
-                <p style="margin:0;">Generado automáticamente por el Sistema de Administración Ministerial - Proyecto Iglesia</p>
-                <p style="margin:5px 0 0 0;">Documento impreso con fines administrativos.</p>
-            </div>
-        </body>
-        </html>
-        `;
-
-        ventanaImpresion.document.write(contenidoHTML);
-        ventanaImpresion.document.close();
-
-        setTimeout(function () {
-            ventanaImpresion.focus();
-            ventanaImpresion.print();
-        }, 500);
-    }
 </script>
 </body>
 

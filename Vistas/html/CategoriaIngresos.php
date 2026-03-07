@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 include 'header.php';
 
 // Incluir conexión a la base de datos
@@ -207,8 +207,6 @@ $result = mysqli_query($conn, $query);
         </div>
     </div>
 </div>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
     function addCategoria() {
         document.getElementById('categoriaModalLabel').textContent = 'Nueva Categoría de Ingreso';

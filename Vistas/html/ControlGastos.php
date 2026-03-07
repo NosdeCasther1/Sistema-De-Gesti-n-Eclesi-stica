@@ -1,81 +1,10 @@
-<?php
-include 'header.php';
-
-// Incluir conexión a la base de datos
-require_once __DIR__ . '/../../Config/conexion.php';
-
-// Llamar a la función getDBConnection para obtener la conexión
-$conn = getDBConnection();
-
-// Función para generar referencia hexadecimal
-function generateHexReference()
-{
-    // Obtener timestamp actual
-    $timestamp = time();
-    // Generar número aleatorio
-    $random = mt_rand(1000, 9999);
-    // Combinar timestamp y número aleatorio
-    $combined = $timestamp . $random;
-    // Convertir a hexadecimal y tomar los primeros 8 caracteres
-    $hex = strtoupper(substr(md5($combined), 0, 8));
-    return $hex;
-}
-
-// Procesamiento de la eliminación de gasto
-if (isset($_GET['delete'])) {
-    $id = $_GET['delete'];
-    $query = "DELETE FROM gastos WHERE id = ?";
-    $stmt = mysqli_prepare($conn, $query);
-    mysqli_stmt_bind_param($stmt, "i", $id);
-    if (mysqli_stmt_execute($stmt)) {
-        $mensaje = "Gasto eliminado exitosamente.";
-    } else {
-        $mensaje = "Error al eliminar gasto: " . mysqli_error($conn);
-    }
-    mysqli_stmt_close($stmt);
-}
-
-
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $gasto_id = $_POST['gasto_id'] ?? null;
-    // Generar referencia automática solo para nuevos registros
-    $referencia = $gasto_id ? $_POST['referencia'] : generateHexReference();
-    $fecha = date('Y-m-d', strtotime(str_replace('/', '-', $_POST['fecha'])));
-    $monto = $_POST['monto'];
-    $tipo_gasto_id = $_POST['tipo_gasto'];
-    $descripcion = $_POST['descripcion'];
-
-    if ($gasto_id) {
-        // Actualizar gasto existente
-        $query = "UPDATE gastos SET fecha=?, monto=?, tipo_gasto_id=?, descripcion=? WHERE id=?";
-        $stmt = mysqli_prepare($conn, $query);
-        mysqli_stmt_bind_param($stmt, "sdisi", $fecha, $monto, $tipo_gasto_id, $descripcion, $gasto_id);
-    } else {
-        // Insertar nuevo gasto
-        $query = "INSERT INTO gastos (referencia, fecha, monto, tipo_gasto_id, descripcion) VALUES (?, ?, ?, ?, ?)";
-        $stmt = mysqli_prepare($conn, $query);
-        mysqli_stmt_bind_param($stmt, "ssdis", $referencia, $fecha, $monto, $tipo_gasto_id, $descripcion);
-    }
-
-    if (mysqli_stmt_execute($stmt)) {
-        $mensaje = $gasto_id ? "Gasto actualizado exitosamente." : "Gasto agregado exitosamente.";
-    } else {
-        $mensaje = $gasto_id ? "Error al actualizar gasto: " : "Error al agregar gasto: " . mysqli_error($conn);
-    }
-
-    mysqli_stmt_close($stmt);
-}
-
-// Consulta para obtener todos los gastos con el nombre del tipo
-$query = "SELECT g.*, t.nombre as tipo_gasto_nombre 
-          FROM gastos g 
-          JOIN tipos_gasto t ON g.tipo_gasto_id = t.id 
-          ORDER BY g.fecha DESC";
-$result = mysqli_query($conn, $query);
-
-// Consulta para obtener tipos de gasto
-$tipos_query = "SELECT * FROM tipos_gasto";
-$tipos_result = mysqli_query($conn, $tipos_query);
+﻿<?php
+/**
+ * ControlGastos.php — Vista
+ * La lógica de negocio vive en components/control_gastos_logica.php
+ */
+include __DIR__ . '/header.php';
+require_once __DIR__ . '/components/control_gastos_logica.php';
 ?>
 
 <div class="wrapper">
@@ -110,6 +39,30 @@ $tipos_result = mysqli_query($conn, $tipos_query);
                     <?php echo $mensaje; ?>
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
+            <?php endif; ?>
+
+            <?php if (isset($print_receipt_data)): ?>
+                <script>
+                    document.addEventListener('DOMContentLoaded', function () {
+                        setTimeout(() => {
+                            Swal.fire({
+                                title: '¡Guardado Exitosamente!',
+                                html: "<?php echo $mensaje; ?><br><br>¿Desea imprimir el comprobante de este gasto?",
+                                icon: 'success',
+                                showCancelButton: true,
+                                confirmButtonColor: '#0d6efd',
+                                cancelButtonColor: '#6c757d',
+                                confirmButtonText: '<i class="fas fa-print me-2"></i>Imprimir Comprobante',
+                                cancelButtonText: 'No imprimir',
+                                reverseButtons: true
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    imprimirComprobante(<?php echo $print_receipt_data; ?>);
+                                }
+                            });
+                        }, 200);
+                    });
+                </script>
             <?php endif; ?>
 
             <div class="card shadow-sm border-0">
@@ -161,7 +114,8 @@ $tipos_result = mysqli_query($conn, $tipos_query);
                                             </span>
                                         </td>
                                         <td class="text-muted text-wrap" style="max-width: 250px;">
-                                            <?php echo htmlspecialchars($row['descripcion']); ?></td>
+                                            <?php echo htmlspecialchars($row['descripcion']); ?>
+                                        </td>
                                         <td class="text-center">
                                             <div class="d-flex justify-content-center">
                                                 <button class="btn btn-action btn-action-edit me-1" title="Editar"
@@ -232,7 +186,8 @@ $tipos_result = mysqli_query($conn, $tipos_query);
                                 while ($tipo = mysqli_fetch_assoc($tipos_result)) {
                                     ?>
                                     <option value="<?php echo $tipo['id']; ?>">
-                                        <?php echo htmlspecialchars($tipo['nombre']); ?></option>
+                                        <?php echo htmlspecialchars($tipo['nombre']); ?>
+                                    </option>
                                 <?php } ?>
                             </select>
                         </div>
@@ -284,9 +239,21 @@ $tipos_result = mysqli_query($conn, $tipos_query);
 
     // Función para editar un gasto
     function deleteGasto(id) {
-        if (confirm('¿Estás seguro de que quieres eliminar este gasto?')) {
-            window.location.href = '?delete=' + id;
-        }
+        Swal.fire({
+            title: '¿Estás seguro?',
+            text: "Esta acción no se puede deshacer. ¿Desea eliminar completamente este gasto?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#dc3545',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: '<i class="fas fa-trash me-2"></i>Sí, eliminar',
+            cancelButtonText: 'Cancelar',
+            reverseButtons: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = '?delete=' + id;
+            }
+        });
     }
 
     // Función para generar referencia hexadecimal en el frontend
@@ -324,7 +291,58 @@ $tipos_result = mysqli_query($conn, $tipos_query);
         var modal = new bootstrap.Modal(document.getElementById('gastoModal'));
         modal.show();
     }
-</script>
 
+    function imprimirComprobante(gasto) {
+        var ventanaRecibo = window.open('', '_blank');
+        var fechaActual = new Date().toLocaleDateString('es-ES');
+
+        var contenidoRecibo = `
+        <html>
+        <head>
+            <title>Comprobante de Egreso</title>
+            <style>
+                body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background-color: #f0f0f0; }
+                .recibo { width: 80mm; margin: 0 auto; padding: 10mm; background-color: white; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+                .encabezado { text-align: center; margin-bottom: 10mm; border-bottom: 1px solid #ddd; padding-bottom: 5mm; }
+                .logo { font-size: 24px; font-weight: bold; color: #333; margin-bottom: 5mm; }
+                .detalle { margin-bottom: 10mm; }
+                .detalle p { margin: 2mm 0; font-size: 14px;}
+                .pie { text-align: center; margin-top: 10mm; font-size: 12px; color: #666; }
+                .numero-recibo { font-size: 14px; color: #888; margin-bottom: 5mm; }
+            </style>
+        </head>
+        <body>
+            <div class="recibo">
+                <div class="encabezado">
+                    <div class="logo">Iglesia AD Rey de Reyes</div>
+                    <div>Comprobante de Egreso</div>
+                    <div class="numero-recibo">No. ${String(gasto.id).padStart(6, '0')}</div>
+                </div>
+                <div class="detalle">
+                    <p><strong>Fecha de impresión:</strong> ${fechaActual}</p>
+                    <p><strong>Clasificación:</strong> ${gasto.tipo_gasto}</p>
+                    <p><strong>Monto:</strong> Q${parseFloat(gasto.monto).toFixed(2)}</p>
+                    <p><strong>Fecha del pago:</strong> ${gasto.fecha}</p>
+                    <p><strong>Referencia:</strong> ${gasto.referencia}</p>
+                    <p><strong>Descripción:</strong> ${gasto.descripcion || 'Ninguna'}</p>
+                </div>
+                <div class="pie">
+                    <p>Documento oficial interno de control de gastos</p>
+                    <p>Iglesia AD Rey de Reyes</p>
+                </div>
+            </div>
+        </body>
+        </html>
+        `;
+
+        ventanaRecibo.document.write(contenidoRecibo);
+        ventanaRecibo.document.close();
+
+        setTimeout(function () {
+            ventanaRecibo.focus();
+            ventanaRecibo.print();
+        }, 500);
+    }
+</script>
 
 <?php include 'footer.php'; ?>

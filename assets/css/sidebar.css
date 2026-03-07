@@ -271,9 +271,9 @@ main.main-content .container {
     overflow: hidden;
 }
 
-/* Animación suave para el despliegue */
-.collapse {
-    transition: all 0.3s ease-in-out;
+/* Animación suave para el despliegue del submenú (NO sobreescribir .collapse de Bootstrap) */
+.submenu-collapse.collapsing {
+    transition: height 0.3s ease-in-out;
 }
 
 /* Responsive */

@@ -1,53 +1,10 @@
-<?php
-include 'header.php';
-
-// Incluir conexión a la base de datos
-require_once __DIR__ . '../conexion.php';
-
-// Llamar a la función getDBConnection para obtener la conexión
-$conn = getDBConnection();
-
-// Verificar conexión
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
-
-
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $id = $_POST['id'] ?? '';
-    $nombre = $_POST['nombre'];
-    $descripcion = $_POST['descripcion'];
-    $estado = $_POST['estado'];
-
-    if (empty($id)) {
-        // Insertar famliar
-        $sql = "INSERT INTO familias (nombre, descripcion, estado) VALUES (?, ?, ?)";
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("sss", $nombre, $descripcion, $estado);
-    } else {
-        // Actualizar Familiar
-        $sql = "UPDATE familias SET nombre = ?, descripcion = ?, estado = ? WHERE id = ?";
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("sssi", $nombre, $descripcion, $estado, $id);
-    }
-
-    $stmt->execute();
-    $stmt->close();
-}
-
-// Eliminar Familia
-if (isset($_GET['delete'])) {
-    $id = $_GET['delete'];
-    $sql = "DELETE FROM familias WHERE id = ?";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("i", $id);
-    $stmt->execute();
-    $stmt->close();
-}
-
-
-$sql = "SELECT * FROM familias";
-$result = $conn->query($sql);
+﻿<?php
+/**
+ * Familias.php — Vista
+ * La lógica de negocio vive en components/familias_logica.php
+ */
+include __DIR__ . '/header.php';
+require_once __DIR__ . '/components/familias_logica.php';
 ?>
 <!-- Estructura principal de la página -->
 <div class="wrapper">
@@ -119,7 +76,8 @@ $result = $conn->query($sql);
                                                     </div>
                                                     <div class="small text-muted"><i
                                                             class="fas fa-hashtag fa-sm opacity-50 me-1"></i>Id. Familia:
-                                                        <?php echo str_pad($row['id'], 4, '0', STR_PAD_LEFT); ?></div>
+                                                        <?php echo str_pad($row['id'], 4, '0', STR_PAD_LEFT); ?>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </td>
@@ -223,8 +181,6 @@ $result = $conn->query($sql);
         </div>
     </div>
 </div>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     function clearFamiliaModal() {
@@ -243,7 +199,7 @@ $result = $conn->query($sql);
         document.getElementById('familiaId').value = id;
         document.getElementById('nombre').value = nombre;
         document.getElementById('descripcion').value = descripcion;
-        
+
         // Ajustar el valor del estado si viene capitalizado de forma diferente
         let estadoSelect = document.getElementById('estado');
         let optionFound = false;
@@ -254,8 +210,8 @@ $result = $conn->query($sql);
                 break;
             }
         }
-        if(!optionFound) {
-             estadoSelect.value = estado;
+        if (!optionFound) {
+            estadoSelect.value = estado;
         }
 
         // Mostrar el modal
@@ -297,10 +253,10 @@ $result = $conn->query($sql);
     function initializePagination() {
         const rowsPerPage = 10;
         const table = document.querySelector('.table-softwys');
-        if(!table) return;
+        if (!table) return;
         const rows = table.querySelectorAll('tbody tr');
         const pageCount = Math.ceil(rows.length / rowsPerPage);
-        
+
         if (pageCount <= 1) return; // No paginar si solo hay 1 página
 
         function showPage(page) {
@@ -316,9 +272,9 @@ $result = $conn->query($sql);
         if (!document.querySelector('.pagination-container')) {
             const paginationContainer = document.createElement('div');
             paginationContainer.className = 'd-flex justify-content-end mt-4 pagination-container';
-            
+
             let html = '<ul class="pagination pagination-sm shadow-sm opacity-75">';
-            for(let i=1; i<=pageCount; i++) {
+            for (let i = 1; i <= pageCount; i++) {
                 html += `<li class="page-item"><a class="page-link" href="#" onclick="event.preventDefault(); window.changeListPage(${i})">${i}</a></li>`;
             }
             html += '</ul>';

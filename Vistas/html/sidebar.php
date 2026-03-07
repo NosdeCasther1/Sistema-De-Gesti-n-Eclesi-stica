@@ -56,11 +56,12 @@ $menu_items = [
         'icon' => 'fa-money-bill-wave',
         'text' => 'Tesorería',
         'submenu' => [
+            ['text' => 'Diezmos', 'link' => BASE_URL . '/Vistas/html/IngresoDiezmos.php'],
+            ['text' => 'Ofrendas', 'link' => BASE_URL . '/Vistas/html/IngresoOfrendas.php'],
+            ['text' => 'Otros Ingresos', 'link' => BASE_URL . '/Vistas/html/IngresoOtros.php'],
+            ['text' => 'Gastos', 'link' => BASE_URL . '/Vistas/html/ControlGastos.php'],
             ['text' => 'Categoría de Ingresos', 'link' => BASE_URL . '/Vistas/html/CategoriaIngresos.php'],
-            ['text' => 'Control de Ofrendas', 'link' => BASE_URL . '/Vistas/html/IngresoOfrendas.php'],
-            ['text' => 'Control de Diezmos', 'link' => BASE_URL . '/Vistas/html/IngresoDiezmos.php'],
-            ['text' => 'Tipos de Gastos', 'link' => BASE_URL . '/Vistas/html/TipoGastos.php'],
-            ['text' => 'Control de Gastos', 'link' => BASE_URL . '/Vistas/html/ControlGastos.php'],
+            ['text' => 'Categoría de Gastos', 'link' => BASE_URL . '/Vistas/html/TipoGastos.php'],
         ]
     ],
     ['icon' => 'fa-couch', 'text' => 'Bienes y Muebles', 'link' => BASE_URL . '/Vistas/html/BienesMuebles.php'],
@@ -68,13 +69,13 @@ $menu_items = [
         'icon' => 'fa-chart-bar',
         'text' => 'Reportes',
         'submenu' => [
-            ['text' => 'Reporte de Ingresos', 'link' => BASE_URL . '/Vistas/html/reporte_ingresos.php'],
-            ['text' => 'Reporte De Miembros', 'link' => BASE_URL . '/Vistas/html/reporte_miembros.php'],
-            ['text' => 'Reporte de Eventos', 'link' => BASE_URL . '/Vistas/html/reporte_eventos.php'],
-            ['text' => 'Reporte de Gastos', 'link' => BASE_URL . '/Vistas/html/reporte_gastos.php'],
+            ['text' => 'Balance General', 'link' => BASE_URL . '/Vistas/html/reporte_balance.php'],
+            ['text' => 'Ingresos', 'link' => BASE_URL . '/Vistas/html/reporte_ingresos.php'],
+            ['text' => 'Miembros', 'link' => BASE_URL . '/Vistas/html/reporte_miembros.php'],
+            ['text' => 'Eventos', 'link' => BASE_URL . '/Vistas/html/reporte_eventos.php'],
+            ['text' => 'Gastos', 'link' => BASE_URL . '/Vistas/html/reporte_gastos.php'],
         ]
     ],
-    ['icon' => 'fa-user', 'text' => 'Usuarios', 'link' => BASE_URL . '/Vistas/html/Usuarios.php'],
     ['icon' => 'fa-cog', 'text' => 'Configuración', 'link' => BASE_URL . '/Vistas/html/configuracion.php'],
 ];
 
@@ -92,9 +93,9 @@ function generate_menu($items, $level = 0, $parent_id = '')
         $html .= '<li class="nav-item">';
 
         if ($has_submenu) {
-            // Para elementos con submenú, usamos data-bs-target en lugar de href
+            // Para elementos con submenú, el JS manual maneja el collapse (sin data-bs-toggle para evitar conflicto)
             $html .= '<a class="nav-link ' . $is_active . ' has-submenu" 
-                        data-bs-toggle="collapse" 
+                        href="#" 
                         data-bs-target="#' . $item_id . '" 
                         role="button" 
                         aria-expanded="false" 

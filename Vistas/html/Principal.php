@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 // Incluir conexión a la base de datos
 require_once __DIR__ . '/../../Config/conexion.php';
 
@@ -433,8 +433,6 @@ while ($row = mysqli_fetch_assoc($resultEgresos)) {
             </div>
         </main>
     </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         // Configuración visual del gráfico de Ingresos vs Egresos para theme premium
         var ctx = document.getElementById('ingresosEgresosChart').getContext('2d');

@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 include 'header.php';
 require_once __DIR__ . '/../../Config/conexion.php';
 
@@ -188,8 +188,6 @@ if (empty($nombre_evento)) {
         box-shadow: 0 .5rem 1rem rgba(0, 0, 0, .15) !important;
     }
 </style>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 <?php include 'footer.php'; ?>
 </body>

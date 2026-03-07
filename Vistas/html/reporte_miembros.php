@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 include 'header.php';
 require_once __DIR__ . '/../../Config/conexion.php';
 
@@ -268,7 +268,6 @@ $result = $stmt->get_result();
 </div>
 
 <!-- Scripts -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
     function exportarPDF() {
         const params = new URLSearchParams({

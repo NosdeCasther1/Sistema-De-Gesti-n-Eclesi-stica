@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 include 'header.php';
 require_once __DIR__ . '/../../Config/conexion.php';
 
@@ -50,6 +50,9 @@ $result = $stmt->get_result();
 $tipos_gasto_sql = "SELECT id, nombre FROM tipos_gasto ORDER BY nombre";
 $tipos_gasto_result = $conn->query($tipos_gasto_sql);
 ?>
+
+<!-- Dependencias Globales del Reporte -->
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
 
 <!-- Estructura principal de la página -->
 <div class="wrapper">
@@ -169,7 +172,6 @@ $tipos_gasto_result = $conn->query($tipos_gasto_sql);
 </div>
 
 <!-- Scripts -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/jquery/latest/jquery.min.js"></script>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>

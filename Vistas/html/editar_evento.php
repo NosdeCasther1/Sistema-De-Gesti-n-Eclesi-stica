@@ -12,7 +12,14 @@ if (!$conn) {
     die("La conexión a la base de datos no está disponible.");
 }
 
-// Procesar el formulario de creación de evento
+$evento_id = isset($_GET['id']) ? intval($_GET['id']) : (isset($_POST['evento_id']) ? intval($_POST['evento_id']) : 0);
+
+if ($evento_id === 0) {
+    echo "<script>alert('ID de evento no válido'); window.location.href='MostrarEventos.php';</script>";
+    exit;
+}
+
+// Procesar el formulario de edición de evento
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $nombre_evento = $_POST['nombre_evento'];
     $descripcion = $_POST['descripcion'];
@@ -21,20 +28,37 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $lugar = $_POST['lugar'];
     $estado = $_POST['estado'];
 
-    // Preparar la consulta
-    $query = "INSERT INTO eventos (nombre_evento, descripcion, fecha_inicio, fecha_fin, lugar, estado, fecha_creacion, fecha_actualizacion) VALUES (?, ?, ?, ?, ?, ?, NOW(), NOW())";
-    $stmt = mysqli_prepare($conn, $query);
+    // Preparar la consulta de UPDATE
+    $query_update = "UPDATE eventos SET nombre_evento = ?, descripcion = ?, fecha_inicio = ?, fecha_fin = ?, lugar = ?, estado = ?, fecha_actualizacion = NOW() WHERE evento_id = ?";
+    $stmt_update = mysqli_prepare($conn, $query_update);
 
-    mysqli_stmt_bind_param($stmt, "ssssss", $nombre_evento, $descripcion, $fecha_inicio, $fecha_fin, $lugar, $estado);
+    mysqli_stmt_bind_param($stmt_update, "ssssssi", $nombre_evento, $descripcion, $fecha_inicio, $fecha_fin, $lugar, $estado, $evento_id);
 
-    if (mysqli_stmt_execute($stmt)) {
-        $mensaje = "Evento creado exitosamente.";
+    if (mysqli_stmt_execute($stmt_update)) {
+        $mensaje = "Evento actualizado exitosamente.";
+        $tipo_alerta = "success";
     } else {
-        $mensaje = "Error al crear el evento: " . mysqli_error($conn);
+        $mensaje = "Error al actualizar el evento: " . mysqli_error($conn);
+        $tipo_alerta = "danger";
     }
 
-    mysqli_stmt_close($stmt);
+    mysqli_stmt_close($stmt_update);
 }
+
+// Consultar datos actuales del evento para rellenar formulario
+$query = "SELECT * FROM eventos WHERE evento_id = ?";
+$stmt = mysqli_prepare($conn, $query);
+mysqli_stmt_bind_param($stmt, "i", $evento_id);
+mysqli_stmt_execute($stmt);
+$result = mysqli_stmt_get_result($stmt);
+
+if (mysqli_num_rows($result) === 0) {
+    echo "<script>alert('Evento no encontrado'); window.location.href='MostrarEventos.php';</script>";
+    exit;
+}
+
+$evento = mysqli_fetch_assoc($result);
+mysqli_stmt_close($stmt);
 ?>
 
 <!-- Estructura principal de la página -->
@@ -47,8 +71,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <div class="container-fluid py-4 px-4">
             <div class="page-header mb-4 d-flex justify-content-between align-items-center">
                 <div>
-                    <h1 class="h2 text-dark font-weight-bold">Crear Nuevo Evento</h1>
-                    <p class="text-muted">Programe un nuevo evento o seminario en el calendario de la congregación.</p>
+                    <h1 class="h2 text-dark font-weight-bold">Editar Evento</h1>
+                    <p class="text-muted">Actualice los detalles del evento seleccionado.</p>
                 </div>
                 <div>
                     <a href="MostrarEventos.php" class="btn btn-outline-secondary px-4 py-2"
@@ -59,10 +83,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </div>
 
             <?php if (isset($mensaje)): ?>
-                <div class="alert alert-<?php echo strpos($mensaje, 'exitosamente') !== false ? 'success' : 'danger'; ?> alert-dismissible fade show shadow-sm"
-                    role="alert">
+                <div class="alert alert-<?php echo $tipo_alerta; ?> alert-dismissible fade show shadow-sm" role="alert">
                     <i
-                        class="fas <?php echo strpos($mensaje, 'exitosamente') !== false ? 'fa-check-circle' : 'fa-exclamation-triangle'; ?> me-2"></i>
+                        class="fas <?php echo $tipo_alerta === 'success' ? 'fa-check-circle' : 'fa-exclamation-triangle'; ?> me-2"></i>
                     <?php echo $mensaje; ?>
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
@@ -70,11 +93,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             <div class="card shadow-sm border-0 mb-4" style="border-radius: 12px;">
                 <div class="card-header bg-light border-bottom-0 rounded-top" style="padding: 1.5rem;">
-                    <h5 class="mb-0 fw-bold"><i class="fas fa-calendar-plus text-primary me-2"></i>Formulario de
-                        Creación de Evento</h5>
+                    <h5 class="mb-0 fw-bold"><i class="fas fa-edit text-primary me-2"></i>Formulario de
+                        Edición de Evento</h5>
                 </div>
                 <div class="card-body p-4 pt-4">
                     <form method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>">
+                        <!-- Campo oculto para el ID -->
+                        <input type="hidden" name="evento_id" value="<?php echo $evento_id; ?>">
 
                         <h6 class="fw-bold text-primary mb-3 border-bottom pb-2">1. Detalles Principales</h6>
                         <div class="row mb-3">
@@ -85,7 +110,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                     <span class="input-group-text bg-white border-end-0"><i
                                             class="fas fa-heading text-muted"></i></span>
                                     <input type="text" class="form-control border-start-0 ps-0" id="nombre_evento"
-                                        name="nombre_evento" placeholder="Ej. Retiro de Jóvenes 2024" required>
+                                        name="nombre_evento" placeholder="Ej. Retiro de Jóvenes 2024"
+                                        value="<?php echo htmlspecialchars($evento['nombre_evento']); ?>" required>
                                 </div>
                             </div>
                             <div class="col-md-12">
@@ -94,7 +120,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                     General</label>
                                 <textarea class="form-control" id="descripcion" name="descripcion" rows="4"
                                     placeholder="Escriba los detalles, objetivo o notas importantes sobre el evento..."
-                                    required style="border-radius: 8px;"></textarea>
+                                    required
+                                    style="border-radius: 8px;"><?php echo htmlspecialchars($evento['descripcion']); ?></textarea>
                             </div>
                         </div>
 
@@ -108,7 +135,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                     <span class="input-group-text bg-white border-end-0"><i
                                             class="far fa-calendar-alt text-muted"></i></span>
                                     <input type="datetime-local" class="form-control border-start-0 ps-0"
-                                        id="fecha_inicio" name="fecha_inicio" required>
+                                        id="fecha_inicio" name="fecha_inicio"
+                                        value="<?php echo date('Y-m-d\TH:i', strtotime($evento['fecha_inicio'])); ?>"
+                                        required>
                                 </div>
                             </div>
                             <div class="col-md-4">
@@ -118,7 +147,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                     <span class="input-group-text bg-white border-end-0"><i
                                             class="far fa-calendar-check text-muted"></i></span>
                                     <input type="datetime-local" class="form-control border-start-0 ps-0" id="fecha_fin"
-                                        name="fecha_fin" required>
+                                        name="fecha_fin"
+                                        value="<?php echo date('Y-m-d\TH:i', strtotime($evento['fecha_fin'])); ?>"
+                                        required>
                                 </div>
                             </div>
                             <div class="col-md-4">
@@ -128,6 +159,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                     <span class="input-group-text bg-white border-end-0"><i
                                             class="fas fa-map-marker-alt text-muted"></i></span>
                                     <input type="text" class="form-control border-start-0 ps-0" id="lugar" name="lugar"
+                                        value="<?php echo htmlspecialchars($evento['lugar']); ?>"
                                         placeholder="Ej. Auditorio Principal" required>
                                 </div>
                             </div>
@@ -140,17 +172,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                     Inicial</label>
                                 <select class="form-select form-select-lg" id="estado" name="estado"
                                     style="font-size: 1rem; border-radius: 8px;" required>
-                                    <option value="Programado" selected>Programado (Activo y Pendiente)</option>
-                                    <option value="En Curso">En Curso (Sucediendo Ahora)</option>
-                                    <option value="Finalizado">Finalizado (Completado)</option>
-                                    <option value="Cancelado">Cancelado (Suspendido)</option>
+                                    <option value="Programado" <?php echo ($evento['estado'] == 'Programado' || $evento['estado'] == 'programado') ? 'selected' : ''; ?>>Programado (Activo y
+                                        Pendiente)</option>
+                                    <option value="En Curso" <?php echo ($evento['estado'] == 'En Curso' || $evento['estado'] == 'en curso') ? 'selected' : ''; ?>>En Curso (Sucediendo
+                                        Ahora)</option>
+                                    <option value="Finalizado" <?php echo ($evento['estado'] == 'Finalizado' || $evento['estado'] == 'finalizado') ? 'selected' : ''; ?>>Finalizado (Completado)
+                                    </option>
+                                    <option value="Cancelado" <?php echo ($evento['estado'] == 'Cancelado' || $evento['estado'] == 'cancelado') ? 'selected' : ''; ?>>Cancelado (Suspendido)
+                                    </option>
                                 </select>
                             </div>
                         </div>
 
                         <div class="mt-4 text-end bg-light p-3 rounded-3 mt-4 border mx-n1">
                             <button type="submit" class="btn btn-primary px-5 py-2 fw-bold" style="border-radius: 8px;">
-                                <i class="fas fa-save me-2"></i>Registrar Evento
+                                <i class="fas fa-save me-2"></i>Guardar Cambios
                             </button>
                         </div>
                     </form>

@@ -4,3 +4,4 @@
 *.log
 *.sql
 .DS_Store
+mysql-mcp/node_modules/

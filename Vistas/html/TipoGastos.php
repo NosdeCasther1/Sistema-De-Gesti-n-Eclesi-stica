@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 include 'header.php';
 
 // Incluir conexión a la base de datos
@@ -122,7 +122,8 @@ $result = mysqli_query($conn, $query);
                                             </div>
                                         </td>
                                         <td class="text-muted text-wrap" style="max-width: 400px;">
-                                            <?php echo htmlspecialchars($row['descripcion']); ?></td>
+                                            <?php echo htmlspecialchars($row['descripcion']); ?>
+                                        </td>
                                         <td class="text-center">
                                             <div class="d-flex justify-content-center">
                                                 <button class="btn btn-action btn-action-edit me-1 px-3 py-1" title="Editar"
@@ -201,9 +202,21 @@ $result = mysqli_query($conn, $query);
     }
 
     function deleteTipoGasto(id) {
-        if (confirm('¿Estás seguro de que quieres eliminar este tipo de gasto?')) {
-            window.location.href = '?delete=' + id;
-        }
+        Swal.fire({
+            title: '¿Estás seguro?',
+            text: "Esta acción no se puede deshacer. ¿Desea eliminar completamente este tipo de gasto?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#dc3545',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: '<i class="fas fa-trash me-2"></i>Sí, eliminar',
+            cancelButtonText: 'Cancelar',
+            reverseButtons: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = '?delete=' + id;
+            }
+        });
     }
 
     document.getElementById('searchInput').addEventListener('keyup', function () {

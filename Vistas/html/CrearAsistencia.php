@@ -1,5 +1,9 @@
-<?php
+﻿<?php
 include 'header.php';
+?>
+<!-- Agregar Select2 CSS para buscador en select -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<?php
 
 // Incluir conexión a la base de datos
 require_once __DIR__ . '/../../Config/conexion.php';
@@ -31,12 +35,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $mensaje = "Asistencia registrada exitosamente.";
 }
 
-// Obtener la lista de miembros
-$query_miembros = "SELECT miembro_id, nombres, apellidos FROM miembros ORDER BY apellidos, nombres";
+// Obtener la lista de miembros con datos adicionales para identificarlos
+$query_miembros = "SELECT miembro_id, nombres, apellidos, no_dpi, tel_celular FROM miembros ORDER BY apellidos, nombres";
 $result_miembros = mysqli_query($conn, $query_miembros);
 
 // Obtener la lista de eventos
-$query_eventos = "SELECT evento_id, nombre_evento FROM eventos ORDER BY fecha_inicio DESC";
+$query_eventos = "SELECT evento_id, nombre_evento, fecha_inicio FROM eventos ORDER BY fecha_inicio DESC";
 $result_eventos = mysqli_query($conn, $query_eventos);
 
 // Obtener las fechas de asistencia registradas
@@ -103,15 +107,15 @@ $result_fechas = mysqli_query($conn, $query_fechas);
                                             class="form-label text-muted fw-bold small text-uppercase">Evento
                                             Seleccionado</label>
                                         <div class="input-group">
-                                            <span class="input-group-text bg-white border-end-0"><i
+                                            <span class="input-group-text bg-white border-end-0" style="z-index: 5;"><i
                                                     class="fas fa-star text-muted"></i></span>
-                                            <select class="form-select border-start-0 ps-0" id="evento_id"
-                                                name="evento_id" required style="border-radius: 0 8px 8px 0;">
-                                                <option value="" selected disabled>Elija un evento de la lista...
+                                            <select class="form-select border-start-0 ps-0 select2-eventos" id="evento_id"
+                                                name="evento_id" required style="border-radius: 0 8px 8px 0; width: 1%;">
+                                                <option value="" selected disabled>Buscar o Escribir un evento...
                                                 </option>
                                                 <?php while ($row = mysqli_fetch_assoc($result_eventos)): ?>
                                                     <option value="<?php echo $row['evento_id']; ?>">
-                                                        <?php echo htmlspecialchars($row['nombre_evento']); ?>
+                                                        <?php echo htmlspecialchars($row['nombre_evento']) . ' (' . date('d/m/Y', strtotime($row['fecha_inicio'])) . ')'; ?>
                                                     </option>
                                                 <?php endwhile; ?>
                                             </select>
@@ -124,9 +128,9 @@ $result_fechas = mysqli_query($conn, $query_fechas);
                                 <!-- Buscador de miembros -->
                                 <div class="mb-3">
                                     <div class="input-group input-group-sm">
-                                        <span class="input-group-text bg-light border-end-0"><i
+                                        <span class="input-group-text bg-white border-end-0" id="search-addon"><i
                                                 class="fas fa-search text-muted"></i></span>
-                                        <input type="text" class="form-control bg-light border-start-0 ps-0"
+                                        <input type="text" class="form-control bg-white border-start-0 ps-0 search-premium"
                                             id="buscar_miembro"
                                             placeholder="Escriba para buscar por nombre o apellido..."
                                             style="border-radius: 0 8px 8px 0; box-shadow: none;">
@@ -142,24 +146,39 @@ $result_fechas = mysqli_query($conn, $query_fechas);
                                             $initial = strtoupper(substr($row['nombres'], 0, 1));
                                             $avatarColor = $colors[crc32($row['miembro_id']) % count($colors)];
                                             $nombreCompleto = htmlspecialchars($row['apellidos'] . ', ' . $row['nombres']);
+
+                                            $identificador = "Sin DPI / Tel";
+                                            if (!empty($row['no_dpi'])) {
+                                                $identificador = "DPI: " . $row['no_dpi'];
+                                            } else if (!empty($row['tel_celular'])) {
+                                                $identificador = "Tel: " . $row['tel_celular'];
+                                            }
                                             ?>
                                             <label
                                                 class="d-flex align-items-center mb-2 p-2 bg-white rounded shadow-sm border btn-miembro w-100"
-                                                style="cursor: pointer; transition: all 0.2s; text-align: left;"
+                                                style="cursor: pointer; text-align: left;"
                                                 for="miembro<?php echo $row['miembro_id']; ?>">
-                                                <div class="me-3">
-                                                    <input class="form-check-input ms-1 mt-0 checkbox-asistencia"
-                                                        type="checkbox" name="miembros[]"
-                                                        value="<?php echo $row['miembro_id']; ?>"
-                                                        id="miembro<?php echo $row['miembro_id']; ?>"
-                                                        style="transform: scale(1.3);">
+                                                <div class="me-3 d-flex align-items-center">
+                                                    <input class="form-check-input mt-0 checkbox-asistencia" type="checkbox"
+                                                        name="miembros[]" value="<?php echo $row['miembro_id']; ?>"
+                                                        id="miembro<?php echo $row['miembro_id']; ?>">
                                                 </div>
                                                 <div class="text-white rounded-circle me-3 d-flex justify-content-center align-items-center flex-shrink-0"
-                                                    style="width: 35px; height: 35px; font-weight: bold; font-size: 0.9rem; background-color: <?php echo $avatarColor; ?>;">
+                                                    style="width: 38px; height: 38px; font-weight: bold; font-size: 0.95rem; background-color: <?php echo $avatarColor; ?>; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
                                                     <?php echo $initial; ?>
                                                 </div>
-                                                <div class="flex-grow-1 text-truncate fw-bold text-dark nombre-texto">
-                                                    <?php echo $nombreCompleto; ?>
+                                                <div class="flex-grow-1 text-truncate nombre-texto">
+                                                    <div class="fw-bold text-dark"
+                                                        style="font-size: 0.95rem; line-height: 1.2;">
+                                                        <?php echo $nombreCompleto; ?>
+                                                    </div>
+                                                    <div class="text-muted mt-1 param-id" style="font-size: 0.75rem;">
+                                                        <i
+                                                            class="fas fa-id-card me-1 opacity-50"></i><?php echo htmlspecialchars($identificador); ?>
+                                                    </div>
+                                                </div>
+                                                <div class="ms-auto pe-2 check-indicator text-primary d-none d-md-block">
+                                                    <i class="fas fa-check-circle fs-5" style="color: #1e3a8a;"></i>
                                                 </div>
                                             </label>
                                         <?php endwhile; ?>
@@ -180,7 +199,7 @@ $result_fechas = mysqli_query($conn, $query_fechas);
                                 </div>
 
                                 <div class="mt-4 text-end bg-light p-3 rounded-3 mt-4 border mx-n1">
-                                    <button type="submit" class="btn btn-primary px-5 py-2 fw-bold"
+                                    <button type="submit" class="btn btn-premium px-5 py-2 fw-bold"
                                         style="border-radius: 8px;">
                                         <i class="fas fa-save me-2"></i>Guardar Asistencias
                                     </button>
@@ -208,22 +227,22 @@ $result_fechas = mysqli_query($conn, $query_fechas);
                                     $bgEventColor = $colors[crc32($row['evento_id']) % count($colors)];
                                     ?>
                                     <a href="ver_asistencia.php?fecha=<?php echo urlencode($row['fecha_asistencia']); ?>&evento_id=<?php echo $row['evento_id']; ?>"
-                                        class="list-group-item list-group-item-action d-flex align-items-center mb-3 rounded shadow-sm border"
-                                        style="transition: all 0.2s;">
+                                        class="list-group-item list-group-item-action d-flex align-items-center recent-card">
 
-                                        <div class="text-white rounded d-flex justify-content-center align-items-center me-3 flex-shrink-0"
-                                            style="width: 45px; height: 45px; font-weight: bold; font-size: 1.2rem; background-color: <?php echo $bgEventColor; ?>;">
+                                        <div class="text-white rounded-circle d-flex justify-content-center align-items-center me-3 flex-shrink-0"
+                                            style="width: 48px; height: 48px; font-weight: bold; font-size: 1.3rem; background-color: <?php echo $bgEventColor; ?>; margin-left: 5px; box-shadow: 0 3px 6px rgba(0,0,0,0.1);">
                                             <?php echo $initialEvent; ?>
                                         </div>
                                         <div class="flex-grow-1 overflow-hidden">
-                                            <h6 class="mb-1 text-dark fw-bold text-truncate">
-                                                <?php echo htmlspecialchars($row['nombre_evento']); ?></h6>
-                                            <div class="d-flex align-items-center">
-                                                <span class="badge bg-light text-dark border me-2"><i
+                                            <h6 class="mb-1 text-dark fw-bold text-truncate" style="font-size: 0.95rem;">
+                                                <?php echo htmlspecialchars($row['nombre_evento']); ?>
+                                            </h6>
+                                            <div class="d-flex align-items-center mt-1">
+                                                <span class="date-badge"><i
                                                         class="far fa-calendar-alt text-primary opacity-75 me-1"></i><?php echo date('d M Y', strtotime($row['fecha_asistencia'])); ?></span>
                                             </div>
                                         </div>
-                                        <div class="ms-2 text-muted">
+                                        <div class="ms-2 text-muted pe-1">
                                             <i class="fas fa-chevron-right opacity-50"></i>
                                         </div>
                                     </a>
@@ -247,41 +266,232 @@ $result_fechas = mysqli_query($conn, $query_fechas);
 </div>
 
 <style>
+    /* Tipografía Global Premium */
+    body {
+        font-family: 'Inter', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    /* Scrollbar minimalista para la lista de miembros */
+    #lista_miembros::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    #lista_miembros::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    #lista_miembros::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 10px;
+    }
+
+    #lista_miembros::-webkit-scrollbar-thumb:hover {
+        background: #94a3b8;
+    }
+
     /* Efecto al seleccionar un miembro */
+    .btn-miembro {
+        border-radius: 10px !important;
+        border: 1px solid #e2e8f0 !important;
+        transition: all 0.3s ease !important;
+    }
+
     .btn-miembro:hover {
-        background-color: #f8f9fc !important;
-        border-color: #d1d3e2 !important;
+        background-color: #f8fafc !important;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02) !important;
     }
 
-    input[type=checkbox]:checked+div+div {
-        color: #4e73df !important;
+    /* Checkbox personalizado invisible */
+    .checkbox-asistencia {
+        appearance: none;
+        -webkit-appearance: none;
+        width: 22px;
+        height: 22px;
+        border: 2px solid #cbd5e1;
+        border-radius: 6px;
+        outline: none;
+        cursor: pointer;
+        transition: all 0.2s;
+        position: relative;
+        background-color: white;
+        margin-right: 2px;
     }
 
+    .checkbox-asistencia:checked {
+        border-color: #1e3a8a;
+        background-color: #1e3a8a;
+    }
+
+    .checkbox-asistencia:checked::after {
+        content: '\f00c';
+        font-family: 'Font Awesome 5 Free';
+        font-weight: 900;
+        font-size: 11px;
+        color: white;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+
+    /* Estilo de la tarjeta cuando está seleccionada */
     .btn-miembro:has(input[type=checkbox]:checked) {
-        border-color: #4e73df !important;
-        background-color: rgba(78, 115, 223, 0.05) !important;
-        box-shadow: 0 0 0 1px #4e73df !important;
+        border-color: #1e3a8a !important;
+        background-color: rgba(30, 58, 138, 0.04) !important;
+        box-shadow: 0 4px 12px rgba(30, 58, 138, 0.1) !important;
+    }
+
+    /* Checkmark lateral derecho emergente */
+    .btn-miembro:has(input[type=checkbox]:checked) .nombre-texto {
+        color: #1e3a8a !important;
+    }
+
+    .check-indicator {
+        opacity: 0;
+        transform: scale(0.5);
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .btn-miembro:has(input[type=checkbox]:checked) .check-indicator {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    /* Botón Guardar Premium */
+    .btn-premium {
+        background: linear-gradient(135deg, #1e3a8a, #1e40af);
+        color: white;
+        border: none;
+        box-shadow: 0 4px 10px rgba(30, 58, 138, 0.3);
+        transition: all 0.3s ease;
+    }
+
+    .btn-premium:hover {
+        background: linear-gradient(135deg, #172554, #1e3a8a);
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 14px rgba(30, 58, 138, 0.4);
+    }
+
+    /* Focus de Inputs Premium */
+    .form-control:focus, .form-select:focus,
+    .select2-container--default.select2-container--focus .select2-selection--single {
+        border-color: #1e3a8a !important;
+        box-shadow: 0 0 0 0.25rem rgba(30, 58, 138, 0.1) !important;
+    }
+
+    /* Estilos Premium para Select2 para encajar con el diseño Bootstrap */
+    .input-group > .select2-container--default {
+        flex: 1 1 auto !important;
+        width: 1% !important;
+    }
+    .select2-container--default .select2-selection--single {
+        height: 38px !important;
+        border: 1px solid #dee2e6 !important;
+        border-left: 0 !important;
+        border-radius: 0 8px 8px 0 !important;
+        display: flex;
+        align-items: center;
+        padding-left: 4px;
+        background-color: #fff;
+    }
+    .select2-container--default .select2-selection--single .select2-selection__arrow {
+        height: 36px !important;
+        right: 8px !important;
+    }
+    .select2-container--default .select2-selection--single .select2-selection__rendered {
+        color: #495057;
+        line-height: normal;
+        padding-left: 0;
+    }
+    .select2-dropdown {
+        border-color: #cbd5e1;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        overflow: hidden;
+    }
+    .select2-search__field {
+        border-radius: 6px !important;
+        border: 1px solid #cbd5e1 !important;
+    }
+    .select2-results__option--highlighted[aria-selected] {
+        background-color: #1e3a8a !important;
+    }
+
+    /* Tarjetas Asistencias Recientes */
+    .recent-card {
+        border: 1px solid #e2e8f0;
+        border-radius: 12px !important;
+        margin-bottom: 12px !important;
+        transition: all 0.3s ease;
+        background: #ffffff;
+        text-decoration: none !important;
+        padding: 12px;
+    }
+
+    .recent-card:hover {
+        transform: translateX(4px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important;
+        border-color: #cbd5e1;
+    }
+
+    .date-badge {
+        background-color: #f1f5f9;
+        color: #475569;
+        border-radius: 20px;
+        padding: 4px 10px;
+        font-weight: 600;
+        font-size: 0.75rem;
+        border: 1px solid #e2e8f0;
     }
 </style>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- Select2 JS -->
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
 <script>
     $(document).ready(function () {
+        // Inicializar Select2 en el buscador de eventos
+        $('.select2-eventos').select2({
+            placeholder: "Escriba para buscar un evento...",
+            allowClear: true,
+            theme: 'default',
+            language: {
+                noResults: function() {
+                    return "No se encontró el evento";
+                }
+            }
+        });
+
         // Función de Búsqueda
-        $('#buscar_miembro').on('keyup', function () {
-            var value = $(this).val().toLowerCase();
+        $('#buscar_miembro').on('input keyup', function () {
+            var value = $(this).val().toLowerCase().trim();
             $('#lista_miembros label').each(function () {
-                var name = $(this).find('.nombre-texto').text().toLowerCase();
-                $(this).toggle(name.indexOf(value) > -1);
+                var name = $(this).text().toLowerCase();
+                if (name.indexOf(value) > -1) {
+                    $(this).removeClass('d-none d-flex').addClass('d-flex');
+                } else {
+                    $(this).removeClass('d-flex').addClass('d-none');
+                }
             });
             actualizarContadorVisible();
+        });
+        
+        // Estilo focus iluminado para el input group del buscador
+        $('#buscar_miembro').on('focus', function() {
+            $('#search-addon').css({'border-color': '#1e3a8a'});
+            $(this).prev('#search-addon').find('i').removeClass('text-muted').css('color', '#1e3a8a');
+        }).on('blur', function() {
+            $('#search-addon').css({'border-color': '#dee2e6'});
+            $(this).prev('#search-addon').find('i').addClass('text-muted').css('color', '');
         });
 
         // Seleccionar/Deseleccionar Múltiples visibles
         $('#seleccionar_todos').click(function (e) {
             e.preventDefault();
-            var $visibles = $('#lista_miembros label:visible input[type="checkbox"]');
+            // Solo seleccionar checkboxes que NO estén dentro de labels ocultos por el buscador
+            var $visibles = $('#lista_miembros label:not(.d-none) input[type="checkbox"]');
             var todosMarcados = $visibles.length === $visibles.filter(':checked').length;
 
             $visibles.prop('checked', !todosMarcados);
@@ -299,7 +509,7 @@ $result_fechas = mysqli_query($conn, $query_fechas);
         }
 
         function actualizarContadorVisible() {
-            var visibles = $('#lista_miembros label:visible').length;
+            var visibles = $('#lista_miembros label:not(.d-none)').length;
             // Opcional: mostrar un mensaje flotante si no hay nadie visible
         }
 
