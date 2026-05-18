@@ -154,16 +154,16 @@
 
     <!-- Listado de Transacciones (Premium Ledger Container) -->
     <div class="ledger-container bg-white dark:bg-slate-900 shadow-sm flex-1 min-h-0 flex flex-col overflow-hidden relative">
-        <div class="ledger-header d-flex justify-content-between align-items-center gap-2 shrink-0">
-            <div class="d-flex align-items-center gap-2">
-                <h6 class="fw-bold mb-0 text-slate-800 dark:text-white d-flex align-items-center gap-2" style="font-size: 0.95rem; white-space: nowrap;">
+        <div class="ledger-header shrink-0" style="display: flex; justify-content: space-between; align-items: center; gap: 0.75rem; flex-wrap: nowrap;">
+            <div style="display: flex; align-items: center; gap: 0.5rem; flex-shrink: 1; min-width: 0;">
+                <h6 class="fw-bold mb-0 text-slate-800 dark:text-white" style="font-size: 0.95rem; white-space: nowrap; display: flex; align-items: center; gap: 0.5rem;">
                     <i class="fas fa-book-open" style="background: linear-gradient(135deg, #6366f1, #8b5cf6); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"></i> Libro Diario de Movimientos
                 </h6>
                 <span class="status-indicator bg-slate-100 dark:bg-slate-800/50 text-slate-500 dark:text-slate-400" style="white-space: nowrap;">
                     <i class="fas fa-shield-halved" style="font-size: 0.6rem;"></i> Auditoría Estricta
                 </span>
             </div>
-            <a href="{{ route('reportes.tesoreria') }}" target="_blank" class="btn-action-treasury" style="background: linear-gradient(135deg, #64748b, #475569) !important; box-shadow: 0 4px 14px rgba(100,116,139,0.2) !important; font-size: 0.75rem !important; padding: 0.4rem 1rem !important; white-space: nowrap;">
+            <a href="{{ route('reportes.tesoreria') }}" target="_blank" style="flex-shrink: 0; background: linear-gradient(135deg, #64748b, #475569) !important; box-shadow: 0 4px 14px rgba(100,116,139,0.2) !important; font-size: 0.75rem !important; padding: 0.4rem 1rem !important; white-space: nowrap; border: none; border-radius: 2rem; font-weight: 700; display: inline-flex; align-items: center; gap: 0.5rem; color: white; text-decoration: none; cursor: pointer; transition: all 0.3s ease;">
                 <i class="fas fa-file-pdf"></i> <span>Exportar PDF</span>
             </a>
         </div>
