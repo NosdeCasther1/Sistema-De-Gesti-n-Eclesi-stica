@@ -1,5 +1,26 @@
 @extends('layouts.app')
 
+@php
+    try {
+        $config = \App\Models\Configuracion::first() ?? new \App\Models\Configuracion([
+            'nombre_iglesia' => 'AD REY DE REYES',
+            'pastor_general' => 'Pastor Principal',
+            'direccion' => 'Ciudad Guatemala',
+            'telefono' => '+502 0000 0000',
+            'email' => 'contacto@iglesia.com'
+        ]);
+    } catch (\Exception $e) {
+        $config = (object)[
+            'nombre_iglesia' => 'AD REY DE REYES',
+            'pastor_general' => 'Pastor Principal',
+            'direccion' => 'Ciudad Guatemala',
+            'telefono' => '+502 0000 0000',
+            'email' => 'contacto@iglesia.com',
+            'logo' => null
+        ];
+    }
+@endphp
+
 @section('title', 'Gestión de Eventos y Calendario - AD Rey de Reyes')
 
 @push('styles')
@@ -331,6 +352,11 @@
         border-radius: 1.25rem !important;
     }
 
+    /* Ocultar cabecera corporativa de impresión en pantalla normal */
+    .print-header {
+        display: none !important;
+    }
+
     /* Estilos de Impresión de Alta Fidelidad (Solo Calendario) */
     @media print {
         @page { size: landscape; margin: 0.5cm; }
@@ -346,6 +372,68 @@
             min-height: 0 !important;
             border: none !important;
             box-shadow: none !important;
+        }
+
+        /* Mostrar cabecera corporativa al imprimir */
+        .print-header {
+            display: block !important;
+            width: 100% !important;
+            border-bottom: 2px solid #cbd5e1 !important;
+            padding-bottom: 12px !important;
+            margin-bottom: 20px !important;
+        }
+
+        .print-header-flex {
+            display: flex !important;
+            align-items: center !important;
+            justify-content: space-between !important;
+        }
+
+        .print-header-left {
+            display: flex !important;
+            align-items: center !important;
+            gap: 15px !important;
+        }
+
+        .print-logo-container {
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            background-color: #f1f5f9 !important;
+            border: 1px solid #cbd5e1 !important;
+            border-radius: 12px !important;
+            height: 65px !important;
+            width: 65px !important;
+        }
+
+        .print-logo-img {
+            max-height: 58px !important;
+            max-width: 58px !important;
+            object-fit: contain !important;
+        }
+
+        .print-church-title {
+            font-size: 22px !important;
+            font-weight: 700 !important;
+            color: #0f172a !important;
+            margin: 0 !important;
+            line-height: 1.2 !important;
+        }
+
+        .print-church-subtitle {
+            font-size: 10px !important;
+            font-weight: 600 !important;
+            color: #64748b !important;
+            margin: 2px 0 0 0 !important;
+            text-transform: uppercase !important;
+            letter-spacing: 0.05em !important;
+        }
+
+        .print-info-right {
+            text-align: right !important;
+            font-size: 10px !important;
+            color: #334155 !important;
+            line-height: 1.5 !important;
         }
 
         /* Corregir desplazamientos y márgenes de la barra lateral y cabeceras */
@@ -367,7 +455,7 @@
         #calendar {
             width: 100% !important;
             max-width: 100% !important;
-            height: 90vh !important;
+            height: 80vh !important;
             margin: 0 !important;
             padding: 0 !important;
         }
@@ -406,6 +494,33 @@
 
 @section('content')
 <div class="bento-container" x-data="{ viewMode: 'calendar' }">
+    
+    <!-- ===== CABECERA CORPORATIVA DE IMPRESIÓN (Solo visible al imprimir) ===== -->
+    <div class="print-header">
+        <div class="print-header-flex">
+            <div class="print-header-left">
+                @if($config->logo)
+                    <div class="print-logo-container">
+                        <img src="{{ asset('storage/config/' . $config->logo) }}" alt="Logo" class="print-logo-img">
+                    </div>
+                @else
+                    <div class="print-logo-container">
+                        <i class="fas fa-church text-slate-700 text-2xl"></i>
+                    </div>
+                @endif
+                <div>
+                    <h2 class="print-church-title">{{ $config->nombre_iglesia }}</h2>
+                    <p class="print-church-subtitle">Calendario Oficial de Actividades Eclesiásticas</p>
+                </div>
+            </div>
+            <div class="print-info-right">
+                <div><strong>Pastor General:</strong> {{ $config->pastor_general }}</div>
+                <div><strong>Dirección:</strong> {{ $config->direccion }}</div>
+                <div><strong>Teléfono:</strong> {{ $config->telefono }}</div>
+                <div><strong>Correo Electrónico:</strong> {{ $config->email }}</div>
+            </div>
+        </div>
+    </div>
     <!-- ===== ENCABEZADO Y BOTONES DE VISTA ===== -->
     <div class="flex justify-between items-center mb-4 flex-wrap gap-3 flex-shrink-0 no-print">
         <!-- Compact Google Calendar Connection Status -->
