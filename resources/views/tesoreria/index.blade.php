@@ -100,8 +100,8 @@
         </div>
 
         <!-- Resumen Financiero (Tarjetas Premium con Glassmorphism) -->
-        <div class="row g-3 mb-3">
-            <div class="col-md-4">
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;" class="mb-3">
+            <div>
                 <div class="finance-card card-income bg-white dark:bg-slate-900 shadow-sm">
                     <div class="d-flex justify-content-between align-items-center mb-1">
                         <div class="text-slate-500 dark:text-slate-400 small text-uppercase fw-bold tracking-wider" style="font-size: 0.72rem;">Total Ingresos</div>
@@ -113,7 +113,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-4">
+            <div>
                 <div class="finance-card card-expense bg-white dark:bg-slate-900 shadow-sm">
                     <div class="d-flex justify-content-between align-items-center mb-1">
                         <div class="text-slate-500 dark:text-slate-400 small text-uppercase fw-bold tracking-wider" style="font-size: 0.72rem;">Total Gastos</div>
@@ -125,7 +125,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-4">
+            <div>
                 <div class="finance-card card-balance bg-white dark:bg-slate-900 shadow-sm">
                     <div class="d-flex justify-content-between align-items-center mb-1">
                         <div class="text-slate-500 dark:text-slate-400 small text-uppercase fw-bold tracking-wider" style="font-size: 0.72rem;">Balance Consolidado</div>
