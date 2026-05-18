@@ -352,6 +352,36 @@
         border-radius: 1.25rem !important;
     }
 
+    /* Botón de Impresión con Micro-Animaciones Premium */
+    .btn-print-premium {
+        position: relative;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        cursor: pointer !important;
+    }
+    .btn-print-premium:hover {
+        transform: translateY(-2px) scale(1.04) !important;
+        border-color: #3b82f6 !important;
+        color: #3b82f6 !important;
+        box-shadow: 0 10px 20px -5px rgba(59, 130, 246, 0.15) !important;
+    }
+    .dark .btn-print-premium:hover {
+        border-color: #60a5fa !important;
+        color: #60a5fa !important;
+        box-shadow: 0 10px 20px -5px rgba(96, 165, 250, 0.25) !important;
+    }
+    .btn-print-premium:hover i {
+        animation: printIconPulse 1.2s infinite alternate ease-in-out;
+    }
+    .btn-print-premium:active {
+        transform: translateY(1px) scale(0.96) !important;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05) !important;
+    }
+
+    @keyframes printIconPulse {
+        0% { transform: translateY(0) rotate(-10deg); }
+        100% { transform: translateY(-3px) rotate(10deg); }
+    }
+
     /* Ocultar cabecera corporativa de impresión en pantalla normal */
     .print-header {
         display: none !important;
@@ -752,7 +782,7 @@
                 <h5 class="font-bold text-slate-800 dark:text-white mb-1"><i class="fas fa-calendar-alt text-blue-500 mr-2"></i> Vista Mensual Interactiva</h5>
                 <p class="text-slate-500 dark:text-slate-400 text-sm mb-0">Haz clic en cualquier día para agendar un evento en esa fecha</p>
             </div>
-            <button onclick="window.print()" class="bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 px-4 py-2 rounded-full font-bold shadow-sm flex items-center gap-2 transition-colors">
+            <button onclick="window.print()" class="btn-print-premium bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 px-4 py-2 rounded-full font-bold shadow-sm flex items-center gap-2">
                 <i class="fas fa-print"></i> <span>Imprimir Calendario</span>
             </button>
         </div>
