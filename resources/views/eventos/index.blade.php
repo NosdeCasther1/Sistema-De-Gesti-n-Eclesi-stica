@@ -334,11 +334,66 @@
     /* Estilos de Impresión de Alta Fidelidad (Solo Calendario) */
     @media print {
         @page { size: landscape; margin: 0.5cm; }
-        body { background: white !important; color: black !important; }
-        .sidebar, .navbar, .btn, .alert, form, .badge, footer { display: none !important; }
-        .card-module { border: none !important; box-shadow: none !important; padding: 0 !important; }
-        #calendar { width: 100% !important; max-width: 100% !important; }
-        .fc-header-toolbar { margin-bottom: 15px !important; }
+        
+        body, html, .main-content, .bento-container, .card-module {
+            background: white !important;
+            color: black !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            height: auto !important;
+            min-height: 0 !important;
+            border: none !important;
+            box-shadow: none !important;
+        }
+
+        /* Corregir desplazamientos y márgenes de la barra lateral y cabeceras */
+        .sidebar, #sidebar, header, .header, footer, .no-print {
+            display: none !important;
+        }
+
+        .main-content {
+            margin-left: 0 !important;
+            padding: 0 !important;
+        }
+
+        .main-content > main {
+            padding-top: 0 !important;
+            margin: 0 !important;
+        }
+
+        /* Hacer que el calendario se adapte perfectamente al ancho completo sin recortes */
+        #calendar {
+            width: 100% !important;
+            max-width: 100% !important;
+            height: 90vh !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+        .fc-header-toolbar {
+            margin-bottom: 15px !important;
+        }
+
+        /* Optimizar legibilidad y contraste de los eventos */
+        .fc {
+            color: #000000 !important;
+        }
+
+        .fc-col-header-cell-cushion, 
+        .fc-daygrid-day-number {
+            color: #000000 !important;
+            font-weight: 700 !important;
+            text-decoration: none !important;
+        }
+
+        .fc-event {
+            background-color: #f1f5f9 !important;
+            border: 1px solid #cbd5e1 !important;
+            color: #0f172a !important;
+            padding: 2px 4px !important;
+        }
     }
 </style>
 @endpush
@@ -352,7 +407,7 @@
 @section('content')
 <div class="bento-container" x-data="{ viewMode: 'calendar' }">
     <!-- ===== ENCABEZADO Y BOTONES DE VISTA ===== -->
-    <div class="flex justify-between items-center mb-4 flex-wrap gap-3 flex-shrink-0">
+    <div class="flex justify-between items-center mb-4 flex-wrap gap-3 flex-shrink-0 no-print">
         <!-- Compact Google Calendar Connection Status -->
         <div class="flex items-center">
             @if($isConnected)
@@ -542,7 +597,7 @@
 
     <!-- ===== CONTENIDO VISTA CALENDARIO ===== -->
     <div :class="viewMode === 'calendar' ? 'card-module p-4 shadow-sm flex flex-col flex-grow mb-4 min-h-0' : 'hidden-important'">
-        <div class="flex justify-between items-center mb-4 flex-wrap gap-3 border-b border-slate-200 dark:border-slate-800 pb-3 flex-shrink-0">
+        <div class="flex justify-between items-center mb-4 flex-wrap gap-3 border-b border-slate-200 dark:border-slate-800 pb-3 flex-shrink-0 no-print">
             <div>
                 <h5 class="font-bold text-slate-800 dark:text-white mb-1"><i class="fas fa-calendar-alt text-blue-500 mr-2"></i> Vista Mensual Interactiva</h5>
                 <p class="text-slate-500 dark:text-slate-400 text-sm mb-0">Haz clic en cualquier día para agendar un evento en esa fecha</p>
