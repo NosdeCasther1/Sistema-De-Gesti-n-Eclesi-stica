@@ -451,11 +451,46 @@
             margin: 0 !important;
         }
 
-        /* Hacer que el calendario se adapte perfectamente al ancho completo sin recortes */
-        #calendar {
+        /* Hacer que el calendario y todas sus tablas se adapten perfectamente al ancho completo */
+        #calendar, 
+        .fc, 
+        .fc-view-harness, 
+        .fc-view, 
+        .fc-daygrid, 
+        .fc-scrollgrid, 
+        .fc-scrollgrid-sync-table, 
+        .fc-col-header, 
+        .fc-daygrid-body,
+        .fc-daygrid-body table, 
+        .fc-scrollgrid-sync-table table,
+        .fc-scrollgrid-section-body table,
+        .fc-scrollgrid-section-header table {
             width: 100% !important;
             max-width: 100% !important;
-            height: 80vh !important;
+            min-width: 100% !important;
+        }
+
+        .fc-scrollgrid, 
+        .fc-scrollgrid-sync-table, 
+        .fc-col-header,
+        .fc-scrollgrid-section-body table,
+        .fc-scrollgrid-section-header table {
+            table-layout: fixed !important;
+        }
+
+        /* Eliminar scrollbars y overflows en la hoja de impresión */
+        .fc-scroller, 
+        .fc-scroller-harness,
+        .overflow-auto,
+        .card-module,
+        main,
+        .bento-container {
+            overflow: visible !important;
+            height: auto !important;
+        }
+
+        #calendar {
+            height: auto !important;
             margin: 0 !important;
             padding: 0 !important;
         }
