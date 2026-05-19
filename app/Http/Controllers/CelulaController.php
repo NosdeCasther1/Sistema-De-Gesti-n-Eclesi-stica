@@ -70,12 +70,11 @@ class CelulaController extends Controller
         return view('celulas.show', compact('celula'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(string $id)
     {
-        //
+        $celula = \App\Models\Celula::findOrFail($id);
+        $miembros = \App\Models\Miembro::orderBy('nombres')->get();
+        return view('celulas.edit', compact('celula', 'miembros'));
     }
 
     /**
@@ -83,7 +82,19 @@ class CelulaController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $request->validate([
+            'nombre' => 'required|string|max:255',
+            'sector' => 'nullable|string|max:255',
+            'lider_id' => 'required|exists:miembros,id',
+            'dia_reunion' => 'required|string',
+            'hora_reunion' => 'required',
+            'direccion' => 'nullable|string'
+        ]);
+
+        $celula = \App\Models\Celula::findOrFail($id);
+        $celula->update($request->all());
+
+        return redirect()->route('celulas.index')->with('success', 'Célula actualizada correctamente.');
     }
 
     /**
@@ -91,6 +102,9 @@ class CelulaController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $celula = \App\Models\Celula::findOrFail($id);
+        $celula->delete();
+
+        return redirect()->route('celulas.index')->with('success', 'Célula eliminada correctamente.');
     }
 }

@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Nueva Célula Familiar - AD Rey de Reyes')
+@section('title', 'Editar Célula Familiar - AD Rey de Reyes')
 
 @push('styles')
 <style>
@@ -97,8 +97,8 @@
 </style>
 @endpush
 
-@section('header_title', 'Registro de Célula')
-@section('header_subtitle', 'Organización territorial y multiplicación ministerial')
+@section('header_title', 'Editar Célula')
+@section('header_subtitle', 'Modifique los datos y asignaciones de la célula seleccionada')
 @section('header_icon')
 <i class="fas fa-network-wired fs-5"></i>
 @endsection
@@ -109,9 +109,9 @@
     <div class="flex items-center justify-between mb-8 flex-wrap gap-4 border-b border-slate-200 dark:border-slate-800/80 pb-6">
         <div>
             <h1 class="text-2xl font-black text-slate-900 dark:text-white tracking-tight mb-1 flex items-center gap-3">
-                <span>Registrar Nueva Célula Familiar</span>
+                <span>Editar Célula: {{ $celula->nombre }}</span>
             </h1>
-            <p class="text-xs text-slate-500 dark:text-slate-400 mb-0 font-medium">Defina el nombre, líder a cargo e información horaria de la célula</p>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mb-0 font-medium">Actualice la información de liderazgo, horarios y dirección de la célula</p>
         </div>
         <a href="{{ route('celulas.index') }}" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl text-xs font-bold bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/60 shadow-sm transition-all no-underline">
             <i class="fas fa-arrow-left text-sm"></i>
@@ -138,8 +138,9 @@
         </div>
         @endif
 
-        <form action="{{ route('celulas.store') }}" method="POST" class="m-0 space-y-10">
+        <form action="{{ route('celulas.update', $celula->id) }}" method="POST" class="m-0 space-y-10">
             @csrf
+            @method('PUT')
 
             {{-- SECCIÓN 1: IDENTIFICACIÓN Y LIDERAZGO --}}
             <div>
@@ -156,12 +157,12 @@
                 <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
                     <div class="md:col-span-8">
                         <label class="block text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">Nombre de la Célula *</label>
-                        <input type="text" name="nombre" value="{{ old('nombre') }}" placeholder="Ej: Célula Emanuel, Célula Jerusalén" required
+                        <input type="text" name="nombre" value="{{ old('nombre', $celula->nombre) }}" placeholder="Ej: Célula Emanuel, Célula Jerusalén" required
                                class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 px-4 py-3.5 text-slate-900 dark:text-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all shadow-sm">
                     </div>
                     <div class="md:col-span-4">
                         <label class="block text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">Sector / Zona</label>
-                        <input type="text" name="sector" value="{{ old('sector') }}" placeholder="Ej: Sector Norte, Zona 1"
+                        <input type="text" name="sector" value="{{ old('sector', $celula->sector) }}" placeholder="Ej: Sector Norte, Zona 1"
                                class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 px-4 py-3.5 text-slate-900 dark:text-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all shadow-sm">
                     </div>
                     <div class="md:col-span-12">
@@ -169,7 +170,7 @@
                         <select name="lider_id" id="lider_select" class="w-full" required>
                             <option value="">Buscar por nombre, apellidos o DPI...</option>
                             @foreach($miembros as $m)
-                                <option value="{{ $m->id }}" {{ old('lider_id') == $m->id ? 'selected' : '' }}>
+                                <option value="{{ $m->id }}" {{ old('lider_id', $celula->lider_id) == $m->id ? 'selected' : '' }}>
                                     #{{ $m->id }} - {{ $m->nombres }} {{ $m->apellidos }} (DPI: {{ $m->dpi ?? 'Sin DPI' }})
                                 </option>
                             @endforeach
@@ -195,19 +196,19 @@
                         <label class="block text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">Día de Reunión *</label>
                         <select name="dia_reunion" required class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 px-4 py-3.5 text-slate-900 dark:text-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all shadow-sm cursor-pointer">
                             @foreach(['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'] as $dia)
-                                <option value="{{ $dia }}" {{ old('dia_reunion') == $dia ? 'selected' : '' }}>{{ $dia }}</option>
+                                <option value="{{ $dia }}" {{ old('dia_reunion', $celula->dia_reunion) == $dia ? 'selected' : '' }}>{{ $dia }}</option>
                             @endforeach
                         </select>
                     </div>
                     <div>
                         <label class="block text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">Hora de Reunión *</label>
-                        <input type="time" name="hora_reunion" value="{{ old('hora_reunion') }}" required
+                        <input type="time" name="hora_reunion" value="{{ old('hora_reunion', \Carbon\Carbon::parse($celula->hora_reunion)->format('H:i')) }}" required
                                class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 px-4 py-3.5 text-slate-900 dark:text-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all shadow-sm">
                     </div>
                     <div class="md:col-span-2">
                         <label class="block text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">Dirección de Célula</label>
                         <textarea name="direccion" rows="2" placeholder="Describa la dirección exacta o coordenadas de la célula..."
-                                  class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 px-4 py-3.5 text-slate-900 dark:text-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all shadow-sm resize-none">{{ old('direccion') }}</textarea>
+                                  class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 px-4 py-3.5 text-slate-900 dark:text-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all shadow-sm resize-none">{{ old('direccion', $celula->direccion) }}</textarea>
                     </div>
                 </div>
             </div>
@@ -217,7 +218,7 @@
                 <a href="{{ route('celulas.index') }}" class="px-6 py-3.5 rounded-2xl text-xs font-bold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all no-underline cursor-pointer">Cancelar</a>
                 <button type="submit" class="btn-bento-primary px-8 py-3.5 rounded-2xl font-bold text-xs flex items-center justify-center gap-2.5 transition-all cursor-pointer">
                     <i class="fas fa-save text-base"></i>
-                    <span>Registrar Célula</span>
+                    <span>Guardar Cambios</span>
                 </button>
             </div>
         </form>
