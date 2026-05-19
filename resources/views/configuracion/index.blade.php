@@ -10,6 +10,100 @@
         overflow-y: auto !important;
         height: auto !important;
     }
+
+    /* Bento Card Hover Effects */
+    .bento-card {
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .bento-card:hover {
+        transform: translateY(-4px);
+    }
+
+    /* Bento Buttons Premium (Bulletproof Gradients) */
+    .btn-bento-primary {
+        background: linear-gradient(135deg, #2563eb, #4f46e5) !important;
+        color: white !important;
+        box-shadow: 0 4px 14px rgba(37,99,235,0.25) !important;
+        border: none !important;
+        transition: all 0.3s ease !important;
+    }
+    .btn-bento-primary:hover {
+        background: linear-gradient(135deg, #1d4ed8, #4338ca) !important;
+        box-shadow: 0 6px 20px rgba(37,99,235,0.35) !important;
+        transform: translateY(-2px);
+    }
+
+    .btn-bento-success {
+        background: linear-gradient(135deg, #059669, #0d9488) !important;
+        color: white !important;
+        box-shadow: 0 4px 14px rgba(5,150,105,0.25) !important;
+        border: none !important;
+        transition: all 0.3s ease !important;
+    }
+    .btn-bento-success:hover {
+        background: linear-gradient(135deg, #047857, #0f766e) !important;
+        box-shadow: 0 6px 20px rgba(5,150,105,0.35) !important;
+        transform: translateY(-2px);
+    }
+
+    .btn-bento-warning {
+        background: linear-gradient(135deg, #d97706, #ea580c) !important;
+        color: white !important;
+        box-shadow: 0 4px 14px rgba(217,119,6,0.25) !important;
+        border: none !important;
+        transition: all 0.3s ease !important;
+    }
+    .btn-bento-warning:hover {
+        background: linear-gradient(135deg, #b45309, #c2410c) !important;
+        box-shadow: 0 6px 20px rgba(217,119,6,0.35) !important;
+        transform: translateY(-2px);
+    }
+
+    .btn-bento-danger {
+        background: linear-gradient(135deg, #e11d48, #dc2626) !important;
+        color: white !important;
+        box-shadow: 0 4px 14px rgba(225,29,72,0.25) !important;
+        border: none !important;
+        transition: all 0.3s ease !important;
+    }
+    .btn-bento-danger:hover {
+        background: linear-gradient(135deg, #be123c, #b91c1c) !important;
+        box-shadow: 0 6px 20px rgba(225,29,72,0.35) !important;
+        transform: translateY(-2px);
+    }
+
+    /* Icon Boxes Premium (Bulletproof Gradients & Dimensions) */
+    .config-icon-box {
+        width: 52px !important;
+        height: 52px !important;
+        min-width: 52px !important;
+        min-height: 52px !important;
+        border-radius: 16px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        flex-shrink: 0 !important;
+        box-shadow: 0 10px 25px -5px rgba(0,0,0,0.2) !important;
+    }
+    .config-icon-box i {
+        color: white !important;
+        background: transparent !important;
+        box-shadow: none !important;
+        border: none !important;
+        width: auto !important;
+        height: auto !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        display: inline-block !important;
+        font-size: 1.4rem !important;
+    }
+
+    .icon-box-primary { background: linear-gradient(135deg, #2563eb, #4f46e5) !important; color: white !important; }
+    .icon-box-success { background: linear-gradient(135deg, #059669, #10b981) !important; color: white !important; }
+    .icon-box-warning { background: linear-gradient(135deg, #d97706, #f59e0b) !important; color: white !important; }
+    .icon-box-danger  { background: linear-gradient(135deg, #e11d48, #f43f5e) !important; color: white !important; }
+    .icon-box-info    { background: linear-gradient(135deg, #0891b2, #06b6d4) !important; color: white !important; }
+    .icon-box-purple  { background: linear-gradient(135deg, #8b5cf6, #a855f7) !important; color: white !important; }
 </style>
 @endpush
 
@@ -35,9 +129,9 @@
         actionUrl: '',
         method: 'POST',
         buttonText: 'Confirmar',
-        buttonClass: 'bg-rose-600 hover:bg-rose-700 text-white'
+        buttonClass: 'btn-bento-danger'
     },
-    showConfirm(title, message, actionUrl, method = 'POST', buttonText = 'Confirmar', buttonClass = 'bg-rose-600 hover:bg-rose-700 text-white') {
+    showConfirm(title, message, actionUrl, method = 'POST', buttonText = 'Confirmar', buttonClass = 'btn-bento-danger') {
         this.confirmModal.title = title;
         this.confirmModal.message = message;
         this.confirmModal.actionUrl = actionUrl;
@@ -46,10 +140,10 @@
         this.confirmModal.buttonClass = buttonClass;
         this.confirmModal.open = true;
     }
-}" class="container-fluid py-3 px-3">
+}" class="container-fluid py-6 px-4 max-w-7xl mx-auto">
 
     {{-- Navegación Premium de Pestañas (Pills compactos y de alta densidad con Armadura Z-Index) --}}
-    <nav class="relative z-20 flex flex-wrap gap-2 p-2 bg-slate-100/80 dark:bg-slate-800/60 backdrop-blur-md rounded-2xl border border-slate-200 dark:border-slate-700/80 mb-6 shadow-sm">
+    <nav class="relative z-20 flex flex-wrap gap-2 p-2 bg-slate-100/80 dark:bg-slate-800/60 backdrop-blur-md rounded-2xl border border-slate-200 dark:border-slate-700/80 mb-8 shadow-sm">
         <button type="button" 
                 @click="tab = 'general'; console.log('Pestaña cambiada a: ' + tab)" 
                 :class="tab === 'general' ? 'bg-white dark:bg-slate-700 shadow-sm text-indigo-600 dark:text-indigo-400 font-bold' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-white/50 dark:hover:bg-slate-700/40 font-semibold'"
@@ -97,14 +191,14 @@
                     @csrf
                     <div class="bento-card bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800/80 rounded-3xl p-8 shadow-xl flex flex-col justify-between relative overflow-hidden group flex-grow">
                         <!-- Glow de fondo -->
-                        <div class="absolute -right-20 -top-20 w-60 h-60 bg-primary/10 dark:bg-primary/5 rounded-full blur-3xl group-hover:bg-primary/20 transition-all duration-500"></div>
+                        <div class="absolute -right-20 -top-20 w-60 h-60 bg-blue-500/10 dark:bg-blue-500/5 rounded-full blur-3xl group-hover:bg-blue-500/20 transition-all duration-500"></div>
 
                         <div>
                             {{-- Header Bento --}}
                             <div class="flex items-center justify-between mb-6 pb-5 border-b border-slate-100 dark:border-slate-800 flex-wrap gap-4">
                                 <div class="flex items-center gap-4">
-                                    <div class="rounded-2xl bg-primary/10 text-primary flex items-center justify-center shadow-sm w-12 h-12 flex-shrink-0">
-                                        <i class="fas fa-church text-xl"></i>
+                                    <div class="config-icon-box icon-box-primary group-hover:scale-110 transition-transform duration-500">
+                                        <i class="fas fa-church"></i>
                                     </div>
                                     <div>
                                         <h5 class="text-lg font-bold text-slate-900 dark:text-white tracking-tight mb-1">Ajustes Generales de la Iglesia</h5>
@@ -116,7 +210,7 @@
                             <div class="space-y-6">
                                 <!-- Seccion 1: Identidad -->
                                 <div>
-                                    <h6 class="font-extrabold text-primary text-xs uppercase tracking-wider mb-4 flex items-center gap-2">
+                                    <h6 class="font-extrabold text-blue-600 dark:text-blue-400 text-xs uppercase tracking-wider mb-4 flex items-center gap-2">
                                         <i class="fas fa-id-card"></i>
                                         <span>1. Identidad Ministerial</span>
                                     </h6>
@@ -126,11 +220,11 @@
                                         <div class="md:col-span-8 space-y-4">
                                             <div>
                                                 <label class="block text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">Nombre de la Iglesia *</label>
-                                                <input type="text" name="nombre_iglesia" class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all shadow-sm" value="{{ $config->nombre_iglesia }}" required>
+                                                <input type="text" name="nombre_iglesia" class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all shadow-sm" value="{{ $config->nombre_iglesia }}" required>
                                             </div>
                                             <div>
                                                 <label class="block text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">Pastor General</label>
-                                                <input type="text" name="pastor_general" class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all shadow-sm" value="{{ $config->pastor_general }}">
+                                                <input type="text" name="pastor_general" class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all shadow-sm" value="{{ $config->pastor_general }}">
                                             </div>
                                         </div>
 
@@ -152,7 +246,7 @@
                                             </div>
 
                                             <input type="file" name="logo" id="logoInput" class="hidden" accept="image/*" onchange="previewLogo(this)">
-                                            <label for="logoInput" class="w-full py-2.5 px-4 rounded-xl border border-primary/30 dark:border-primary/40 bg-primary/10 hover:bg-primary/20 dark:bg-primary/10 dark:hover:bg-primary/20 text-primary font-bold text-xs flex items-center justify-center gap-2 cursor-pointer transition-all shadow-sm mb-1">
+                                            <label for="logoInput" class="w-full py-2.5 px-4 rounded-xl border border-blue-500/30 dark:border-blue-500/40 bg-blue-500/10 hover:bg-blue-500/20 dark:bg-blue-500/10 dark:hover:bg-blue-500/20 text-blue-600 dark:text-blue-400 font-bold text-xs flex items-center justify-center gap-2 cursor-pointer transition-all shadow-sm mb-1">
                                                 <i class="fas fa-camera text-sm"></i>
                                                 <span>Cambiar Logo</span>
                                             </label>
@@ -165,7 +259,7 @@
 
                                 <!-- Seccion 2: Contacto -->
                                 <div>
-                                    <h6 class="font-extrabold text-primary text-xs uppercase tracking-wider mb-4 flex items-center gap-2">
+                                    <h6 class="font-extrabold text-blue-600 dark:text-blue-400 text-xs uppercase tracking-wider mb-4 flex items-center gap-2">
                                         <i class="fas fa-address-book"></i>
                                         <span>2. Información de Contacto</span>
                                     </h6>
@@ -173,19 +267,19 @@
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                         <div>
                                             <label class="block text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">Dirección Física</label>
-                                            <input type="text" name="direccion" class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all shadow-sm" value="{{ $config->direccion }}">
+                                            <input type="text" name="direccion" class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all shadow-sm" value="{{ $config->direccion }}">
                                         </div>
                                         <div>
                                             <label class="block text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">Teléfono de Oficina</label>
-                                            <input type="text" name="telefono" class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all shadow-sm" value="{{ $config->telefono }}">
+                                            <input type="text" name="telefono" class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all shadow-sm" value="{{ $config->telefono }}">
                                         </div>
                                         <div>
                                             <label class="block text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">Correo Electrónico Oficial</label>
-                                            <input type="email" name="email" class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all shadow-sm" value="{{ $config->email }}">
+                                            <input type="email" name="email" class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all shadow-sm" value="{{ $config->email }}">
                                         </div>
                                         <div>
                                             <label class="block text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">Símbolo de Moneda</label>
-                                            <input type="text" name="moneda" class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all shadow-sm font-mono" value="{{ $config->moneda }}" maxlength="5">
+                                            <input type="text" name="moneda" class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all shadow-sm font-mono" value="{{ $config->moneda }}" maxlength="5">
                                         </div>
                                     </div>
                                 </div>
@@ -194,7 +288,7 @@
 
                         <!-- Boton Guardar -->
                         <div class="mt-8 pt-5 border-t border-slate-100 dark:border-slate-800 flex justify-end">
-                            <button type="submit" class="px-6 py-3 bg-primary hover:bg-primary/90 text-white rounded-xl text-xs font-bold shadow-lg shadow-primary/20 flex items-center gap-2.5 transition-all cursor-pointer border-0">
+                            <button type="submit" class="btn-bento-primary px-6 py-3.5 rounded-xl text-xs font-bold flex items-center gap-2.5 transition-all cursor-pointer">
                                 <i class="fas fa-save text-sm"></i>
                                 <span>Guardar Ajustes Generales</span>
                             </button>
@@ -205,17 +299,20 @@
 
             {{-- Guía de Configuración (4 Columnas) --}}
             <div class="lg:col-span-4 flex flex-col">
-                <div class="bento-card bg-gradient-to-b from-info/10 via-info/5 to-transparent dark:from-info/20 dark:via-info/10 dark:to-transparent border border-info/20 dark:border-info/30 rounded-3xl p-8 shadow-xl flex flex-col justify-between relative overflow-hidden flex-grow">
+                <div class="bento-card bg-gradient-to-b from-cyan-500/10 via-cyan-500/5 to-transparent dark:from-cyan-500/20 dark:via-cyan-500/10 dark:to-transparent border border-cyan-500/20 dark:border-cyan-500/30 rounded-3xl p-8 shadow-xl flex flex-col justify-between relative overflow-hidden flex-grow group">
+                    <!-- Glow de fondo -->
+                    <div class="absolute -right-20 -top-20 w-60 h-60 bg-cyan-500/10 dark:bg-cyan-500/5 rounded-full blur-3xl group-hover:bg-cyan-500/20 transition-all duration-500"></div>
+
                     <div>
                         {{-- Header Bento --}}
-                        <div class="flex items-center justify-between mb-6 pb-5 border-b border-info/20 flex-wrap gap-4">
+                        <div class="flex items-center justify-between mb-6 pb-5 border-b border-cyan-500/20 flex-wrap gap-4">
                             <div class="flex items-center gap-4">
-                                <div class="rounded-2xl bg-info/20 text-info flex items-center justify-center shadow-sm w-12 h-12 flex-shrink-0">
-                                    <i class="fas fa-lightbulb text-xl"></i>
+                                <div class="config-icon-box icon-box-info group-hover:scale-110 transition-transform duration-500">
+                                    <i class="fas fa-lightbulb"></i>
                                 </div>
                                 <div>
-                                    <h5 class="text-lg font-bold text-info tracking-tight mb-1">Guía de Configuración</h5>
-                                    <p class="text-xs text-info/80 mb-0">Impacto en el sistema</p>
+                                    <h5 class="text-lg font-bold text-cyan-600 dark:text-cyan-400 tracking-tight mb-1">Guía de Configuración</h5>
+                                    <p class="text-xs text-cyan-600/80 dark:text-cyan-400/80 mb-0">Impacto en el sistema</p>
                                 </div>
                             </div>
                         </div>
@@ -226,8 +323,8 @@
                         
                         <div class="space-y-4 mb-6">
                             <!-- Item 1 -->
-                            <div class="p-4 rounded-2xl bg-white dark:bg-slate-800/80 border border-info/15 dark:border-info/25 shadow-sm flex items-start gap-4">
-                                <div class="rounded-xl bg-info/10 p-2.5 text-info flex items-center justify-center w-10 h-10 flex-shrink-0 mt-0.5">
+                            <div class="p-4 rounded-2xl bg-white dark:bg-slate-800/80 border border-cyan-500/15 dark:border-cyan-500/25 shadow-sm flex items-start gap-4">
+                                <div class="rounded-xl bg-cyan-500/10 p-2.5 text-cyan-600 dark:text-cyan-400 flex items-center justify-center w-10 h-10 flex-shrink-0 mt-0.5">
                                     <i class="fas fa-file-pdf text-base"></i>
                                 </div>
                                 <div>
@@ -237,8 +334,8 @@
                             </div>
 
                             <!-- Item 2 -->
-                            <div class="p-4 rounded-2xl bg-white dark:bg-slate-800/80 border border-info/15 dark:border-info/25 shadow-sm flex items-start gap-4">
-                                <div class="rounded-xl bg-info/10 p-2.5 text-info flex items-center justify-center w-10 h-10 flex-shrink-0 mt-0.5">
+                            <div class="p-4 rounded-2xl bg-white dark:bg-slate-800/80 border border-cyan-500/15 dark:border-cyan-500/25 shadow-sm flex items-start gap-4">
+                                <div class="rounded-xl bg-cyan-500/10 p-2.5 text-cyan-600 dark:text-cyan-400 flex items-center justify-center w-10 h-10 flex-shrink-0 mt-0.5">
                                     <i class="fas fa-id-badge text-base"></i>
                                 </div>
                                 <div>
@@ -248,8 +345,8 @@
                             </div>
 
                             <!-- Item 3 -->
-                            <div class="p-4 rounded-2xl bg-white dark:bg-slate-800/80 border border-info/15 dark:border-info/25 shadow-sm flex items-start gap-4">
-                                <div class="rounded-xl bg-info/10 p-2.5 text-info flex items-center justify-center w-10 h-10 flex-shrink-0 mt-0.5">
+                            <div class="p-4 rounded-2xl bg-white dark:bg-slate-800/80 border border-cyan-500/15 dark:border-cyan-500/25 shadow-sm flex items-start gap-4">
+                                <div class="rounded-xl bg-cyan-500/10 p-2.5 text-cyan-600 dark:text-cyan-400 flex items-center justify-center w-10 h-10 flex-shrink-0 mt-0.5">
                                     <i class="fas fa-receipt text-base"></i>
                                 </div>
                                 <div>
@@ -260,7 +357,7 @@
                         </div>
                     </div>
 
-                    <div class="pt-4 border-t border-info/20 text-center text-info text-[11px] font-semibold flex items-center justify-center gap-2">
+                    <div class="pt-4 border-t border-cyan-500/20 text-center text-cyan-600 dark:text-cyan-400 text-[11px] font-semibold flex items-center justify-center gap-2">
                         <i class="fas fa-shield-alt"></i>
                         <span>Configuración global protegida por nivel de acceso</span>
                     </div>
@@ -274,20 +371,20 @@
     <div x-show="tab === 'usuarios'" x-cloak>
         <div class="bento-card bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800/80 rounded-3xl p-8 shadow-xl mb-8 relative overflow-hidden group">
             <!-- Glow de fondo -->
-            <div class="absolute -right-20 -top-20 w-60 h-60 bg-primary/10 dark:bg-primary/5 rounded-full blur-3xl group-hover:bg-primary/20 transition-all duration-500"></div>
+            <div class="absolute -right-20 -top-20 w-60 h-60 bg-blue-500/10 dark:bg-blue-500/5 rounded-full blur-3xl group-hover:bg-blue-500/20 transition-all duration-500"></div>
 
             {{-- Header Bento --}}
             <div class="flex items-center justify-between mb-6 pb-5 border-b border-slate-100 dark:border-slate-800 flex-wrap gap-4">
                 <div class="flex items-center gap-4">
-                    <div class="rounded-2xl bg-primary/10 text-primary flex items-center justify-center shadow-sm w-12 h-12 flex-shrink-0">
-                        <i class="fas fa-users-cog text-xl"></i>
+                    <div class="config-icon-box icon-box-primary group-hover:scale-110 transition-transform duration-500">
+                        <i class="fas fa-users-cog"></i>
                     </div>
                     <div>
                         <h5 class="text-lg font-bold text-slate-900 dark:text-white tracking-tight mb-1">Gestión de Usuarios</h5>
                         <p class="text-xs text-slate-500 dark:text-slate-400 mb-0">Administra las credenciales y niveles de acceso al sistema</p>
                     </div>
                 </div>
-                <button type="button" @click="showModalCrearUsuario = true" class="px-5 py-2.5 bg-primary hover:bg-primary/90 text-white rounded-xl text-xs font-bold shadow-lg shadow-primary/20 flex items-center gap-2 cursor-pointer border-0 transition-all">
+                <button type="button" @click="showModalCrearUsuario = true" class="btn-bento-primary px-5 py-3 rounded-xl text-xs font-bold flex items-center gap-2 cursor-pointer transition-all">
                     <i class="fas fa-user-plus text-sm"></i> <span>Nuevo Usuario</span>
                 </button>
             </div>
@@ -309,7 +406,7 @@
                                 <tr class="transition-all hover:bg-slate-50/80 dark:hover:bg-slate-800/30 text-xs">
                                     <td class="pl-6 pr-4 py-4">
                                         <div class="flex items-center gap-4">
-                                            <div class="rounded-2xl bg-primary/10 text-primary font-black flex items-center justify-center shadow-sm w-10 h-10 flex-shrink-0 text-sm border border-primary/20">
+                                            <div class="rounded-2xl bg-blue-500/10 text-blue-600 dark:text-blue-400 font-black flex items-center justify-center shadow-sm w-10 h-10 flex-shrink-0 text-sm border border-blue-500/20">
                                                 {{ strtoupper(substr($user->nombre, 0, 2)) }}
                                             </div>
                                             <div>
@@ -328,7 +425,7 @@
                                                 <i class="fas fa-coins text-xs"></i> Tesorero
                                             </span>
                                         @elseif($user->rol === 'lider')
-                                            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-info/10 text-info border border-info/20 uppercase tracking-wider">
+                                            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border border-cyan-500/20 uppercase tracking-wider">
                                                 <i class="fas fa-user-tie text-xs"></i> Líder Célula
                                             </span>
                                         @else
@@ -342,7 +439,7 @@
                                     </td>
                                     <td class="py-4 text-right pr-6 pl-4">
                                         <div class="flex items-center justify-end gap-2">
-                                            <button type="button" @click="showModalEditarUsuario = {{ $user->id }}" class="w-9 h-9 rounded-full border border-primary/20 dark:border-primary/30 bg-primary/10 hover:bg-primary/20 dark:bg-primary/10 dark:hover:bg-primary/20 text-primary flex items-center justify-center transition-all cursor-pointer shadow-sm" title="Editar Usuario">
+                                            <button type="button" @click="showModalEditarUsuario = {{ $user->id }}" class="w-9 h-9 rounded-full border border-blue-500/20 dark:border-blue-500/30 bg-blue-500/10 hover:bg-blue-500/20 dark:bg-blue-500/10 dark:hover:bg-blue-500/20 text-blue-600 dark:text-blue-400 flex items-center justify-center transition-all cursor-pointer shadow-sm" title="Editar Usuario">
                                                 <i class="fas fa-edit text-xs"></i>
                                             </button>
                                             @if($usuarios->count() > 1)
@@ -352,7 +449,7 @@
                                                     '{{ route('usuarios.destroy', $user->id) }}',
                                                     'DELETE',
                                                     'Sí, Eliminar Usuario',
-                                                    'bg-rose-600 hover:bg-rose-700 text-white'
+                                                    'btn-bento-danger'
                                                 )" class="w-9 h-9 rounded-full border border-rose-200 dark:border-rose-800/80 bg-rose-50 hover:bg-rose-100 dark:bg-rose-500/10 dark:hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 flex items-center justify-center transition-all cursor-pointer shadow-sm" title="Eliminar Usuario">
                                                     <i class="fas fa-trash-alt text-xs"></i>
                                                 </button>
@@ -374,13 +471,13 @@
         {{-- SECCIÓN MATRIZ DE PERMISOS POR ROL (RBAC DINÁMICO) --}}
         <div class="bento-card bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800/80 rounded-3xl p-8 shadow-xl mb-8 relative overflow-hidden group">
             <!-- Glow de fondo -->
-            <div class="absolute -right-20 -top-20 w-60 h-60 bg-warning/10 dark:bg-warning/5 rounded-full blur-3xl group-hover:bg-warning/20 transition-all duration-500"></div>
+            <div class="absolute -right-20 -top-20 w-60 h-60 bg-amber-500/10 dark:bg-amber-500/5 rounded-full blur-3xl group-hover:bg-amber-500/20 transition-all duration-500"></div>
 
             {{-- Header Bento --}}
             <div class="flex items-center justify-between mb-6 pb-5 border-b border-slate-100 dark:border-slate-800 flex-wrap gap-4">
                 <div class="flex items-center gap-4">
-                    <div class="rounded-2xl bg-warning/10 text-warning flex items-center justify-center shadow-sm w-12 h-12 flex-shrink-0">
-                        <i class="fas fa-shield-alt text-xl"></i>
+                    <div class="config-icon-box icon-box-warning group-hover:scale-110 transition-transform duration-500">
+                        <i class="fas fa-shield-alt"></i>
                     </div>
                     <div>
                         <h5 class="text-lg font-bold text-slate-900 dark:text-white tracking-tight mb-1">Matriz de Permisos por Rol (RBAC)</h5>
@@ -440,12 +537,12 @@
                                             <td class="py-4 text-center">
                                                 @if($rolData['bloqueado'])
                                                     <div class="inline-flex items-center justify-center">
-                                                        <input type="checkbox" class="w-5 h-5 rounded-lg border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 text-primary focus:ring-primary/20 cursor-not-allowed opacity-60 shadow-sm" checked disabled>
+                                                        <input type="checkbox" class="w-5 h-5 rounded-lg border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 text-blue-600 focus:ring-blue-500/20 cursor-not-allowed opacity-60 shadow-sm" checked disabled>
                                                         <input type="hidden" name="permisos[{{ $rolKey }}][]" value="{{ $modKey }}">
                                                     </div>
                                                 @else
                                                     <div class="inline-flex items-center justify-center">
-                                                        <input type="checkbox" name="permisos[{{ $rolKey }}][]" value="{{ $modKey }}" class="w-5 h-5 rounded-lg border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-primary focus:ring-primary/20 cursor-pointer shadow-sm transition-all" {{ $hasPermission ? 'checked' : '' }}>
+                                                        <input type="checkbox" name="permisos[{{ $rolKey }}][]" value="{{ $modKey }}" class="w-5 h-5 rounded-lg border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-blue-600 focus:ring-blue-500/20 cursor-pointer shadow-sm transition-all" {{ $hasPermission ? 'checked' : '' }}>
                                                     </div>
                                                 @endif
                                             </td>
@@ -459,10 +556,10 @@
 
                 <div class="flex items-center justify-between flex-wrap gap-4 pt-5 border-t border-slate-100 dark:border-slate-800">
                     <div class="text-slate-500 dark:text-slate-400 text-xs font-medium flex items-center gap-2.5">
-                        <i class="fas fa-info-circle text-primary text-base"></i>
+                        <i class="fas fa-info-circle text-blue-600 dark:text-blue-400 text-base"></i>
                         <span>El rol de Administrador tiene acceso permanente e inmodificable a todas las áreas del sistema.</span>
                     </div>
-                    <button type="submit" class="px-6 py-3 bg-primary hover:bg-primary/90 text-white rounded-xl text-xs font-bold shadow-lg shadow-primary/20 flex items-center gap-2.5 transition-all cursor-pointer border-0">
+                    <button type="submit" class="btn-bento-primary px-6 py-3.5 rounded-xl text-xs font-bold flex items-center gap-2.5 transition-all cursor-pointer">
                         <i class="fas fa-user-shield text-sm"></i> <span>Guardar Matriz de Permisos</span>
                     </button>
                 </div>
@@ -471,7 +568,7 @@
 
         {{-- MODAL CREAR USUARIO (TAILWIND PURO + ALPINE) --}}
         <template x-if="showModalCrearUsuario">
-            <div class="fixed inset-0 z-[150] overflow-y-auto flex items-center justify-center p-4" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+            <div class="fixed inset-0 z-[9999] overflow-y-auto flex items-center justify-center p-4" aria-labelledby="modal-title" role="dialog" aria-modal="true">
                 <!-- Overlay -->
                 <div @click="showModalCrearUsuario = false; document.getElementById('formModalCrearUsuario').reset()" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm"></div>
                 
@@ -482,8 +579,8 @@
                     
                     <div class="border-b border-slate-200 dark:border-slate-800 p-6 flex items-center justify-between bg-slate-50/50 dark:bg-slate-800/50">
                         <h6 class="font-bold text-slate-900 dark:text-white mb-0 flex items-center gap-3 text-base">
-                            <div class="rounded-2xl bg-primary/10 p-2.5 text-primary flex items-center justify-center shadow-sm w-11 h-11">
-                                <i class="fas fa-user-plus text-lg"></i>
+                            <div class="config-icon-box icon-box-primary group-hover:scale-110 transition-transform duration-500">
+                                <i class="fas fa-user-plus"></i>
                             </div>
                             <span>Nuevo Usuario</span>
                         </h6>
@@ -497,15 +594,15 @@
                         <div class="p-6 text-left space-y-4">
                             <div>
                                 <label class="block text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">Nombre Completo *</label>
-                                <input type="text" name="nombre" class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all shadow-sm" placeholder="Ej. Juan Pérez" required>
+                                <input type="text" name="nombre" class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all shadow-sm" placeholder="Ej. Juan Pérez" required>
                             </div>
                             <div>
                                 <label class="block text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">Correo Electrónico *</label>
-                                <input type="email" name="email" class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all shadow-sm" placeholder="ejemplo@iglesia.com" required>
+                                <input type="email" name="email" class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all shadow-sm" placeholder="ejemplo@iglesia.com" required>
                             </div>
                             <div>
                                 <label class="block text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">Rol / Nivel de Acceso *</label>
-                                <select name="rol" class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all shadow-sm cursor-pointer" required>
+                                <select name="rol" class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all shadow-sm cursor-pointer" required>
                                     <option value="administrador">👑 Administrador (Acceso Total)</option>
                                     <option value="tesorero">🪙 Tesorero (Solo Finanzas y Miembros)</option>
                                     <option value="lider" selected>👥 Líder de Célula (Solo Células y Familias)</option>
@@ -514,7 +611,7 @@
                             </div>
                             <div>
                                 <label class="block text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">Contraseña Inicial *</label>
-                                <div class="flex rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 overflow-hidden shadow-sm focus-within:ring-2 focus-within:ring-primary/20 focus-within:border-primary transition-all">
+                                <div class="flex rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 overflow-hidden shadow-sm focus-within:ring-2 focus-within:ring-blue-500/20 focus-within:border-blue-500 transition-all">
                                     <input type="text" name="password" id="createPassword" class="w-full bg-transparent px-4 py-3 text-slate-900 dark:text-white text-xs font-medium focus:outline-none border-0" placeholder="Mínimo 6 caracteres" required>
                                     <button type="button" class="px-4 border-l border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-colors border-0 cursor-pointer flex items-center justify-center" onclick="generatePassword('createPassword')" title="Generar clave segura">
                                         <i class="fas fa-key text-xs"></i>
@@ -525,7 +622,7 @@
                         </div>
                         <div class="border-t border-slate-200 dark:border-slate-800 p-4 bg-slate-50/50 dark:bg-slate-800/50 flex justify-end gap-3">
                             <button type="button" @click="showModalCrearUsuario = false; document.getElementById('formModalCrearUsuario').reset()" class="px-5 py-2.5 text-xs font-bold text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700/60 rounded-xl transition-all border-0 bg-transparent cursor-pointer">Cancelar</button>
-                            <button type="submit" :disabled="isSubmitting" class="px-6 py-2.5 bg-primary hover:bg-primary/90 text-white rounded-xl text-xs font-bold shadow-lg shadow-primary/20 flex items-center justify-center gap-2 disabled:opacity-50 transition-all cursor-pointer disabled:cursor-not-allowed border-0">
+                            <button type="submit" :disabled="isSubmitting" class="btn-bento-primary px-6 py-3 rounded-xl text-xs font-bold flex items-center justify-center gap-2 disabled:opacity-50 transition-all cursor-pointer disabled:cursor-not-allowed">
                                 <span x-show="!isSubmitting" class="flex items-center gap-2">
                                     <i class="fas fa-user-check"></i> <span>Crear Usuario</span>
                                 </span>
@@ -543,7 +640,7 @@
         {{-- MODAL EDITAR USUARIO (TAILWIND PURO + ALPINE) --}}
         @foreach($usuarios as $user)
             <template x-if="showModalEditarUsuario === {{ $user->id }}">
-                <div class="fixed inset-0 z-[150] overflow-y-auto flex items-center justify-center p-4" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+                <div class="fixed inset-0 z-[9999] overflow-y-auto flex items-center justify-center p-4" aria-labelledby="modal-title" role="dialog" aria-modal="true">
                     <!-- Overlay -->
                     <div @click="showModalEditarUsuario = null; document.getElementById('formModalEditarUsuario_{{ $user->id }}').reset()" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm"></div>
                     
@@ -554,8 +651,8 @@
                         
                         <div class="border-b border-slate-200 dark:border-slate-800 p-6 flex items-center justify-between bg-slate-50/50 dark:bg-slate-800/50">
                             <h6 class="font-bold text-slate-900 dark:text-white mb-0 flex items-center gap-3 text-base">
-                                <div class="rounded-2xl bg-primary/10 p-2.5 text-primary flex items-center justify-center shadow-sm w-11 h-11">
-                                    <i class="fas fa-user-edit text-lg"></i>
+                                <div class="config-icon-box icon-box-primary group-hover:scale-110 transition-transform duration-500">
+                                    <i class="fas fa-user-edit"></i>
                                 </div>
                                 <span>Editar Usuario</span>
                             </h6>
@@ -570,15 +667,15 @@
                             <div class="p-6 text-left space-y-4">
                                 <div>
                                     <label class="block text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">Nombre Completo *</label>
-                                    <input type="text" name="nombre" class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all shadow-sm" value="{{ $user->nombre }}" required>
+                                    <input type="text" name="nombre" class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all shadow-sm" value="{{ $user->nombre }}" required>
                                 </div>
                                 <div>
                                     <label class="block text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">Correo Electrónico *</label>
-                                    <input type="email" name="email" class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all shadow-sm" value="{{ $user->email }}" required>
+                                    <input type="email" name="email" class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all shadow-sm" value="{{ $user->email }}" required>
                                 </div>
                                 <div>
                                     <label class="block text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">Rol / Nivel de Acceso *</label>
-                                    <select name="rol" class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all shadow-sm cursor-pointer" required>
+                                    <select name="rol" class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all shadow-sm cursor-pointer" required>
                                         <option value="administrador" {{ $user->rol === 'administrador' ? 'selected' : '' }}>👑 Administrador (Acceso Total)</option>
                                         <option value="tesorero" {{ $user->rol === 'tesorero' ? 'selected' : '' }}>🪙 Tesorero (Solo Finanzas y Miembros)</option>
                                         <option value="lider" {{ $user->rol === 'lider' ? 'selected' : '' }}>👥 Líder de Célula (Solo Células y Familias)</option>
@@ -587,7 +684,7 @@
                                 </div>
                                 <div>
                                     <label class="block text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">Nueva Contraseña (Opcional)</label>
-                                    <div class="flex rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 overflow-hidden shadow-sm focus-within:ring-2 focus-within:ring-primary/20 focus-within:border-primary transition-all">
+                                    <div class="flex rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 overflow-hidden shadow-sm focus-within:ring-2 focus-within:ring-blue-500/20 focus-within:border-blue-500 transition-all">
                                         <input type="text" name="password" id="editPassword_{{ $user->id }}" class="w-full bg-transparent px-4 py-3 text-slate-900 dark:text-white text-xs font-medium focus:outline-none border-0" placeholder="Dejar en blanco para mantener actual">
                                         <button type="button" class="px-4 border-l border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-colors border-0 cursor-pointer flex items-center justify-center" onclick="generatePassword('editPassword_{{ $user->id }}')" title="Generar clave segura">
                                             <i class="fas fa-key text-xs"></i>
@@ -598,12 +695,12 @@
                             </div>
                             <div class="border-t border-slate-200 dark:border-slate-800 p-4 bg-slate-50/50 dark:bg-slate-800/50 flex justify-end gap-3">
                                 <button type="button" @click="showModalEditarUsuario = null; document.getElementById('formModalEditarUsuario_{{ $user->id }}').reset()" class="px-5 py-2.5 text-xs font-bold text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700/60 rounded-xl transition-all border-0 bg-transparent cursor-pointer">Cancelar</button>
-                                <button type="submit" :disabled="isSubmitting" class="px-6 py-2.5 bg-primary hover:bg-primary/90 text-white rounded-xl text-xs font-bold shadow-lg shadow-primary/20 flex items-center justify-center gap-2 disabled:opacity-50 transition-all cursor-pointer disabled:cursor-not-allowed border-0">
+                                <button type="submit" :disabled="isSubmitting" class="btn-bento-primary px-6 py-3 rounded-xl text-xs font-bold flex items-center justify-center gap-2 disabled:opacity-50 transition-all cursor-pointer disabled:cursor-not-allowed">
                                     <span x-show="!isSubmitting" class="flex items-center gap-2">
                                         <i class="fas fa-save"></i> <span>Guardar Cambios</span>
                                     </span>
                                     <span x-show="isSubmitting" x-cloak class="flex items-center gap-2">
-                                        <svg class="animate-spin h-4 w-4 text-white" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm:2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                                        <svg class="animate-spin h-4 w-4 text-white" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
                                         <span>Procesando...</span>
                                     </span>
                                 </button>
@@ -624,21 +721,21 @@
                 {{-- 1. Categorías Financieras --}}
                 <div class="bento-card bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800/80 rounded-3xl p-8 shadow-xl flex flex-col justify-between relative overflow-hidden group flex-grow">
                     <!-- Glow de fondo -->
-                    <div class="absolute -right-20 -top-20 w-60 h-60 bg-warning/10 dark:bg-warning/5 rounded-full blur-3xl group-hover:bg-warning/20 transition-all duration-500"></div>
+                    <div class="absolute -right-20 -top-20 w-60 h-60 bg-amber-500/10 dark:bg-amber-500/5 rounded-full blur-3xl group-hover:bg-amber-500/20 transition-all duration-500"></div>
 
                     <div>
                         {{-- Header Bento --}}
                         <div class="flex items-center justify-between mb-6 pb-5 border-b border-slate-100 dark:border-slate-800 flex-wrap gap-4">
                             <div class="flex items-center gap-4">
-                                <div class="rounded-2xl bg-warning/10 text-warning flex items-center justify-center shadow-sm w-12 h-12 flex-shrink-0">
-                                    <i class="fas fa-coins text-xl"></i>
+                                <div class="config-icon-box icon-box-warning group-hover:scale-110 transition-transform duration-500">
+                                    <i class="fas fa-coins"></i>
                                 </div>
                                 <div>
                                     <h5 class="text-lg font-bold text-slate-900 dark:text-white tracking-tight mb-1">Categorías Financieras</h5>
                                     <p class="text-xs text-slate-500 dark:text-slate-400 mb-0">Gestión de rubros de ingresos y egresos para Tesorería</p>
                                 </div>
                             </div>
-                            <button type="button" @click="showModalCrearCategoria = true" class="px-5 py-2.5 bg-primary hover:bg-primary/90 text-white rounded-xl text-xs font-bold shadow-lg shadow-primary/20 flex items-center gap-2 cursor-pointer border-0 transition-all">
+                            <button type="button" @click="showModalCrearCategoria = true" class="btn-bento-warning px-5 py-3 rounded-xl text-xs font-bold flex items-center gap-2 cursor-pointer transition-all">
                                 <i class="fas fa-plus text-sm"></i> <span>Nueva Categoría</span>
                             </button>
                         </div>
@@ -668,11 +765,11 @@
                                                 </td>
                                                 <td class="py-4 text-center">
                                                     @if($cat->tipo === 'ingreso')
-                                                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-success/10 text-success border border-success/20 uppercase tracking-wider">
+                                                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 uppercase tracking-wider">
                                                             <i class="fas fa-arrow-down text-xs"></i> Ingreso
                                                         </span>
                                                     @else
-                                                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-danger/10 text-danger border border-danger/20 uppercase tracking-wider">
+                                                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20 uppercase tracking-wider">
                                                             <i class="fas fa-arrow-up text-xs"></i> Gasto / Egreso
                                                         </span>
                                                     @endif
@@ -680,7 +777,7 @@
                                                 <td class="py-4 text-right pr-6 pl-4">
                                                     <div class="flex items-center justify-end gap-2">
                                                         @if(!$cat->trashed())
-                                                            <button type="button" @click="showModalEditarCategoria = {{ $cat->id }}" class="w-9 h-9 rounded-full border border-primary/20 dark:border-primary/30 bg-primary/10 hover:bg-primary/20 dark:bg-primary/10 dark:hover:bg-primary/20 text-primary flex items-center justify-center transition-all cursor-pointer shadow-sm" title="Editar Categoría">
+                                                            <button type="button" @click="showModalEditarCategoria = {{ $cat->id }}" class="w-9 h-9 rounded-full border border-blue-500/20 dark:border-blue-500/30 bg-blue-500/10 hover:bg-blue-500/20 dark:bg-blue-500/10 dark:hover:bg-blue-500/20 text-blue-600 dark:text-blue-400 flex items-center justify-center transition-all cursor-pointer shadow-sm" title="Editar Categoría">
                                                                 <i class="fas fa-edit text-xs"></i>
                                                             </button>
                                                             <button type="button" @click="showConfirm(
@@ -689,7 +786,7 @@
                                                                 '{{ route('categorias.destroy', $cat->id) }}',
                                                                 'DELETE',
                                                                 'Sí, Archivar Categoría',
-                                                                'bg-rose-600 hover:bg-rose-700 text-white'
+                                                                'btn-bento-danger'
                                                             )" class="w-9 h-9 rounded-full border border-rose-200 dark:border-rose-800/80 bg-rose-50 hover:bg-rose-100 dark:bg-rose-500/10 dark:hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 flex items-center justify-center transition-all cursor-pointer shadow-sm" title="Archivar Categoría">
                                                                 <i class="fas fa-trash-alt text-xs"></i>
                                                             </button>
@@ -700,7 +797,7 @@
                                                                 '{{ route('categorias.restore', $cat->id) }}',
                                                                 'POST',
                                                                 'Sí, Restaurar Categoría',
-                                                                'bg-emerald-600 hover:bg-emerald-700 text-white'
+                                                                'btn-bento-success'
                                                             )" class="w-9 h-9 rounded-full border border-emerald-200 dark:border-emerald-800/80 bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-500/10 dark:hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center transition-all cursor-pointer shadow-sm" title="Restaurar Categoría">
                                                                 <i class="fas fa-rotate-left text-xs"></i>
                                                             </button>
@@ -716,7 +813,7 @@
                     </div>
 
                     <div class="pt-4 border-t border-slate-100 dark:border-slate-800 text-slate-500 dark:text-slate-400 text-xs font-medium flex items-center gap-2.5 mt-auto">
-                        <i class="fas fa-info-circle text-warning text-base"></i>
+                        <i class="fas fa-info-circle text-amber-500 text-base"></i>
                         <span>Las categorías financieras estructuran los reportes contables de la iglesia.</span>
                     </div>
                 </div>
@@ -724,21 +821,21 @@
                 {{-- 2. Cajas y Fondos Ministeriales --}}
                 <div class="bento-card bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800/80 rounded-3xl p-8 shadow-xl flex flex-col justify-between relative overflow-hidden group flex-grow">
                     <!-- Glow de fondo -->
-                    <div class="absolute -right-20 -top-20 w-60 h-60 bg-primary/10 dark:bg-primary/5 rounded-full blur-3xl group-hover:bg-primary/20 transition-all duration-500"></div>
+                    <div class="absolute -right-20 -top-20 w-60 h-60 bg-emerald-500/10 dark:bg-emerald-500/5 rounded-full blur-3xl group-hover:bg-emerald-500/20 transition-all duration-500"></div>
 
                     <div>
                         {{-- Header Bento --}}
                         <div class="flex items-center justify-between mb-6 pb-5 border-b border-slate-100 dark:border-slate-800 flex-wrap gap-4">
                             <div class="flex items-center gap-4">
-                                <div class="rounded-2xl bg-primary/10 text-primary flex items-center justify-center shadow-sm w-12 h-12 flex-shrink-0">
-                                    <i class="fas fa-boxes text-xl"></i>
+                                <div class="config-icon-box icon-box-success group-hover:scale-110 transition-transform duration-500">
+                                    <i class="fas fa-boxes"></i>
                                 </div>
                                 <div>
                                     <h5 class="text-lg font-bold text-slate-900 dark:text-white tracking-tight mb-1">Cajas y Fondos Ministeriales</h5>
                                     <p class="text-xs text-slate-500 dark:text-slate-400 mb-0">Fondos independientes para la administración interna.</p>
                                 </div>
                             </div>
-                            <button type="button" @click="showModalCaja = true" class="px-5 py-2.5 bg-primary hover:bg-primary/90 text-white rounded-xl text-xs font-bold shadow-lg shadow-primary/20 flex items-center gap-2 cursor-pointer border-0 transition-all">
+                            <button type="button" @click="showModalCaja = true" class="btn-bento-success px-5 py-3 rounded-xl text-xs font-bold flex items-center gap-2 cursor-pointer transition-all">
                                 <i class="fas fa-plus text-sm"></i> <span>Nueva Caja</span>
                             </button>
                         </div>
@@ -763,7 +860,7 @@
                                                     @if($account->trashed())
                                                         <span class="inline-flex items-center px-3 py-1 rounded-full text-[11px] font-bold bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-100 dark:border-amber-500/20 uppercase tracking-wider">Archivado</span>
                                                     @else
-                                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-[11px] font-bold bg-success/10 text-success border border-success/20 uppercase tracking-wider">Activa</span>
+                                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-[11px] font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 uppercase tracking-wider">Activa</span>
                                                     @endif
                                                 </td>
                                                 <td class="py-4 text-right pr-6 pl-4">
@@ -775,7 +872,7 @@
                                                                 '{{ route('configuracion.accounts.destroy', $account->id) }}',
                                                                 'DELETE',
                                                                 'Sí, Archivar Caja',
-                                                                'bg-rose-600 hover:bg-rose-700 text-white'
+                                                                'btn-bento-danger'
                                                             )" class="w-9 h-9 rounded-full border border-rose-200 dark:border-rose-800/80 bg-rose-50 hover:bg-rose-100 dark:bg-rose-500/10 dark:hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 flex items-center justify-center transition-all cursor-pointer shadow-sm" title="Archivar Caja">
                                                                 <i class="fas fa-trash-alt text-xs"></i>
                                                             </button>
@@ -786,7 +883,7 @@
                                                                 '{{ route('configuracion.accounts.restore', $account->id) }}',
                                                                 'POST',
                                                                 'Sí, Restaurar Caja',
-                                                                'bg-emerald-600 hover:bg-emerald-700 text-white'
+                                                                'btn-bento-success'
                                                             )" class="w-9 h-9 rounded-full border border-emerald-200 dark:border-emerald-800/80 bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-500/10 dark:hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center transition-all cursor-pointer shadow-sm" title="Restaurar Caja">
                                                                 <i class="fas fa-rotate-left text-xs"></i>
                                                             </button>
@@ -802,7 +899,7 @@
                     </div>
 
                     <div class="pt-4 border-t border-slate-100 dark:border-slate-800 text-slate-500 dark:text-slate-400 text-xs font-medium flex items-center gap-2.5 mt-auto">
-                        <i class="fas fa-info-circle text-primary text-base"></i>
+                        <i class="fas fa-info-circle text-emerald-500 text-base"></i>
                         <span>Cuentas para la gestión de fondos ministeriales específicos.</span>
                     </div>
                 </div>
@@ -813,14 +910,14 @@
                 {{-- 1. Ministerios Activos --}}
                 <div class="bento-card bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800/80 rounded-3xl p-8 shadow-xl flex flex-col justify-between relative overflow-hidden group flex-grow">
                     <!-- Glow de fondo -->
-                    <div class="absolute -right-20 -top-20 w-60 h-60 bg-primary/10 dark:bg-primary/5 rounded-full blur-3xl group-hover:bg-primary/20 transition-all duration-500"></div>
+                    <div class="absolute -right-20 -top-20 w-60 h-60 bg-blue-500/10 dark:bg-blue-500/5 rounded-full blur-3xl group-hover:bg-blue-500/20 transition-all duration-500"></div>
 
                     <div>
                         {{-- Header Bento --}}
                         <div class="flex items-center justify-between mb-6 pb-5 border-b border-slate-100 dark:border-slate-800 flex-wrap gap-4">
                             <div class="flex items-center gap-4">
-                                <div class="rounded-2xl bg-primary/10 text-primary flex items-center justify-center shadow-sm w-12 h-12 flex-shrink-0">
-                                    <i class="fas fa-church text-xl"></i>
+                                <div class="config-icon-box icon-box-primary group-hover:scale-110 transition-transform duration-500">
+                                    <i class="fas fa-church"></i>
                                 </div>
                                 <div>
                                     <h5 class="text-lg font-bold text-slate-900 dark:text-white tracking-tight mb-1">Ministerios Activos</h5>
@@ -830,17 +927,17 @@
                         </div>
 
                         <div class="flex flex-wrap gap-2.5 mb-6">
-                            <span class="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs font-bold bg-primary/10 text-primary border border-primary/20 shadow-sm"><i class="fas fa-music"></i> <span>Alabanza</span></span>
-                            <span class="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs font-bold bg-primary/10 text-primary border border-primary/20 shadow-sm"><i class="fas fa-child"></i> <span>E. Dominical</span></span>
-                            <span class="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs font-bold bg-primary/10 text-primary border border-primary/20 shadow-sm"><i class="fas fa-user-friends"></i> <span>Jóvenes</span></span>
-                            <span class="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs font-bold bg-primary/10 text-primary border border-primary/20 shadow-sm"><i class="fas fa-female"></i> <span>Damas</span></span>
-                            <span class="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs font-bold bg-primary/10 text-primary border border-primary/20 shadow-sm"><i class="fas fa-male"></i> <span>Caballeros</span></span>
-                            <span class="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs font-bold bg-primary/10 text-primary border border-primary/20 shadow-sm"><i class="fas fa-hand-holding-heart"></i> <span>Ujieres</span></span>
+                            <span class="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs font-bold bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20 shadow-sm"><i class="fas fa-music"></i> <span>Alabanza</span></span>
+                            <span class="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs font-bold bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20 shadow-sm"><i class="fas fa-child"></i> <span>E. Dominical</span></span>
+                            <span class="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs font-bold bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20 shadow-sm"><i class="fas fa-user-friends"></i> <span>Jóvenes</span></span>
+                            <span class="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs font-bold bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20 shadow-sm"><i class="fas fa-female"></i> <span>Damas</span></span>
+                            <span class="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs font-bold bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20 shadow-sm"><i class="fas fa-male"></i> <span>Caballeros</span></span>
+                            <span class="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs font-bold bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20 shadow-sm"><i class="fas fa-hand-holding-heart"></i> <span>Ujieres</span></span>
                         </div>
                     </div>
 
                     <div class="pt-4 border-t border-slate-100 dark:border-slate-800 text-slate-500 dark:text-slate-400 text-xs font-medium flex items-center gap-2.5 mt-auto">
-                        <i class="fas fa-info-circle text-primary text-base"></i>
+                        <i class="fas fa-info-circle text-blue-600 dark:text-blue-400 text-base"></i>
                         <span>Estos valores se asignan dinámicamente al crear o editar feligreses.</span>
                     </div>
                 </div>
@@ -848,14 +945,14 @@
                 {{-- 2. Etapas de Consolidación --}}
                 <div class="bento-card bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800/80 rounded-3xl p-8 shadow-xl flex flex-col justify-between relative overflow-hidden group flex-grow">
                     <!-- Glow de fondo -->
-                    <div class="absolute -right-20 -top-20 w-60 h-60 bg-info/10 dark:bg-info/5 rounded-full blur-3xl group-hover:bg-info/20 transition-all duration-500"></div>
+                    <div class="absolute -right-20 -top-20 w-60 h-60 bg-cyan-500/10 dark:bg-cyan-500/5 rounded-full blur-3xl group-hover:bg-cyan-500/20 transition-all duration-500"></div>
 
                     <div>
                         {{-- Header Bento --}}
                         <div class="flex items-center justify-between mb-6 pb-5 border-b border-slate-100 dark:border-slate-800 flex-wrap gap-4">
                             <div class="flex items-center gap-4">
-                                <div class="rounded-2xl bg-info/10 text-info flex items-center justify-center shadow-sm w-12 h-12 flex-shrink-0">
-                                    <i class="fas fa-shoe-prints text-xl"></i>
+                                <div class="config-icon-box icon-box-info group-hover:scale-110 transition-transform duration-500">
+                                    <i class="fas fa-shoe-prints"></i>
                                 </div>
                                 <div>
                                     <h5 class="text-lg font-bold text-slate-900 dark:text-white tracking-tight mb-1">Etapas de Consolidación</h5>
@@ -866,16 +963,16 @@
 
                         <div class="space-y-3.5 mb-6">
                             <div class="flex items-center justify-between p-4 rounded-2xl bg-slate-50/50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/50 shadow-sm">
-                                <span class="font-bold text-slate-900 dark:text-white text-xs flex items-center gap-3"><i class="fas fa-seedling text-success text-lg"></i> <span>1. Nuevo Creyente</span></span>
+                                <span class="font-bold text-slate-900 dark:text-white text-xs flex items-center gap-3"><i class="fas fa-seedling text-emerald-500 text-lg"></i> <span>1. Nuevo Creyente</span></span>
                                 <span class="inline-flex items-center px-3 py-1 rounded-full text-[11px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 uppercase tracking-wider">Inicial</span>
                             </div>
                             <div class="flex items-center justify-between p-4 rounded-2xl bg-slate-50/50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/50 shadow-sm">
-                                <span class="font-bold text-slate-900 dark:text-white text-xs flex items-center gap-3"><i class="fas fa-book-open text-primary text-lg"></i> <span>2. En Discipulado</span></span>
-                                <span class="inline-flex items-center px-3 py-1 rounded-full text-[11px] font-bold bg-primary/10 text-primary border border-primary/20 uppercase tracking-wider">Formación</span>
+                                <span class="font-bold text-slate-900 dark:text-white text-xs flex items-center gap-3"><i class="fas fa-book-open text-blue-600 dark:text-blue-400 text-lg"></i> <span>2. En Discipulado</span></span>
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-[11px] font-bold bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20 uppercase tracking-wider">Formación</span>
                             </div>
                             <div class="flex items-center justify-between p-4 rounded-2xl bg-slate-50/50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/50 shadow-sm">
-                                <span class="font-bold text-slate-900 dark:text-white text-xs flex items-center gap-3"><i class="fas fa-users text-info text-lg"></i> <span>3. Asignado a Célula</span></span>
-                                <span class="inline-flex items-center px-3 py-1 rounded-full text-[11px] font-bold bg-info/10 text-info border border-info/20 uppercase tracking-wider">Comunidad</span>
+                                <span class="font-bold text-slate-900 dark:text-white text-xs flex items-center gap-3"><i class="fas fa-users text-cyan-600 dark:text-cyan-400 text-lg"></i> <span>3. Asignado a Célula</span></span>
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-[11px] font-bold bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border border-cyan-500/20 uppercase tracking-wider">Comunidad</span>
                             </div>
                             <div class="flex items-center justify-between p-4 rounded-2xl bg-slate-50/50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/50 shadow-sm">
                                 <span class="font-bold text-slate-900 dark:text-white text-xs flex items-center gap-3"><i class="fas fa-water text-indigo-500 text-lg"></i> <span>4. Bautizado</span></span>
@@ -885,7 +982,7 @@
                     </div>
 
                     <div class="pt-4 border-t border-slate-100 dark:border-slate-800 text-slate-500 dark:text-slate-400 text-xs font-medium flex items-center gap-2.5 mt-auto">
-                        <i class="fas fa-info-circle text-info text-base"></i>
+                        <i class="fas fa-info-circle text-cyan-600 dark:text-cyan-400 text-base"></i>
                         <span>Ruta de seguimiento para la consolidación de nuevos miembros.</span>
                     </div>
                 </div>
@@ -901,14 +998,14 @@
             <div class="lg:col-span-7 flex flex-col">
                 <div class="bento-card bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800/80 rounded-3xl p-8 shadow-xl flex flex-col justify-between relative overflow-hidden group flex-grow">
                     <!-- Glow de fondo -->
-                    <div class="absolute -right-20 -top-20 w-60 h-60 bg-danger/10 dark:bg-danger/5 rounded-full blur-3xl group-hover:bg-danger/20 transition-all duration-500"></div>
+                    <div class="absolute -right-20 -top-20 w-60 h-60 bg-rose-500/10 dark:bg-rose-500/5 rounded-full blur-3xl group-hover:bg-rose-500/20 transition-all duration-500"></div>
 
                     <div>
                         {{-- Header Bento --}}
                         <div class="flex items-center justify-between mb-6 pb-5 border-b border-slate-100 dark:border-slate-800 flex-wrap gap-4">
                             <div class="flex items-center gap-4">
-                                <div class="rounded-2xl bg-danger/10 text-danger flex items-center justify-center shadow-sm w-12 h-12 flex-shrink-0">
-                                    <i class="fas fa-cogs text-xl"></i>
+                                <div class="config-icon-box icon-box-danger group-hover:scale-110 transition-transform duration-500">
+                                    <i class="fas fa-cogs"></i>
                                 </div>
                                 <div>
                                     <h5 class="text-lg font-bold text-slate-900 dark:text-white tracking-tight mb-1">Ajustes del Sistema y Servidor</h5>
@@ -922,8 +1019,8 @@
                             <div class="space-y-6">
                                 {{-- Zona Horaria --}}
                                 <div>
-                                    <label class="block text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5 flex items-center gap-1.5"><i class="fas fa-globe-americas text-primary"></i> <span>Zona Horaria del Sistema *</span></label>
-                                    <select name="timezone" class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all shadow-sm cursor-pointer" required>
+                                    <label class="block text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5 flex items-center gap-1.5"><i class="fas fa-globe-americas text-blue-600 dark:text-blue-400"></i> <span>Zona Horaria del Sistema *</span></label>
+                                    <select name="timezone" class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all shadow-sm cursor-pointer" required>
                                         @php $currentTz = session('timezone', 'America/Guatemala'); @endphp
                                         <option value="America/Guatemala" {{ $currentTz === 'America/Guatemala' ? 'selected' : '' }}>🇬🇹 America/Guatemala (UTC-06:00)</option>
                                         <option value="America/Mexico_City" {{ $currentTz === 'America/Mexico_City' ? 'selected' : '' }}>🇲🇽 America/Mexico_City (UTC-06:00)</option>
@@ -937,33 +1034,33 @@
                                 {{-- SMTP Host & Port --}}
                                 <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
                                     <div class="md:col-span-8">
-                                        <label class="block text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5 flex items-center gap-1.5"><i class="fas fa-server text-primary"></i> <span>Servidor SMTP (Mail Host) *</span></label>
-                                        <input type="text" name="mail_host" class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all shadow-sm" value="{{ session('mail_host', 'smtp.mailtrap.io') }}" placeholder="ej. smtp.gmail.com" required>
+                                        <label class="block text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5 flex items-center gap-1.5"><i class="fas fa-server text-blue-600 dark:text-blue-400"></i> <span>Servidor SMTP (Mail Host) *</span></label>
+                                        <input type="text" name="mail_host" class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all shadow-sm" value="{{ session('mail_host', 'smtp.mailtrap.io') }}" placeholder="ej. smtp.gmail.com" required>
                                     </div>
                                     <div class="md:col-span-4">
                                         <label class="block text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">Puerto *</label>
-                                        <input type="number" name="mail_port" class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all shadow-sm font-mono" value="{{ session('mail_port', 2525) }}" placeholder="ej. 587" required>
+                                        <input type="number" name="mail_port" class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all shadow-sm font-mono" value="{{ session('mail_port', 2525) }}" placeholder="ej. 587" required>
                                     </div>
                                 </div>
 
                                 {{-- SMTP User & Pass --}}
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div>
-                                        <label class="block text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5 flex items-center gap-1.5"><i class="fas fa-user-lock text-primary"></i> <span>Usuario SMTP</span></label>
-                                        <input type="text" name="mail_username" class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all shadow-sm" value="{{ session('mail_username', '7a8b9c0d1e2f3g') }}" placeholder="Usuario de correo">
+                                        <label class="block text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5 flex items-center gap-1.5"><i class="fas fa-user-lock text-blue-600 dark:text-blue-400"></i> <span>Usuario SMTP</span></label>
+                                        <input type="text" name="mail_username" class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all shadow-sm" value="{{ session('mail_username', '7a8b9c0d1e2f3g') }}" placeholder="Usuario de correo">
                                     </div>
                                     <div>
-                                        <label class="block text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5 flex items-center gap-1.5"><i class="fas fa-key text-primary"></i> <span>Contraseña SMTP</span></label>
-                                        <input type="password" name="mail_password" class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all shadow-sm" placeholder="••••••••••••">
+                                        <label class="block text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5 flex items-center gap-1.5"><i class="fas fa-key text-blue-600 dark:text-blue-400"></i> <span>Contraseña SMTP</span></label>
+                                        <input type="password" name="mail_password" class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all shadow-sm" placeholder="••••••••••••">
                                     </div>
                                 </div>
 
                                 {{-- Modo Mantenimiento --}}
                                 <div class="pt-6 border-t border-slate-100 dark:border-slate-800">
-                                    <div class="flex items-center justify-between p-6 rounded-3xl bg-warning/10 border border-warning/20 shadow-sm flex-wrap gap-4">
+                                    <div class="flex items-center justify-between p-6 rounded-3xl bg-amber-500/10 border border-amber-500/20 shadow-sm flex-wrap gap-4">
                                         <div class="flex items-center gap-4">
-                                            <div class="rounded-2xl bg-warning p-3 text-slate-900 flex items-center justify-center shadow-sm w-12 h-12 flex-shrink-0">
-                                                <i class="fas fa-exclamation-triangle text-xl"></i>
+                                            <div class="config-icon-box icon-box-warning group-hover:scale-110 transition-transform duration-500">
+                                                <i class="fas fa-exclamation-triangle"></i>
                                             </div>
                                             <div>
                                                 <h6 class="font-bold text-slate-900 dark:text-white mb-1 text-sm">Modo de Mantenimiento</h6>
@@ -973,7 +1070,7 @@
                                         <div>
                                             <label class="relative inline-flex items-center cursor-pointer mb-0">
                                                 <input type="checkbox" name="maintenance_mode" class="sr-only peer" {{ session('maintenance_mode') ? 'checked' : '' }}>
-                                                <div class="w-14 h-7 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-warning/20 dark:peer-focus:ring-warning/10 rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[4px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all dark:border-slate-600 peer-checked:bg-warning shadow-sm"></div>
+                                                <div class="w-14 h-7 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-amber-500/20 dark:peer-focus:ring-amber-500/10 rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[4px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all dark:border-slate-600 peer-checked:bg-amber-500 shadow-sm"></div>
                                             </label>
                                         </div>
                                     </div>
@@ -981,7 +1078,7 @@
                             </div>
 
                             <div class="pt-5 border-t border-slate-100 dark:border-slate-800 flex justify-end">
-                                <button type="submit" class="px-6 py-3 bg-primary hover:bg-primary/90 text-white rounded-xl text-xs font-bold shadow-lg shadow-primary/20 flex items-center gap-2.5 transition-all cursor-pointer border-0">
+                                <button type="submit" class="btn-bento-danger px-6 py-3.5 rounded-xl text-xs font-bold flex items-center gap-2.5 transition-all cursor-pointer">
                                     <i class="fas fa-save text-sm"></i> <span>Guardar Ajustes de Sistema</span>
                                 </button>
                             </div>
@@ -995,14 +1092,14 @@
                 {{-- Tarjeta: Respaldo de Base de Datos --}}
                 <div class="bento-card bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800/80 rounded-3xl p-8 shadow-xl flex flex-col justify-between relative overflow-hidden group flex-grow">
                     <!-- Glow de fondo -->
-                    <div class="absolute -right-20 -top-20 w-60 h-60 bg-success/10 dark:bg-success/5 rounded-full blur-3xl group-hover:bg-success/20 transition-all duration-500"></div>
+                    <div class="absolute -right-20 -top-20 w-60 h-60 bg-emerald-500/10 dark:bg-emerald-500/5 rounded-full blur-3xl group-hover:bg-emerald-500/20 transition-all duration-500"></div>
 
                     <div>
                         {{-- Header Bento --}}
                         <div class="flex items-center justify-between mb-6 pb-5 border-b border-slate-100 dark:border-slate-800 flex-wrap gap-4">
                             <div class="flex items-center gap-4">
-                                <div class="rounded-2xl bg-success/10 text-success flex items-center justify-center shadow-sm w-12 h-12 flex-shrink-0">
-                                    <i class="fas fa-database text-xl"></i>
+                                <div class="config-icon-box icon-box-success group-hover:scale-110 transition-transform duration-500">
+                                    <i class="fas fa-database"></i>
                                 </div>
                                 <div>
                                     <h5 class="text-lg font-bold text-slate-900 dark:text-white tracking-tight mb-1">Respaldo de Base de Datos</h5>
@@ -1012,13 +1109,13 @@
                         </div>
 
                         <div class="p-6 rounded-2xl bg-slate-50/50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/50 shadow-sm text-center mb-6">
-                            <i class="fas fa-cloud-download-alt text-4xl text-success mb-4 block drop-shadow-md"></i>
+                            <i class="fas fa-cloud-download-alt text-4xl text-emerald-500 mb-4 block drop-shadow-md"></i>
                             <h6 class="font-bold text-slate-900 dark:text-white mb-2 text-sm">Copia de Seguridad Automatizada</h6>
                             <p class="text-slate-500 dark:text-slate-400 text-xs mb-6 leading-relaxed">Descarga un archivo .sql con la estructura completa y registros actuales de la iglesia.</p>
                             
                             <form action="{{ route('sistema.backup') }}" method="POST" class="m-0">
                                 @csrf
-                                <button type="submit" class="w-full py-3.5 px-6 bg-success hover:bg-success/90 text-white rounded-xl text-xs font-bold shadow-lg shadow-success/20 flex items-center justify-center gap-2.5 transition-all cursor-pointer border-0">
+                                <button type="submit" class="btn-bento-success w-full py-3.5 px-6 rounded-xl text-xs font-bold flex items-center justify-center gap-2.5 transition-all cursor-pointer">
                                     <i class="fas fa-download text-sm"></i> <span>Generar Respaldo (SQL)</span>
                                 </button>
                             </form>
@@ -1035,7 +1132,7 @@
                     </div>
 
                     <div class="pt-4 border-t border-slate-100 dark:border-slate-800 text-slate-500 dark:text-slate-400 text-xs font-medium flex items-center gap-2.5 mt-6">
-                        <i class="fas fa-info-circle text-success text-base"></i>
+                        <i class="fas fa-info-circle text-emerald-500 text-base"></i>
                         <span>Almacenamiento seguro de transacciones y feligreses.</span>
                     </div>
                 </div>
@@ -1043,14 +1140,14 @@
                 {{-- Tarjeta: Información del Servidor --}}
                 <div class="bento-card bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800/80 rounded-3xl p-8 shadow-xl flex flex-col justify-between relative overflow-hidden group flex-grow">
                     <!-- Glow de fondo -->
-                    <div class="absolute -right-20 -top-20 w-60 h-60 bg-indigo-500/10 dark:bg-indigo-500/5 rounded-full blur-3xl group-hover:bg-indigo-500/20 transition-all duration-500"></div>
+                    <div class="absolute -right-20 -top-20 w-60 h-60 bg-purple-500/10 dark:bg-purple-500/5 rounded-full blur-3xl group-hover:bg-purple-500/20 transition-all duration-500"></div>
 
                     <div>
                         {{-- Header Bento --}}
                         <div class="flex items-center justify-between mb-6 pb-5 border-b border-slate-100 dark:border-slate-800 flex-wrap gap-4">
                             <div class="flex items-center gap-4">
-                                <div class="rounded-2xl bg-indigo-500/10 text-indigo-500 flex items-center justify-center shadow-sm w-12 h-12 flex-shrink-0">
-                                    <i class="fas fa-microchip text-xl"></i>
+                                <div class="config-icon-box icon-box-purple group-hover:scale-110 transition-transform duration-500">
+                                    <i class="fas fa-microchip"></i>
                                 </div>
                                 <div>
                                     <h5 class="text-lg font-bold text-slate-900 dark:text-white tracking-tight mb-1">Estado del Entorno</h5>
@@ -1074,13 +1171,13 @@
                             </div>
                             <div class="flex justify-between items-center p-4 rounded-2xl bg-slate-50/50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/50 text-xs">
                                 <span class="text-slate-500 dark:text-slate-400 font-medium">Entorno (APP_ENV):</span>
-                                <span class="inline-flex items-center px-3 py-1 rounded-full text-[11px] font-bold bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-500/20 uppercase tracking-wider">{{ config('app.env', 'local') }}</span>
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-[11px] font-bold bg-purple-50 dark:bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-100 dark:border-purple-500/20 uppercase tracking-wider">{{ config('app.env', 'local') }}</span>
                             </div>
                         </div>
                     </div>
 
                     <div class="pt-4 border-t border-slate-100 dark:border-slate-800 text-slate-500 dark:text-slate-400 text-xs font-medium flex items-center gap-2.5 mt-6">
-                        <i class="fas fa-check-circle text-indigo-500 text-base"></i>
+                        <i class="fas fa-check-circle text-purple-500 text-base"></i>
                         <span>El sistema opera bajo los requerimientos óptimos de rendimiento.</span>
                     </div>
                 </div>
@@ -1094,14 +1191,14 @@
             <div class="lg:col-span-8 flex flex-col">
                 <div class="bento-card bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800/80 rounded-3xl p-8 shadow-xl flex flex-col justify-between relative overflow-hidden group flex-grow">
                     <!-- Glow de fondo -->
-                    <div class="absolute -right-20 -top-20 w-60 h-60 bg-primary/10 dark:bg-primary/5 rounded-full blur-3xl group-hover:bg-primary/20 transition-all duration-500"></div>
+                    <div class="absolute -right-20 -top-20 w-60 h-60 bg-blue-500/10 dark:bg-blue-500/5 rounded-full blur-3xl group-hover:bg-blue-500/20 transition-all duration-500"></div>
 
                     <div>
                         {{-- Header Bento --}}
                         <div class="flex items-center justify-between mb-6 pb-5 border-b border-slate-100 dark:border-slate-800 flex-wrap gap-4">
                             <div class="flex items-center gap-4">
-                                <div class="rounded-2xl bg-primary/10 text-primary flex items-center justify-center shadow-sm w-12 h-12 flex-shrink-0">
-                                    <i class="fas fa-calendar-check text-xl"></i>
+                                <div class="config-icon-box icon-box-primary group-hover:scale-110 transition-transform duration-500">
+                                    <i class="fas fa-calendar-check"></i>
                                 </div>
                                 <div>
                                     <h5 class="text-lg font-bold text-slate-900 dark:text-white tracking-tight mb-1">Integración con Google Calendar</h5>
@@ -1117,7 +1214,7 @@
                                     <div>
                                         <h6 class="font-bold text-slate-900 dark:text-white mb-1.5 text-xs uppercase tracking-wider">Estado de Conexión:</h6>
                                         @if(session()->has('google_calendar_token'))
-                                            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-success/10 text-success border border-success/20 uppercase tracking-wider"><i class="fas fa-check-circle text-xs"></i> Conectado y Activo</span>
+                                            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 uppercase tracking-wider"><i class="fas fa-check-circle text-xs"></i> Conectado y Activo</span>
                                         @else
                                             <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 uppercase tracking-wider"><i class="fas fa-exclamation-circle text-xs"></i> No Conectado</span>
                                         @endif
@@ -1128,12 +1225,12 @@
                                     @if(session()->has('google_calendar_token'))
                                         <form action="{{ route('google.calendar.disconnect') }}" method="POST" class="m-0" onsubmit="return confirm('¿Estás seguro de desvincular Google Calendar?');">
                                             @csrf
-                                            <button type="submit" class="px-5 py-2.5 bg-rose-50 hover:bg-rose-100 dark:bg-rose-500/10 dark:hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-800/80 rounded-xl text-xs font-bold shadow-sm flex items-center gap-2 cursor-pointer transition-all">
+                                            <button type="submit" class="btn-bento-danger px-5 py-3 rounded-xl text-xs font-bold flex items-center gap-2 cursor-pointer transition-all">
                                                 <i class="fas fa-unlink text-sm"></i> <span>Desvincular Cuenta</span>
                                             </button>
                                         </form>
                                     @else
-                                        <a href="{{ route('google.calendar.connect') }}" class="px-6 py-3 bg-primary hover:bg-primary/90 text-white rounded-xl text-xs font-bold shadow-lg shadow-primary/20 flex items-center gap-2.5 no-underline transition-all">
+                                        <a href="{{ route('google.calendar.connect') }}" class="btn-bento-primary px-6 py-3.5 rounded-xl text-xs font-bold flex items-center gap-2.5 no-underline transition-all">
                                             <i class="fas fa-link text-sm"></i> <span>Conectar con Google Calendar</span>
                                         </a>
                                     @endif
@@ -1149,27 +1246,27 @@
                             @endphp
 
                             @if(session()->has('google_calendar_error'))
-                                <div class="p-6 rounded-3xl mb-6 shadow-sm border border-danger/30 bg-danger/10">
-                                    <h6 class="font-bold text-danger mb-3 text-sm flex items-center gap-2"><i class="fas fa-exclamation-triangle"></i> Permiso Denegado en Google Cloud Console</h6>
-                                    <p class="text-xs text-danger mb-4 leading-relaxed font-medium">
+                                <div class="p-6 rounded-3xl mb-6 shadow-sm border border-rose-500/30 bg-rose-500/10">
+                                    <h6 class="font-bold text-rose-600 dark:text-rose-400 mb-3 text-sm flex items-center gap-2"><i class="fas fa-exclamation-triangle"></i> Permiso Denegado en Google Cloud Console</h6>
+                                    <p class="text-xs text-rose-600 dark:text-rose-400 mb-4 leading-relaxed font-medium">
                                         Tu cuenta fue vinculada correctamente, pero el proyecto de Google Cloud no tiene habilitada la API de Google Calendar.
                                     </p>
-                                    <div class="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-danger/20 mb-4 text-xs font-mono text-slate-600 dark:text-slate-400 shadow-inner" style="word-break: break-all;">
+                                    <div class="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-rose-500/20 mb-4 text-xs font-mono text-slate-600 dark:text-slate-400 shadow-inner" style="word-break: break-all;">
                                         {{ session('google_calendar_error') }}
                                     </div>
-                                    <p class="text-xs mb-0 font-medium text-danger leading-relaxed">
+                                    <p class="text-xs mb-0 font-medium text-rose-600 dark:text-rose-400 leading-relaxed">
                                         👉 <strong>Solución:</strong> Visita la consola de Google Cloud a través del enlace mostrado arriba para habilitar la <code>Google Calendar API</code> en tu proyecto. Luego, espera unos minutos y recarga esta página.
                                     </p>
                                 </div>
                             @else
-                                <div class="p-6 rounded-3xl bg-primary/10 border border-primary/20 mb-6 shadow-sm">
-                                    <h6 class="font-bold text-slate-900 dark:text-white mb-2 text-sm flex items-center gap-2"><i class="fas fa-calendar-alt text-primary"></i> Seleccionar Calendario de Trabajo</h6>
+                                <div class="p-6 rounded-3xl bg-blue-500/10 border border-blue-500/20 mb-6 shadow-sm">
+                                    <h6 class="font-bold text-slate-900 dark:text-white mb-2 text-sm flex items-center gap-2"><i class="fas fa-calendar-alt text-blue-600 dark:text-blue-400"></i> Seleccionar Calendario de Trabajo</h6>
                                     <p class="text-slate-500 dark:text-slate-400 text-xs mb-4 leading-relaxed font-medium">Elige cuál de tus calendarios de Google deseas sincronizar con el sistema de la iglesia:</p>
                                     
                                     <form action="{{ route('google.calendar.select') }}" method="POST" class="grid grid-cols-1 md:grid-cols-12 gap-4 items-center m-0">
                                         @csrf
                                         <div class="md:col-span-9">
-                                            <select name="calendar_id" class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all shadow-sm cursor-pointer" onchange="this.form.submit()">
+                                            <select name="calendar_id" class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all shadow-sm cursor-pointer" onchange="this.form.submit()">
                                                 @foreach($calendars as $cal)
                                                     <option value="{{ $cal->getId() }}" {{ $selectedCalendarId === $cal->getId() ? 'selected' : '' }}>
                                                         📅 {{ $cal->getSummary() }} {{ $cal->getPrimary() ? '(Calendario Principal)' : '' }}
@@ -1178,19 +1275,19 @@
                                             </select>
                                         </div>
                                         <div class="md:col-span-3">
-                                            <button type="submit" class="w-full py-3 px-6 bg-primary hover:bg-primary/90 text-white rounded-xl text-xs font-bold shadow-lg shadow-primary/20 flex items-center justify-center gap-2 transition-all cursor-pointer border-0">
+                                            <button type="submit" class="btn-bento-primary w-full py-3.5 px-6 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-all cursor-pointer">
                                                 <i class="fas fa-sync-alt text-sm"></i> <span>Sincronizar</span>
                                             </button>
                                         </div>
                                     </form>
                                     <div class="text-[11px] text-slate-500 dark:text-slate-400 mt-3 font-medium flex items-center gap-1.5">
-                                        <i class="fas fa-info-circle text-primary"></i> Al cambiar de calendario, el sistema importará automáticamente las actividades de ese calendario específico.
+                                        <i class="fas fa-info-circle text-blue-600 dark:text-blue-400"></i> Al cambiar de calendario, el sistema importará automáticamente las actividades de ese calendario específico.
                                     </div>
                                 </div>
                             @endif
                         @endif
 
-                        <h6 class="font-bold text-slate-900 dark:text-white mb-3 text-xs uppercase tracking-wider flex items-center gap-2"><i class="fas fa-shield-alt text-primary"></i> Alcance de la Integración</h6>
+                        <h6 class="font-bold text-slate-900 dark:text-white mb-3 text-xs uppercase tracking-wider flex items-center gap-2"><i class="fas fa-shield-alt text-blue-600 dark:text-blue-400"></i> Alcance de la Integración</h6>
                         <ul class="text-slate-500 dark:text-slate-400 text-xs space-y-2.5 mb-0 pl-4 font-medium leading-relaxed">
                             <li>Creación y actualización automática de eventos en el calendario principal de la cuenta vinculada.</li>
                             <li>Generación de salas virtuales de Google Meet adjuntas a los eventos híbridos o en línea.</li>
@@ -1199,30 +1296,30 @@
                     </div>
 
                     <div class="pt-4 border-t border-slate-100 dark:border-slate-800 text-slate-500 dark:text-slate-400 text-xs font-medium flex items-center gap-2.5 mt-8">
-                        <i class="fas fa-check-circle text-primary text-base"></i>
+                        <i class="fas fa-check-circle text-blue-600 dark:text-blue-400 text-base"></i>
                         <span>Sincronización bidireccional activa y segura.</span>
                     </div>
                 </div>
             </div>
 
             <div class="lg:col-span-4 flex flex-col">
-                <div class="bento-card bg-gradient-to-b from-info/10 via-info/5 to-transparent dark:from-info/20 dark:via-info/10 dark:to-transparent border border-info/20 dark:border-info/30 rounded-3xl p-8 shadow-xl flex flex-col justify-between relative overflow-hidden flex-grow">
+                <div class="bento-card bg-gradient-to-b from-cyan-500/10 via-cyan-500/5 to-transparent dark:from-cyan-500/20 dark:via-cyan-500/10 dark:to-transparent border border-cyan-500/20 dark:border-cyan-500/30 rounded-3xl p-8 shadow-xl flex flex-col justify-between relative overflow-hidden flex-grow group">
                     <div>
                         {{-- Header Bento --}}
-                        <div class="flex items-center justify-between mb-6 pb-5 border-b border-info/20 flex-wrap gap-4">
+                        <div class="flex items-center justify-between mb-6 pb-5 border-b border-cyan-500/20 flex-wrap gap-4">
                             <div class="flex items-center gap-4">
-                                <div class="rounded-2xl bg-info/20 text-info flex items-center justify-center shadow-sm w-12 h-12 flex-shrink-0">
-                                    <i class="fas fa-info-circle text-xl"></i>
+                                <div class="config-icon-box icon-box-info group-hover:scale-110 transition-transform duration-500">
+                                    <i class="fas fa-info-circle"></i>
                                 </div>
                                 <div>
-                                    <h5 class="text-lg font-bold text-info tracking-tight mb-1">Requisitos Previos</h5>
-                                    <p class="text-xs text-info/80 mb-0">Credenciales de API de Google</p>
+                                    <h5 class="text-lg font-bold text-cyan-600 dark:text-cyan-400 tracking-tight mb-1">Requisitos Previos</h5>
+                                    <p class="text-xs text-cyan-600/80 dark:text-cyan-400/80 mb-0">Credenciales de API de Google</p>
                                 </div>
                             </div>
                         </div>
 
                         <p class="text-xs text-slate-600 dark:text-slate-300 mb-4 font-medium leading-relaxed">
-                            Para que la integración funcione correctamente, asegúrate de que en el archivo <code>.env</code> estén configuradas las base credenciales de Google Cloud Console:
+                            Para que la integración funcione correctamente, asegúrate de que en el archivo <code>.env</code> estén configuradas las credenciales de Google Cloud Console:
                         </p>
                         <div class="bg-slate-900 text-slate-300 p-4 rounded-2xl text-xs font-mono mb-4 shadow-inner border border-slate-800 leading-relaxed" style="word-break: break-all;">
                             GOOGLE_CLIENT_ID=...<br>
@@ -1231,11 +1328,11 @@
                         </div>
                         <p class="text-xs text-slate-500 dark:text-slate-400 mb-0 leading-relaxed font-medium">
                             La URI de redirección debe coincidir exactamente con: <br>
-                            <code class="text-info font-bold block mt-1">{{ route('google.calendar.callback') }}</code>
+                            <code class="text-cyan-600 dark:text-cyan-400 font-bold block mt-1">{{ route('google.calendar.callback') }}</code>
                         </p>
                     </div>
 
-                    <div class="pt-4 border-t border-info/20 text-center text-info text-[11px] font-semibold flex items-center justify-center gap-2">
+                    <div class="pt-4 border-t border-cyan-500/20 text-center text-cyan-600 dark:text-cyan-400 text-[11px] font-semibold flex items-center justify-center gap-2">
                         <i class="fas fa-lock"></i> Conexión encriptada mediante OAuth 2.0
                     </div>
                 </div>
@@ -1283,7 +1380,7 @@
             }
             
             reader.readAsDataURL(input.files[0]);
-            fileNameDisplay.innerHTML = `<span class="text-primary font-bold"><i class="fas fa-file-image mr-1"></i> ${input.files[0].name}</span>`;
+            fileNameDisplay.innerHTML = `<span class="text-blue-600 dark:text-blue-400 font-bold"><i class="fas fa-file-image mr-1"></i> ${input.files[0].name}</span>`;
         }
     }
 

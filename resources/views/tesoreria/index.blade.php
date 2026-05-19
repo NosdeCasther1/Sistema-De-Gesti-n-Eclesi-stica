@@ -71,11 +71,11 @@
 
         <!-- Selector de Cajas (Premium Glassmorphism Tabs) -->
         <div class="treasury-tabs mb-3 d-flex align-items-center justify-content-between flex-wrap gap-2 shadow-sm">
-            <div class="d-flex align-items-center gap-1 flex-wrap">
+            <div class="d-flex align-items-center gap-1 flex-wrap w-full">
                 <a href="{{ route('tesoreria.index', ['tab' => 'all', 'search' => request('search')]) }}" @click.prevent="switchTab('all', $el.href)"
                         :class="activeTab === 'all' ? 'tab-active' : ''"
                         class="tab-pill d-flex align-items-center gap-1.5 text-slate-600 dark:text-slate-300">
-                    <i class="fas fa-layer-group"></i> Consolidado
+                    <i class="fas fa-layer-group"></i> Todas las cajas
                 </a>
                 <a href="{{ route('tesoreria.index', ['tab' => 'general', 'search' => request('search')]) }}" @click.prevent="switchTab('general', $el.href)"
                         :class="activeTab === 'general' ? 'tab-active' : ''"
@@ -92,10 +92,6 @@
                         class="tab-pill d-flex align-items-center gap-1.5 text-slate-600 dark:text-slate-300">
                     <i class="fas fa-globe-americas"></i> Fondo Misiones
                 </a>
-            </div>
-            <div class="status-indicator text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800/50 px-3 py-1">
-                <i class="fas fa-circle text-xs" style="font-size: 0.45rem; color: #6366f1; animation: pulse 2s infinite;"></i>
-                <span x-text="activeTab === 'all' ? 'Todas las cajas' : (activeTab === 'general' ? 'Caja General' : (activeTab === 'jovenes' ? 'Caja Jóvenes' : 'Fondo Misiones'))"></span>
             </div>
         </div>
 
@@ -139,33 +135,48 @@
             </div>
         </div>
 
-        <!-- Filtro de Búsqueda (Premium Glassmorphism) -->
-        <div class="search-treasury p-2 shadow-sm">
-            <form action="{{ route('tesoreria.index') }}" method="GET" id="searchForm">
-                <input type="hidden" name="tab" id="searchTabInput" value="{{ $activeTab ?? 'all' }}">
-                <div class="d-flex align-items-center">
-                    <span class="ps-3 pe-2 text-slate-400 dark:text-slate-500"><i class="fas fa-search"></i></span>
-                    <input type="text" name="search" id="searchInput" class="form-control border-0 bg-transparent ps-2 py-1.5 text-slate-800 dark:text-white shadow-none text-sm"
-                           placeholder="Buscar por descripción, miembro, categoría o referencia..." value="{{ request('search') }}" autocomplete="off">
-                </div>
-            </form>
-        </div>
     </div>
 
     <!-- Listado de Transacciones (Premium Ledger Container) -->
     <div class="ledger-container bg-white dark:bg-slate-900 shadow-sm flex-1 min-h-0 flex flex-col overflow-hidden relative">
-        <div class="ledger-header shrink-0" style="display: flex; justify-content: space-between; align-items: center; gap: 0.75rem; flex-wrap: nowrap;">
-            <div style="display: flex; align-items: center; gap: 0.5rem; flex-shrink: 1; min-width: 0;">
+        <div class="ledger-header shrink-0" style="display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap;">
+            <div style="display: flex; align-items: center; gap: 0.5rem; flex-shrink: 1; min-width: 0; flex-wrap: wrap;">
                 <h6 class="fw-bold mb-0 text-slate-800 dark:text-white" style="font-size: 0.95rem; white-space: nowrap; display: flex; align-items: center; gap: 0.5rem;">
                     <i class="fas fa-book-open" style="background: linear-gradient(135deg, #6366f1, #8b5cf6); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"></i> Libro Diario de Movimientos
                 </h6>
                 <span class="status-indicator bg-slate-100 dark:bg-slate-800/50 text-slate-500 dark:text-slate-400" style="white-space: nowrap;">
                     <i class="fas fa-shield-halved" style="font-size: 0.6rem;"></i> Auditoría Estricta
                 </span>
+                <span class="status-indicator bg-indigo-500/10 dark:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 font-bold" style="white-space: nowrap;">
+                    <i class="fas fa-circle text-xs" style="font-size: 0.45rem; color: #6366f1; animation: pulse 2s infinite;"></i>
+                    <span x-text="activeTab === 'all' ? 'Todas las cajas' : (activeTab === 'general' ? 'Caja General' : (activeTab === 'jovenes' ? 'Caja Jóvenes' : 'Fondo Misiones'))"></span>
+                </span>
             </div>
-            <a href="{{ route('reportes.tesoreria') }}" target="_blank" style="flex-shrink: 0; background: linear-gradient(135deg, #64748b, #475569) !important; box-shadow: 0 4px 14px rgba(100,116,139,0.2) !important; font-size: 0.75rem !important; padding: 0.4rem 1rem !important; white-space: nowrap; border: none; border-radius: 2rem; font-weight: 700; display: inline-flex; align-items: center; gap: 0.5rem; color: white; text-decoration: none; cursor: pointer; transition: all 0.3s ease;">
-                <i class="fas fa-file-pdf"></i> <span>Exportar PDF</span>
-            </a>
+            
+            <div class="flex items-center gap-2.5 flex-wrap sm:flex-nowrap w-full sm:w-auto justify-end">
+                <!-- Filtro de Búsqueda Compacto -->
+                <div class="search-treasury shadow-sm relative flex-grow sm:flex-grow-0" style="border-radius: 2rem; height: 38px; width: 100%; max-width: 350px; min-width: 240px;">
+                    <form action="{{ route('tesoreria.index') }}" method="GET" id="searchForm" @submit.prevent class="m-0 h-full">
+                        <input type="hidden" name="tab" id="searchTabInput" value="{{ $activeTab ?? 'all' }}">
+                        <div class="flex items-center w-full h-full relative">
+                            <span class="absolute left-3 text-slate-400 dark:text-slate-500 pointer-events-none flex items-center justify-center" style="font-size: 0.95rem;">
+                                <i class="fas fa-search"></i>
+                            </span>
+                            <input type="text" name="search" id="searchInput" 
+                                   class="w-full h-full pl-9 pr-9 py-1 bg-transparent border-0 text-slate-800 dark:text-white font-medium focus:outline-none focus:ring-0 shadow-none text-xs"
+                                   style="box-shadow: none !important; background: transparent !important; border: none !important;"
+                                   placeholder="Buscar por descripción, miembro, referencia..." value="{{ request('search') }}" autocomplete="off">
+                            <button type="button" id="clearSearchBtn" class="absolute right-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-all flex items-center justify-center p-1.5 border-0 bg-transparent cursor-pointer" style="display: {{ request('search') ? 'flex' : 'none' }};">
+                                <i class="fas fa-times-circle" style="font-size: 1.1rem;"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <a href="{{ route('reportes.tesoreria') }}" target="_blank" style="flex-shrink: 0; background: linear-gradient(135deg, #64748b, #475569) !important; box-shadow: 0 4px 14px rgba(100,116,139,0.2) !important; font-size: 0.75rem !important; height: 38px; padding: 0 1.25rem !important; white-space: nowrap; border: none; border-radius: 2rem; font-weight: 700; display: inline-flex; align-items: center; gap: 0.5rem; color: white; text-decoration: none; cursor: pointer; transition: all 0.3s ease;">
+                    <i class="fas fa-file-pdf"></i> <span>Exportar PDF</span>
+                </a>
+            </div>
         </div>
         
         <div id="table-results" class="flex-1 min-h-0 overflow-auto custom-scrollbar w-full">
@@ -178,7 +189,7 @@
     ========================================== -->
     <div x-cloak 
          x-show="showIncomeModal" 
-         class="fixed inset-0 z-[100] overflow-y-auto" 
+         class="fixed inset-0 z-[9999] overflow-y-auto" 
          aria-labelledby="modal-title" 
          role="dialog" 
          aria-modal="true">
@@ -320,7 +331,7 @@
     ========================================== -->
     <div x-cloak 
          x-show="showExpenseModal" 
-         class="fixed inset-0 z-[100] overflow-y-auto" 
+         class="fixed inset-0 z-[9999] overflow-y-auto" 
          aria-labelledby="modal-title" 
          role="dialog" 
          aria-modal="true">
@@ -470,6 +481,9 @@
     input[type="number"]::-webkit-outer-spin-button,
     input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
     input[type="number"] { -moz-appearance: textfield; }
+
+    /* Evitar flash de modales Alpine.js al cargar la página */
+    [x-cloak] { display: none !important; }
 
     /* ========== PREMIUM TESORERIA DESIGN SYSTEM ========== */
 
@@ -663,6 +677,7 @@
         border-radius: 2rem;
         font-size: 0.7rem; font-weight: 600;
     }
+
 </style>
 @endpush
 
@@ -672,7 +687,18 @@
         const searchInput = document.getElementById('searchInput');
         const searchForm = document.getElementById('searchForm');
         const resultsContainer = document.getElementById('table-results');
+        const clearBtn = document.getElementById('clearSearchBtn');
         let debounceTimer;
+
+        const toggleClearBtn = () => {
+            if (clearBtn) {
+                if (searchInput && searchInput.value.trim().length > 0) {
+                    clearBtn.style.setProperty('display', 'inline-flex', 'important');
+                } else {
+                    clearBtn.style.setProperty('display', 'none', 'important');
+                }
+            }
+        };
 
         const performSearch = () => {
             const formData = new FormData(searchForm);
@@ -698,10 +724,29 @@
 
         if(searchInput && searchForm) {
             searchInput.addEventListener('input', function() {
+                toggleClearBtn();
                 clearTimeout(debounceTimer);
                 debounceTimer = setTimeout(performSearch, 300);
             });
+
+            // Prevent manual form submission (reloads)
+            searchForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                performSearch();
+            });
         }
+
+        if(clearBtn && searchInput) {
+            clearBtn.addEventListener('click', function() {
+                searchInput.value = '';
+                toggleClearBtn();
+                performSearch();
+                searchInput.focus();
+            });
+        }
+
+        // Initial toggle on page load if search already populated
+        toggleClearBtn();
     });
 </script>
 @endpush

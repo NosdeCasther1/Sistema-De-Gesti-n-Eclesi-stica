@@ -1,0 +1,179 @@
+/* =========================================
+   ESTILOS GENERALES DEL DASHBOARD
+   ========================================= */
+/* Layout Core (Managed in theme.css) */
+main {
+    background-color: transparent;
+    color: var(--text-main);
+}
+
+/* --- Dashboard Summary (KPI Cards) --- */
+.dashboard-summary {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.summary-card {
+    background-color: var(--bg-card);
+    border-radius: 12px;
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border: 1px solid var(--border-color);
+    color: var(--text-main);
+}
+
+.summary-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-md);
+}
+
+.summary-card .card-body {
+    padding: 1.5rem;
+}
+
+.stat-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    opacity: 0.9;
+}
+
+/* --- Dashboard Layout (Charts & Transactions) --- */
+.dashboard-content {
+    display: grid;
+    grid-template-columns: 3fr 2fr;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.statistics-section {
+    background-color: var(--bg-card);
+    border-radius: 16px;
+    box-shadow: var(--shadow-sm);
+    padding: 1.5rem;
+    border: 1px solid var(--border-color);
+}
+
+.chart-container {
+    position: relative;
+    height: 350px;
+    width: 100%;
+    margin-top: 1rem;
+}
+
+.transactions-section {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+/* --- Transaction Cards --- */
+.transaction-card {
+    background-color: var(--bg-card);
+    border-radius: 16px;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-color);
+    overflow: hidden;
+}
+
+.card-header-custom {
+    padding: 1.25rem 1.5rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 0.8px;
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text-primary);
+}
+
+/* =========================================
+   ESTILO DE TABLAS PREMIUM (AGNOSTIC)
+   ========================================= */
+.table-softwys {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: transparent;
+}
+
+.table-softwys thead th {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    font-weight: 700;
+    color: var(--text-muted);
+    border-bottom: 2px solid var(--border-color);
+    padding: 1.25rem 1rem;
+    background-color: transparent;
+}
+
+.table-softwys tbody td {
+    padding: 1.15rem 1rem;
+    color: var(--text-primary);
+    font-weight: 500;
+    font-size: 0.9rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.table-hover tbody tr:hover {
+    background-color: rgba(var(--bg-card-rgb), 0.05) !important;
+}
+
+[data-theme='dark'] .table-hover tbody tr:hover {
+    background-color: rgba(255, 255, 255, 0.02) !important;
+}
+
+/* --- Badges & Buttons --- */
+.badge-soft {
+    padding: 0.45rem 0.85rem;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+}
+
+/* --- Form Controls --- */
+.form-control, .form-select {
+    background-color: var(--bg-card) !important;
+    border: 1px solid var(--border-color) !important;
+    color: var(--text-primary) !important;
+    border-radius: 10px;
+    padding: 0.75rem 1.25rem;
+    transition: all 0.2s ease;
+}
+
+.form-control:focus {
+    border-color: var(--bs-primary) !important;
+    box-shadow: 0 0 0 4px rgba(var(--bs-primary-rgb), 0.15) !important;
+}
+
+/* --- Buttons --- */
+.btn-premium {
+    border-radius: 10px;
+    font-weight: 700;
+    padding: 0.75rem 1.75rem;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 0.5px;
+}
+
+/* --- Responsive Layout --- */
+@media (max-width: 1200px) {
+    .dashboard-content {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .dashboard-summary {
+        grid-template-columns: 1fr;
+    }
+    
+    /* Layout managed globally */
+}

@@ -1,0 +1,22 @@
+{
+  "name": "optibill-mcp-server",
+  "version": "1.0.0",
+  "description": "MCP Server for Asset Optimization and Accessibility Auditing",
+  "main": "build/index.js",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "start": "node build/index.js",
+    "dev": "tsc --watch"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.1",
+    "sharp": "^0.33.2",
+    "puppeteer": "^22.2.0",
+    "axe-core": "^4.8.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.19",
+    "typescript": "^5.3.3"
+  }
+}

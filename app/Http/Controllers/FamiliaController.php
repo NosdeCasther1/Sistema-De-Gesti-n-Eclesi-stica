@@ -1,0 +1,107 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+
+class FamiliaController extends Controller
+{
+    /**
+     * Display a listing of the resource.
+     */
+    public function index(Request $request)
+    {
+        $search = $request->input('search');
+
+        $query = \App\Models\Familia::withCount('miembros');
+
+        if ($search) {
+            $query->where('nombre', 'LIKE', "%{$search}%")
+                  ->orWhere('direccion', 'LIKE', "%{$search}%");
+        }
+
+        $familias = $query->paginate(10);
+
+        if ($request->ajax()) {
+            return view('familias._table', compact('familias'))->render();
+        }
+
+        return view('familias.index', compact('familias'));
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create()
+    {
+        $celulas = \App\Models\Celula::orderBy('nombre')->get();
+        return view('familias.create', compact('celulas'));
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(Request $request)
+    {
+        $request->validate([
+            'nombre' => 'required|string|max:100|unique:familias,nombre',
+            'direccion' => 'nullable|string|max:255',
+            'telefono_principal' => 'nullable|string|max:20',
+            'notas' => 'nullable|string',
+            'celula_id' => 'nullable|exists:celulas,id'
+        ]);
+
+        \App\Models\Familia::create($request->all());
+
+        return redirect()->route('familias.index')->with('success', 'Familia creada exitosamente.');
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(string $id)
+    {
+        $familia = \App\Models\Familia::with('miembros', 'celula')->findOrFail($id);
+        return view('familias.show', compact('familia'));
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(string $id)
+    {
+        $familia = \App\Models\Familia::findOrFail($id);
+        $celulas = \App\Models\Celula::orderBy('nombre')->get();
+        return view('familias.edit', compact('familia', 'celulas'));
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, string $id)
+    {
+        $request->validate([
+            'nombre' => 'required|string|max:100|unique:familias,nombre,' . $id,
+            'direccion' => 'nullable|string|max:255',
+            'telefono_principal' => 'nullable|string|max:20',
+            'notas' => 'nullable|string',
+            'celula_id' => 'nullable|exists:celulas,id'
+        ]);
+
+        $familia = \App\Models\Familia::findOrFail($id);
+        $familia->update($request->all());
+
+        return redirect()->route('familias.index')->with('success', 'Familia actualizada exitosamente.');
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(string $id)
+    {
+        $familia = \App\Models\Familia::findOrFail($id);
+        $familia->delete();
+
+        return redirect()->route('familias.index')->with('success', 'Familia eliminada exitosamente.');
+    }
+}
