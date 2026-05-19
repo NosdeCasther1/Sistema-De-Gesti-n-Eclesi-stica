@@ -48,7 +48,7 @@ main {
 @endpush
 
 @section('header_title', 'Gestión de Familias')
-@section('header_subtitle', 'Organización del núcleo de la iglesia')
+@section('header_subtitle', 'Organización, censo y vinculación de núcleos familiares')
 @section('header_icon')
 <i class="fas fa-home fs-5"></i>
 @endsection
@@ -58,19 +58,21 @@ main {
 <div class="bento-container">
     {{-- ===== ACCIONES ===== --}}
     <div class="flex justify-end mb-4 flex-shrink-0">
-        <a href="{{ route('familias.create') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-full font-bold shadow-sm flex items-center gap-2 transition-colors">
+        <a href="{{ route('familias.create') }}" 
+           class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-full font-bold shadow-md flex items-center gap-2 transition-all hover:scale-102 no-underline">
             <i class="fas fa-plus"></i> <span>Nueva Familia</span>
         </a>
     </div>
 
     {{-- ===== FILTROS ===== --}}
     <div class="card-module p-4 mb-4 shadow-sm flex-shrink-0">
-        <form action="{{ route('familias.index') }}" method="GET" id="searchForm" class="max-w-xl">
+        <form action="{{ route('familias.index') }}" method="GET" id="searchForm" class="max-w-xl m-0">
             <div class="relative w-full">
-                <label class="block text-sm mb-1.5 font-bold text-slate-700 dark:text-slate-300">Búsqueda Rápida</label>
+                <label class="block text-xs font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">Búsqueda Rápida</label>
                 <div class="relative flex items-center w-full">
-                    <span class="absolute left-3 text-slate-400"><i class="fas fa-search"></i></span>
-                    <input type="text" name="search" id="searchInput" class="w-full pl-10 pr-10 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                    <span class="absolute left-3.5 text-slate-400 dark:text-slate-500"><i class="fas fa-search"></i></span>
+                    <input type="text" name="search" id="searchInput" 
+                           class="w-full pl-10 pr-10 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-xs font-medium"
                            placeholder="Buscar por nombre de familia o dirección..." value="{{ request('search') }}" autocomplete="off">
                     <button type="button" class="absolute right-3 text-slate-400 hover:text-slate-600 clear-search" id="clearSearch" title="Limpiar filtros" style="display: {{ request('search') ? 'flex' : 'none' }}; align-items: center; justify-content: center;">
                         <i class="fas fa-times-circle text-lg"></i>
@@ -87,6 +89,8 @@ main {
         </div>
     </div>
 </div>
+
+@endpush
 
 @push('scripts')
 <script>
