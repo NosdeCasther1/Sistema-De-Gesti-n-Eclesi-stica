@@ -254,7 +254,7 @@
             </div>
 
             {{-- SECCIÓN 4: FOTOGRAFÍA --}}
-            <div>
+            <div x-data="{ fileName: '', filePreview: '' }">
                 <div class="flex items-center gap-3 mb-6 pb-4 border-b border-slate-100 dark:border-slate-800">
                     <div class="stat-icon-box bg-purple-50 dark:bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-100 dark:border-purple-500/20 shadow-sm flex-shrink-0">
                         <i class="fas fa-camera"></i>
@@ -265,15 +265,63 @@
                     </div>
                 </div>
 
-                <div class="p-6 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/40 shadow-inner flex flex-col items-center justify-center gap-3">
-                    @if($miembro->foto)
-                        <div class="mb-3 relative group/foto">
-                            <img src="{{ asset('storage/miembros/' . $miembro->foto) }}" class="w-28 h-28 rounded-2xl object-cover border-2 border-white dark:border-slate-800 shadow-md">
-                            <div class="absolute inset-0 rounded-2xl bg-black/40 opacity-0 group-hover/foto:opacity-100 transition-opacity flex items-center justify-center text-white text-[10px] font-bold pointer-events-none">Foto Actual</div>
+                <div class="p-8 rounded-3xl border-2 border-dashed border-purple-300 dark:border-purple-700/60 bg-purple-50/30 dark:bg-purple-950/10 hover:bg-purple-50/60 dark:hover:bg-purple-950/20 transition-all flex flex-col items-center justify-center gap-4 text-center group cursor-pointer relative"
+                     @click="$refs.fotoInput.click()">
+                    
+                    <input type="file" name="foto" x-ref="fotoInput" class="hidden" accept="image/jpeg,image/png,image/jpg,image/gif"
+                           @change="fileName = $event.target.files[0] ? $event.target.files[0].name : ''; 
+                                    if($event.target.files[0]) { 
+                                        let reader = new FileReader(); 
+                                        reader.onload = (e) => filePreview = e.target.result; 
+                                        reader.readAsDataURL($event.target.files[0]); 
+                                    }">
+
+                    <!-- Vista previa dinámica de la nueva imagen seleccionada -->
+                    <template x-if="filePreview">
+                        <div class="relative mb-2">
+                            <img :src="filePreview" class="w-32 h-32 rounded-2xl object-cover border-4 border-white dark:border-slate-800 shadow-xl mx-auto animate-fade-in">
+                            <div class="absolute inset-0 rounded-2xl bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white text-xs font-bold pointer-events-none">Cambiar Foto</div>
                         </div>
+                    </template>
+
+                    <!-- Vista previa de foto actual (cuando no se ha seleccionado una nueva) -->
+                    @if($miembro->foto)
+                        <template x-if="!filePreview">
+                            <div class="relative mb-2">
+                                <img src="{{ asset('storage/miembros/' . $miembro->foto) }}" 
+                                     onerror="this.src='https://ui-avatars.com/api/?name={{ urlencode($miembro->nombres . ' ' . $miembro->apellidos) }}&background=0D8abc&color=fff&size=200'"
+                                     class="w-32 h-32 rounded-2xl object-cover border-4 border-white dark:border-slate-800 shadow-xl mx-auto">
+                                <div class="absolute inset-0 rounded-2xl bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center text-white text-xs font-bold pointer-events-none gap-1">
+                                    <i class="fas fa-camera text-lg"></i>
+                                    <span>Cambiar Foto</span>
+                                </div>
+                            </div>
+                        </template>
+                    @else
+                        <template x-if="!filePreview">
+                            <div class="w-16 h-16 rounded-2xl bg-purple-100 dark:bg-purple-500/20 text-purple-600 dark:text-purple-400 flex items-center justify-center text-2xl shadow-sm group-hover:scale-110 group-hover:bg-purple-200 dark:group-hover:bg-purple-500/30 transition-all duration-300">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                            </div>
+                        </template>
                     @endif
-                    <input type="file" name="foto" id="fotoInput" class="w-full max-w-md rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-4 py-2.5 text-slate-900 dark:text-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-all shadow-sm cursor-pointer" accept="image/jpeg,image/png,image/jpg,image/gif">
-                    <div class="text-[11px] text-slate-400 dark:text-slate-500 font-medium text-center">Opcional. Tamaño máximo: 2MB. Formatos: JPG, PNG, GIF.<br>(Dejar en blanco para conservar la fotografía actual)</div>
+
+                    <div>
+                        <template x-if="!fileName">
+                            <div>
+                                <p class="text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">Haz clic para buscar o arrastra una imagen aquí</p>
+                                <p class="text-[11px] text-slate-400 dark:text-slate-500 font-medium mb-0">PNG, JPG o GIF (Máximo 2MB)</p>
+                            </div>
+                        </template>
+                        <template x-if="fileName">
+                            <div class="bg-white dark:bg-slate-800 px-4 py-2 rounded-xl border border-purple-200 dark:border-purple-800/80 shadow-sm inline-flex items-center gap-2 max-w-xs">
+                                <i class="fas fa-file-image text-purple-500 text-sm flex-shrink-0"></i>
+                                <span class="text-xs font-bold text-slate-700 dark:text-slate-300 truncate" x-text="fileName"></span>
+                                <button type="button" @click.stop="fileName = ''; filePreview = ''; $refs.fotoInput.value = ''" class="text-slate-400 hover:text-rose-500 transition-colors ml-1">
+                                    <i class="fas fa-times text-xs"></i>
+                                </button>
+                            </div>
+                        </template>
+                    </div>
                 </div>
             </div>
 
