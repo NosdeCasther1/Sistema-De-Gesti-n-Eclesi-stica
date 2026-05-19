@@ -11,7 +11,7 @@ use App\Models\Miembro;
 class MigrateLegacyData extends Command
 {
     protected $signature = 'iglesia:migrate-legacy';
-    protected $description = 'Migra datos reales del MVC anterior a la estructura Eloquent de Laravel';
+    protected $description = 'Migra datos reales del MVC anterior a la estructura Eloquent de Laravel presenvando IDs y relaciones correctas';
 
     public function handle()
     {
@@ -29,12 +29,14 @@ class MigrateLegacyData extends Command
 
             DB::connection('legacy')->table('familias')->orderBy('id')->chunk(100, function ($familiasLegacy) use ($bar) {
                 foreach ($familiasLegacy as $f) {
-                    Familia::create([
+                    DB::table('familias')->insert([
                         'id' => $f->id,
                         'nombre' => $f->nombre,
-                        'direccion' => null, // No existe en tabla vieja
-                        'telefono_principal' => null, // No existe en tabla vieja
+                        'direccion' => null,
+                        'telefono_principal' => null,
                         'notas' => $f->descripcion ?? null,
+                        'created_at' => $f->fecha_creacion ?? now(),
+                        'updated_at' => $f->fecha_actualizacion ?? now(),
                     ]);
                     $bar->advance();
                 }
@@ -47,25 +49,29 @@ class MigrateLegacyData extends Command
 
         $this->info('Migrando Miembros...');
         try {
-            // Mapeo de nombres de familias a IDs para la relación
-            $familiasMap = Familia::pluck('id', 'nombre')->toArray();
-
             $totalMiembros = DB::connection('legacy')->table('miembros')->count();
             $bar = $this->output->createProgressBar($totalMiembros);
 
-            DB::connection('legacy')->table('miembros')->orderBy('miembro_id')->chunk(100, function ($miembrosLegacy) use ($bar, $familiasMap) {
+            DB::connection('legacy')->table('miembros')->orderBy('miembro_id')->chunk(100, function ($miembrosLegacy) use ($bar) {
                 foreach ($miembrosLegacy as $m) {
-                    // Buscar el ID de la familia por nombre
-                    $familiaId = $familiasMap[$m->familia] ?? null;
+                    $familiaId = $m->familia ? (int)$m->familia : null;
                     
-                    // Si no existe la familia, crearla o asignar una por defecto
-                    if (!$familiaId && !empty($m->familia)) {
-                        $nuevaFamilia = Familia::create(['nombre' => $m->familia]);
-                        $familiasMap[$m->familia] = $nuevaFamilia->id;
-                        $familiaId = $nuevaFamilia->id;
+                    // Si el ID de familia no existe en la tabla de familias, lo creamos para mantener integridad referencial
+                    if ($familiaId && !DB::table('familias')->where('id', $familiaId)->exists()) {
+                        // Usar el apellido del primer miembro para darle un nombre de familia real y bonito
+                        $nombreFamilia = 'Familia ' . ($m->apellidos ?: 'Grupo ' . $familiaId);
+                        DB::table('familias')->insert([
+                            'id' => $familiaId,
+                            'nombre' => $nombreFamilia,
+                            'direccion' => $m->direccion ?? null,
+                            'telefono_principal' => $m->tel_celular ?? null,
+                            'notas' => 'Familia creada automáticamente durante la migración.',
+                            'created_at' => now(),
+                            'updated_at' => now(),
+                        ]);
                     }
 
-                    Miembro::create([
+                    DB::table('miembros')->insert([
                         'id' => $m->miembro_id,
                         'familia_id' => $familiaId,
                         'nombres' => $m->nombres,
@@ -79,10 +85,12 @@ class MigrateLegacyData extends Command
                         'direccion' => $m->direccion,
                         'ciudad' => $m->ciudad,
                         'ministerio' => $m->cargo ?? null,
-                        'estado' => ($m->estado ?? 'Activo') === 'Activo',
+                        'estado' => ($m->estado ?? 'Activo') === 'Activo' ? 1 : 0,
                         'foto' => $m->foto ?: 'default_avatar.png',
                         'fecha_integracion' => $m->fecha_ingreso,
-                        'etapa_consolidacion' => 'Nuevo', // Valor por defecto
+                        'etapa_consolidacion' => 'Nuevo',
+                        'created_at' => $m->fecha_creacion ?? now(),
+                        'updated_at' => $m->fecha_actualizacion ?? now(),
                     ]);
                     $bar->advance();
                 }
