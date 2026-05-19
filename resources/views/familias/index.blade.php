@@ -90,7 +90,7 @@ main {
     </div>
 </div>
 
-@endpush
+@endsection
 
 @push('scripts')
 <script>
