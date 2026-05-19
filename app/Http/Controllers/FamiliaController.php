@@ -20,7 +20,7 @@ class FamiliaController extends Controller
                   ->orWhere('direccion', 'LIKE', "%{$search}%");
         }
 
-        $familias = $query->paginate(5);
+        $familias = $query->paginate(9);
 
         if ($request->ajax()) {
             return view('familias._table', compact('familias'))->render();
