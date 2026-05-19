@@ -2,15 +2,15 @@
     <table class="w-full text-left border-separate border-spacing-0" style="min-width:650px;">
         <thead>
             <tr>
-                <th class="pl-6 py-3.5 text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-800/80" 
+                <th class="pl-6 py-3.5 text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-800" 
                     style="position: sticky; top: 0; z-index: 1020; box-shadow: inset 0 -1px 0 var(--border-color), 0 2px 4px rgba(0,0,0,0.03); background-clip: padding-box;">
                     <span class="flex items-center gap-2"><i class="fas fa-home text-blue-500 text-xs"></i> Familia</span>
                 </th>
-                <th class="py-3.5 text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-800/80" 
+                <th class="py-3.5 text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-800" 
                     style="position: sticky; top: 0; z-index: 1020; box-shadow: inset 0 -1px 0 var(--border-color), 0 2px 4px rgba(0,0,0,0.03); background-clip: padding-box;">
                     <span class="flex items-center gap-2"><i class="fas fa-users text-blue-500 text-xs"></i> Integrantes</span>
                 </th>
-                <th class="py-3.5 text-right pr-6 text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-800/80" 
+                <th class="py-3.5 text-right pr-6 text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-800" 
                     style="position: sticky; top: 0; z-index: 1020; box-shadow: inset 0 -1px 0 var(--border-color), 0 2px 4px rgba(0,0,0,0.03); background-clip: padding-box;">
                     Acciones
                 </th>
