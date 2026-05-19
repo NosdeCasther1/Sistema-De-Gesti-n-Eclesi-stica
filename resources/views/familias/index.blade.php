@@ -179,4 +179,3 @@ main {
     });
 </script>
 @endpush
-@endsection
