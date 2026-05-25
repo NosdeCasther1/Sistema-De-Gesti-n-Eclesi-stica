@@ -85,7 +85,10 @@
 @endsection
 
 @section('content')
-<div class="container-fluid py-8 px-4 max-w-7xl mx-auto">
+{{-- FONDO MAESTRO DE LA PANTALLA --}}
+<div class="min-h-screen bg-slate-50 dark:bg-[#0B1121] p-4 lg:p-8 font-sans antialiased -m-4">
+    {{-- CONTENEDOR CENTRALIZADO --}}
+    <div class="max-w-7xl mx-auto space-y-6">
     <!-- Barra de Navegación / Regreso -->
     <div class="flex items-center justify-between mb-8 flex-wrap gap-4 border-b border-slate-200 dark:border-slate-800/80 pb-6">
         <div>
@@ -224,7 +227,14 @@
                                         <h6 class="text-sm font-bold text-slate-900 dark:text-white mb-0.5 tracking-tight group-hover/item:text-blue-600 dark:group-hover/item:text-blue-400 transition-colors">{{ $miembro->nombres }} {{ $miembro->apellidos }}</h6>
                                         <div class="flex items-center gap-3 text-[10px] text-slate-400 dark:text-slate-500 font-bold uppercase tracking-wider">
                                             <span class="flex items-center gap-1"><i class="fas fa-phone"></i> {{ $miembro->telefono ?? 'Sin teléfono' }}</span>
-                                            <span class="flex items-center gap-1"><i class="fas fa-church"></i> {{ $miembro->ministerio ?? 'Sin ministerio' }}</span>
+                                            <span class="flex items-center gap-1">
+                                                <i class="fas fa-church"></i> 
+                                                @if($miembro->ministerios->isNotEmpty())
+                                                    {{ $miembro->es_lider ? 'Líder - ' : '' }}{{ $miembro->ministerios->pluck('nombre')->implode(', ') }}
+                                                @else
+                                                    {{ $miembro->es_lider ? 'Líder' : 'Sin ministerio' }}
+                                                @endif
+                                            </span>
                                         </div>
                                     </div>
                                 </div>

@@ -18,7 +18,7 @@
         /* Membrete */
         .header-table {
             width: 100%;
-            border-bottom: 2px solid #10b981;
+            border-bottom: 3px solid #c9a227;
             padding-bottom: 15px;
             margin-bottom: 25px;
         }
@@ -29,8 +29,9 @@
             width: 80px;
         }
         .logo-img {
-            max-height: 65px;
+            max-height: 60px;
             width: auto;
+            display: inline-block;
         }
         .title-cell {
             text-align: left;
@@ -39,7 +40,7 @@
         .church-name {
             font-size: 22px;
             font-weight: bold;
-            color: #0f172a;
+            color: #6d0d0d;
             margin: 0;
             text-transform: uppercase;
             letter-spacing: 0.5px;
@@ -47,7 +48,7 @@
         .report-title {
             font-size: 16px;
             font-weight: bold;
-            color: #10b981;
+            color: #6d0d0d;
             margin: 4px 0;
             text-transform: uppercase;
             letter-spacing: 1px;
@@ -69,8 +70,8 @@
             border-spacing: 12px 0;
         }
         .summary-card {
-            background-color: #f8fafc;
-            border: 1px solid #e2e8f0;
+            background-color: #fcfaf5;
+            border: 1px solid #cbd5e1;
             border-radius: 6px;
             padding: 14px 18px;
             text-align: center;
@@ -92,7 +93,7 @@
         }
         .text-success { color: #10b981; }
         .text-danger { color: #ef4444; }
-        .text-primary { color: #3b82f6; }
+        .text-primary { color: #6d0d0d; }
 
         /* Tabla Principal */
         .main-table {
@@ -101,14 +102,14 @@
             margin-bottom: 40px;
         }
         .main-table th {
-            background-color: #0f172a;
+            background-color: #6d0d0d;
             color: #ffffff;
             text-align: left;
             padding: 10px 12px;
             font-size: 10px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            border: 1px solid #0f172a;
+            border: 1px solid #6d0d0d;
         }
         .main-table td {
             padding: 10px 12px;
@@ -119,7 +120,7 @@
             vertical-align: middle;
         }
         .main-table tr:nth-child(even) td {
-            background-color: #f8fafc;
+            background-color: #fcfaf5;
         }
         .col-right {
             text-align: right;
@@ -146,14 +147,14 @@
             padding: 0 30px;
         }
         .signature-line {
-            border-bottom: 1px solid #334155;
+            border-bottom: 1px solid #c9a227;
             height: 60px;
             margin-bottom: 8px;
         }
         .signature-title {
             font-weight: bold;
             font-size: 12px;
-            color: #0f172a;
+            color: #6d0d0d;
         }
         .signature-subtitle {
             font-size: 10px;
@@ -234,9 +235,9 @@
                 <span class="summary-label">Total Egresos</span>
                 <span class="summary-val text-danger">-{{ $iglesia->moneda }}{{ number_format($totalGastos, 2) }}</span>
             </td>
-            <td class="summary-card" style="background-color: #f1f5f9; border-color: #cbd5e1;">
-                <span class="summary-label" style="color: #0f172a;">Saldo Actual</span>
-                <span class="summary-val text-primary" style="font-size: 18px;">{{ $iglesia->moneda }}{{ number_format($saldoActual, 2) }}</span>
+            <td class="summary-card" style="background-color: #6d0d0d; border-color: #6d0d0d;">
+                <span class="summary-label" style="color: #ffffff;">Saldo Actual</span>
+                <span class="summary-val" style="color: #c9a227; font-size: 18px;">{{ $iglesia->moneda }}{{ number_format($saldoActual, 2) }}</span>
             </td>
         </tr>
     </table>

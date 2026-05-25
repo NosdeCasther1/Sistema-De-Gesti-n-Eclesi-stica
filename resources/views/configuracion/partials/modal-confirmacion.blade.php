@@ -4,7 +4,7 @@
         <div @click="confirmModal.open = false" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm"></div>
         
         <!-- Contenedor del Modal -->
-        <div @click.away="confirmModal.open = false"
+        <div 
              @keydown.escape.window="confirmModal.open = false"
              class="relative bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800/80 max-w-md w-full overflow-hidden z-10 text-left p-0 group">
             
@@ -20,7 +20,7 @@
                 </button>
             </div>
 
-            <form :action="confirmModal.actionUrl" method="POST" @submit="isSubmitting = true" class="m-0">
+            <form :action="confirmModal.actionUrl" method="POST" @submit="if ($el.checkValidity()) { isSubmitting = true }" class="m-0">
                 @csrf
                 <template x-if="confirmModal.method === 'DELETE'">
                     <input type="hidden" name="_method" value="DELETE">

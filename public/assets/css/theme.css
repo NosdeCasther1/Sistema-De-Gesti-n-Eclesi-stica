@@ -93,6 +93,16 @@
 [data-theme='dark'] .dark\:bg-slate-800\/80 { background-color: rgba(30, 41, 59, 0.8) !important; }
 [data-theme='dark'] .dark\:bg-slate-800\/50 { background-color: rgba(30, 41, 59, 0.5) !important; }
 [data-theme='dark'] .dark\:bg-slate-800\/30 { background-color: rgba(30, 41, 59, 0.3) !important; }
+[data-theme='dark'] .dark\:bg-slate-800\/40 { background-color: rgba(30, 41, 59, 0.4) !important; }
+[data-theme='dark'] .dark\:bg-slate-900 { background-color: #0f172a !important; }
+[data-theme='dark'] .dark\:bg-slate-900\/50 { background-color: rgba(15, 23, 42, 0.5) !important; }
+[data-theme='dark'] .dark\:bg-slate-950 { background-color: #020617 !important; }
+[data-theme='dark'] .dark\:bg-slate-950\/40 { background-color: rgba(2, 6, 23, 0.4) !important; }
+[data-theme='dark'] .dark\:bg-slate-950\/50 { background-color: rgba(2, 6, 23, 0.5) !important; }
+[data-theme='dark'] .dark\:bg-slate-950\/20 { background-color: rgba(2, 6, 23, 0.2) !important; }
+[data-theme='dark'] .dark\:bg-transparent { background-color: transparent !important; }
+[data-theme='dark'] .dark\:bg-\[\#0B1121\] { background-color: #0b1121 !important; }
+[data-theme='dark'] .dark\:bg-\[\#0f172a\] { background-color: #0f172a !important; }
 [data-theme='dark'] .dark\:hover\:bg-slate-700\/30:hover { background-color: rgba(51, 65, 85, 0.3) !important; }
 [data-theme='dark'] .dark\:divide-slate-700\/50 > :not([hidden]) ~ :not([hidden]) { border-top-color: rgba(51, 65, 85, 0.5) !important; }
 [data-theme='dark'] .dark\:opacity-60 { opacity: 0.6 !important; }
@@ -107,7 +117,12 @@
 [data-theme='light'] .dark\:border-slate-800 { border-color: #e2e8f0 !important; }
 [data-theme='light'] .dark\:border-slate-800\/50 { border-color: #e2e8f0 !important; }
 [data-theme='light'] .dark\:bg-slate-950\/50 { background-color: #ffffff !important; }
+[data-theme='light'] .dark\:bg-slate-950\/40 { background-color: #f8fafc !important; }
+[data-theme='light'] .dark\:bg-slate-950\/20 { background-color: #f8fafc !important; }
 [data-theme='light'] .dark\:bg-slate-900 { background-color: #ffffff !important; }
+[data-theme='light'] .dark\:bg-slate-900\/50 { background-color: rgba(255, 255, 255, 0.5) !important; }
+[data-theme='light'] .dark\:bg-\[\#0B1121\] { background-color: #f8fafc !important; }
+[data-theme='light'] .dark\:bg-\[\#0f172a\] { background-color: #f8fafc !important; }
 [data-theme='light'] .dark\:bg-slate-800 { background-color: #ffffff !important; }
 [data-theme='light'] .dark\:bg-slate-800\/80 { background-color: rgba(255, 255, 255, 0.8) !important; }
 [data-theme='light'] .dark\:bg-slate-800\/50 { background-color: rgba(255, 255, 255, 0.5) !important; }
@@ -1530,11 +1545,11 @@ body {
     color: var(--text-muted) !important;
     padding: 1rem 1.25rem !important;
     border-bottom: 2px solid var(--border-color) !important;
-    background: rgba(var(--bg-card-rgb), 0.5);
+    background: rgba(var(--bg-card-rgb), 0.5) !important;
     white-space: nowrap;
 }
 [data-theme='dark'] .table-custom thead th {
-    background: rgba(15, 23, 42, 0.5);
+    background: rgba(15, 23, 42, 0.5) !important;
     color: #94a3b8 !important;
 }
 
@@ -1742,11 +1757,24 @@ nav[role="navigation"] .flex.justify-between.flex-1.sm\:hidden {
     z-index: 1040;
     opacity: 0;
     pointer-events: none;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    visibility: hidden;
+    transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .sidebar-backdrop.show {
     opacity: 1;
     pointer-events: auto;
+    visibility: visible;
+}
+
+@media (min-width: 992px) {
+    .sidebar-backdrop {
+        display: none !important;
+    }
+}
+
+/* 1.1. Desactivación de eventos del mouse en decoraciones blur para evitar tapar botones */
+.blur-3xl {
+    pointer-events: none !important;
 }
 
 /* 2. Ajustes de Header y Contenedores Principales en Móvil */
@@ -1815,3 +1843,4 @@ nav[role="navigation"] .flex.justify-between.flex-1.sm\:hidden {
         height: 500px; /* Altura mínima garantizada en móviles para evitar colapso de la tabla */
     }
 }
+[style*="display: none"] { display: none !important; }

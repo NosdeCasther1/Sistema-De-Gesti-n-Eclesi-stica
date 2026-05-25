@@ -65,16 +65,19 @@ main {
     </div>
 
     {{-- ===== FILTROS ===== --}}
-    <div class="card-module p-4 mb-4 shadow-sm flex-shrink-0">
-        <form action="{{ route('familias.index') }}" method="GET" id="searchForm" class="max-w-xl m-0">
+    <div class="card-module p-6 mb-5 shadow-xl flex-shrink-0 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl relative overflow-hidden group">
+        <!-- Glow de fondo sutil -->
+        <div class="absolute -right-20 -top-20 w-60 h-60 bg-blue-500/10 dark:bg-blue-500/5 rounded-full blur-3xl pointer-events-none"></div>
+
+        <form action="{{ route('familias.index') }}" method="GET" id="searchForm" class="relative z-10 m-0 w-full max-w-3xl">
             <div class="relative w-full">
-                <label class="block text-xs font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">Búsqueda Rápida</label>
+                <label class="block text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">Búsqueda Rápida</label>
                 <div class="relative flex items-center w-full">
-                    <span class="absolute left-3.5 text-slate-400 dark:text-slate-500"><i class="fas fa-search"></i></span>
+                    <span class="absolute left-4 text-slate-400 dark:text-slate-500"><i class="fas fa-search"></i></span>
                     <input type="text" name="search" id="searchInput" 
-                           class="w-full pl-10 pr-10 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-xs font-medium"
+                           class="w-full pl-11 pr-11 py-3.5 rounded-2xl border border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 text-slate-900 dark:text-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all shadow-sm"
                            placeholder="Buscar por nombre de familia o dirección..." value="{{ request('search') }}" autocomplete="off">
-                    <button type="button" class="absolute right-3 text-slate-400 hover:text-slate-600 clear-search" id="clearSearch" title="Limpiar filtros" style="display: {{ request('search') ? 'flex' : 'none' }}; align-items: center; justify-content: center;">
+                    <button type="button" class="absolute right-3 text-slate-400 hover:text-rose-500 clear-search transition-colors" id="clearSearch" title="Limpiar filtros" style="display: {{ request('search') ? 'flex' : 'none' }}; align-items: center; justify-content: center;">
                         <i class="fas fa-times-circle text-lg"></i>
                     </button>
                 </div>
@@ -82,9 +85,9 @@ main {
         </form>
     </div>
 
-    {{-- ===== TABLA ===== --}}
-    <div class="card-module p-0 overflow-hidden shadow-sm flex flex-col flex-grow" style="min-height: 0;">
-        <div id="table-results" class="results-transition flex flex-col overflow-hidden flex-grow" style="min-height: 0;">
+    {{-- ===== BENTO GRID ===== --}}
+    <div class="flex-grow flex flex-col relative overflow-hidden" style="min-height: 0;">
+        <div id="table-results" class="results-transition flex flex-col overflow-hidden flex-grow h-full" style="min-height: 0;">
             @include('familias._table')
         </div>
     </div>

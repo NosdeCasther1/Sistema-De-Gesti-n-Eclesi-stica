@@ -1,97 +1,208 @@
 <!DOCTYPE html>
-<html lang="es">
+<html>
 <head>
-    <meta charset="UTF-8">
+    <meta charset="utf-8">
+    <title>Carnet - {{ $miembro->nombres }}</title>
     <style>
-        @page { margin: 0; }
-        body { font-family: 'Helvetica', sans-serif; background-color: #0f172a; margin: 0; padding: 0; }
-        .carnet-container {
-            width: 242.65pt;
-            height: 153.07pt;
+        /* 1. ELIMINAR MÁRGENES DEL PDF PARA EVITAR SALTOS */
+        @page { margin: 0px; size: letter portrait; }
+        body { font-family: 'Helvetica', 'Arial', sans-serif; margin: 0; padding: 0; }
+        
+        /* 2. POSICIONAMIENTO ABSOLUTO (LA OPCIÓN NUCLEAR) */
+        /* Calcula el centro de una hoja tamaño carta (612px ancho): (612 - 330) / 2 = 141px */
+        .front-wrapper { position: absolute; top: 60px; left: 141px; }
+        .back-wrapper { position: absolute; top: 290px; left: 141px; }
+
+        .card { 
             position: relative;
+            width: 330px; 
+            height: 210px; 
+            border: 1px dashed #94a3b8; /* Borde punteado para recortar */
+            border-radius: 8px; 
+            background-color: #fff;
             overflow: hidden;
-            border: 2px solid #fbbf24;
-            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
         }
-        .header {
-            background-color: #fbbf24;
-            color: #0f172a;
-            padding: 5px;
-            text-align: center;
-            font-size: 10pt;
+
+        /* ==== LADO FRONTAL ==== */
+        .front-header { 
+            background-color: #D4AF37; 
+            color: white; 
+            text-align: center; 
+            padding: 5px 0; 
+            font-size: 11px; 
+            font-weight: bold; 
+            letter-spacing: 1px;
+            height: 14px;
+        }
+        
+        .front-body { width: 100%; height: 165px; position: relative; z-index: 2; }
+        .col-left { float: left; width: 100px; text-align: center; padding-top: 12px; position: relative; z-index: 2; }
+        .col-right { float: left; width: 210px; padding-top: 12px; padding-left: 10px; text-align: left; position: relative; z-index: 2; }
+
+        .logo-img { width: 45px; height: auto; }
+        .membresia-text { font-size: 8px; font-weight: bold; color: #8B0000; margin: 3px 0; }
+        .photo { width: 65px; height: 85px; object-fit: cover; border: 1px solid #cbd5e1; border-radius: 4px; }
+        
+        .name { 
+            font-size: 13px; 
+            font-weight: bold; 
+            color: #8B0000; 
+            text-transform: uppercase; 
+            line-height: 1.2; 
+            margin-top: 0; 
+            margin-bottom: 6px; 
+            border-bottom: 1px solid #e2e8f0; 
+            padding-bottom: 4px; 
+            width: 95%;
+        }
+        
+        .info-row { margin-bottom: 5px; }
+        .field-label { font-size: 7.5px; color: #D4AF37; font-weight: bold; margin: 0; letter-spacing: 0.5px; }
+        .field-value { font-size: 9.5px; color: #333; font-weight: bold; margin: 1px 0 0 0; }
+        
+        .qr-container { position: absolute; bottom: 35px; right: 10px; z-index: 3; }
+        .qr-img { width: 45px; height: 45px; }
+        
+        .watermark {
+            position: absolute;
+            bottom: 35px;
+            right: 62px;
+            font-size: 9px;
+            color: rgba(139, 0, 0, 0.4);
             font-weight: bold;
-            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            z-index: 2;
+            height: 45px;
+            line-height: 45px;
+            white-space: nowrap;
         }
-        .photo-area {
-            position: absolute;
-            top: 40pt;
-            left: 15pt;
-            width: 60pt;
-            height: 75pt;
-            border: 2px solid #fbbf24;
-            background-color: #334155;
-        }
-        .info-area {
-            position: absolute;
-            top: 35pt;
-            left: 85pt;
-            color: white;
-        }
-        .name { font-size: 12pt; font-weight: bold; margin-bottom: 2pt; color: #fbbf24; }
-        .dpi { font-size: 8pt; color: #94a3b8; margin-bottom: 5pt; }
-        .label { font-size: 7pt; color: #fbbf24; text-transform: uppercase; }
-        .value { font-size: 9pt; margin-bottom: 5pt; }
-        .qr-area {
-            position: absolute;
-            bottom: 10pt;
-            right: 10pt;
-            width: 45pt;
-            height: 45pt;
-            background: white;
-            padding: 2pt;
-        }
-        .footer-line {
+        
+        .front-footer { 
+            background-color: #D4AF37; 
+            color: white; 
+            text-align: center; 
+            font-size: 8.5px; 
+            line-height: 18px; 
             position: absolute;
             bottom: 0;
+            left: 0;
             width: 100%;
-            height: 5pt;
-            background-color: #fbbf24;
+            height: 18px;
+            box-sizing: border-box;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            z-index: 3;
         }
+
+        /* ==== LADO TRASERO ==== */
+        .back-card {
+            background-color: #8B0000; 
+            border: 2px solid #D4AF37;
+            text-align: center;
+            box-sizing: border-box;
+        }
+        
+        .back-logo-wrapper {
+            width: 90px;
+            height: 46px;
+            background-color: #ffffff;
+            border-radius: 6px;
+            margin: 10px auto 5px auto;
+            text-align: center;
+            line-height: 46px;
+            box-shadow: 0px 2px 4px rgba(0,0,0,0.3);
+        }
+        .back-logo { max-width: 88px; max-height: 44px; vertical-align: middle; }
+        
+        .back-title { color: #d4af37; font-size: 11.5px; font-weight: bold; margin-bottom: 6px; letter-spacing: 1px;}
+        .back-text { color: #fdfbf7; font-size: 8.5px; text-align: justify; padding: 0 20px; line-height: 1.3; margin-bottom: 5px; }
+        
+        .signature-container { margin-top: 0px; }
+        .signature-line { border-top: 1px solid white; width: 150px; margin: 22px auto 3px auto; }
+        .signature-text { color: white; font-size: 8px; margin: 1px 0; }
     </style>
 </head>
 <body>
-    <div class="carnet-container">
-        <div class="header">
-            {{ $config->nombre_iglesia }} - Membresía
+
+    <div class="front-wrapper">
+        <div class="card">
+            <div class="front-header">
+                {{ mb_strtoupper($iglesia ?? 'AD REY DE REYES') }}
+            </div>
+            
+            <div class="watermark">
+                ID: {{ str_pad($miembro->id, 5, '0', STR_PAD_LEFT) }}
+            </div>
+            
+            <div class="front-body">
+                <div class="col-left">
+                    @if(isset($logoBase64) && $logoBase64)
+                        <img src="{{ $logoBase64 }}" class="logo-img">
+                    @endif
+                    <div class="membresia-text">MEMBRESÍA</div>
+                    @if(isset($fotoBase64) && $fotoBase64)
+                        <img src="{{ $fotoBase64 }}" class="photo">
+                    @endif
+                </div>
+                
+                <div class="col-right">
+                    <div class="name">{{ $miembro->nombres }}<br>{{ $miembro->apellidos }}</div>
+                    
+                    <div class="info-row">
+                        <p class="field-label">DPI / IDENTIFICACIÓN</p>
+                        <p class="field-value">{{ $miembro->dpi }}</p>
+                    </div>
+                    
+                    <div class="info-row">
+                        <p class="field-label">MIEMBRO DESDE</p>
+                        <p class="field-value">{{ $miembro->fecha_integracion ? \Carbon\Carbon::parse($miembro->fecha_integracion)->format('d/m/Y') : '---' }}</p>
+                    </div>
+                    
+                    <div class="info-row">
+                        <p class="field-label">MINISTERIOS / FUNCIÓN</p>
+                        <p class="field-value">
+                            {{ $miembro->ministerios->pluck('nombre')->join(', ') ?: 'Miembro General' }}
+                            @if($miembro->es_lider) (Líder) @endif
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="qr-container">
+                @if(isset($qrBase64) && $qrBase64)
+                    <img src="{{ $qrBase64 }}" class="qr-img">
+                @endif
+            </div>
+
+            <div class="front-footer">
+                {{ $config->direccion ?? 'Zaculeu Central, Zona 9, Huehuetenango' }}
+            </div>
         </div>
-        
-        <div class="photo-area">
-            @if(!empty($fotoBase64))
-                <img src="{{ $fotoBase64 }}" style="width: 100%; height: 100%; object-fit: cover;">
-            @else
-                <div style="text-align: center; padding-top: 25pt; color: #94a3b8; font-size: 20pt;">
-                    <i class="fa fa-user"></i>
+    </div>
+
+    <div class="back-wrapper">
+        <div class="card back-card">
+            @if(isset($logoBase64) && $logoBase64)
+                <div class="back-logo-wrapper">
+                    <img src="{{ $logoBase64 }}" class="back-logo">
                 </div>
             @endif
-        </div>
-        
-        <div class="info-area">
-            <div class="name">{{ $miembro->nombres }}</div>
-            <div class="name" style="margin-top: -5pt;">{{ $miembro->apellidos }}</div>
-            <div class="dpi">DPI: {{ $miembro->dpi ?? '---' }}</div>
+            <div class="back-title">USO OFICIAL DE MEMBRESÍA</div>
+            <div class="back-text">
+                Este documento es personal e intransferible. Acredita al portador como miembro activo de nuestra congregación bajo los estatutos establecidos. El titular se compromete a portarlo en actividades oficiales y asambleas.
+                <br><br>
+                <center><i>"Restaurando a la familia"</i></center>
+            </div>
             
-            <div class="label">Miembro desde</div>
-            <div class="value">{{ $miembro->fecha_integracion ? $miembro->fecha_integracion->format('d/m/Y') : '---' }}</div>
-            
-            <div class="label">Ministerio</div>
-            <div class="value">{{ $miembro->ministerio ?? 'General' }}</div>
+            <div class="signature-container">
+                <div class="signature-line"></div>
+                <div class="signature-text">{{ mb_strtoupper($config->pastor_general ?? 'PASTOR GENERAL') }}</div>
+                <div class="signature-text">Pastor General</div>
+                <div class="signature-text" style="font-size: 6.5px; opacity: 0.8; margin-top: 1px; margin-bottom: 2px;">En caso de extravío, por favor reportar a la administración de la iglesia.</div>
+            </div>
         </div>
-        
-        <div class="qr-area">
-            <img src="data:image/svg+xml;base64,{{ $qrCode }}" style="width: 100%; height: 100%;">
-        </div>
-        
-        <div class="footer-line"></div>
     </div>
+
 </body>
 </html>

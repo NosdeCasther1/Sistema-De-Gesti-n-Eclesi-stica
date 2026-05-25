@@ -19,6 +19,11 @@
         transform: translateY(-4px);
     }
 
+    /* Evitar que los círculos decorativos difuminados capturen clics */
+    .blur-3xl {
+        pointer-events: none !important;
+    }
+
     /* Bento Buttons Premium (Bulletproof Gradients) */
     .btn-bento-primary {
         background: linear-gradient(135deg, #2563eb, #4f46e5) !important;
@@ -116,12 +121,16 @@
 @section('content')
 <div x-data="{ 
     tab: '{{ request('tab', session('active_tab', 'general')) }}',
+    subTab: 'categorias',
     isSubmitting: false,
     showModalCrearCategoria: false,
     showModalCaja: false,
     showModalEditarCategoria: null,
+    showModalEditarCaja: null,
     showModalCrearUsuario: false,
     showModalEditarUsuario: null,
+    showModalCrearOrganizacion: false,
+    showModalEditarOrganizacion: null,
     confirmModal: {
         open: false,
         title: '',
@@ -226,6 +235,81 @@
                                                 <label class="block text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">Pastor General</label>
                                                 <input type="text" name="pastor_general" class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all shadow-sm" value="{{ $config->pastor_general }}">
                                             </div>
+                                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                                                <!-- Firma Pastor (PNG Transparente) -->
+                                                <div>
+                                                    <label class="block text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">Firma Pastor (PNG Transparente)</label>
+                                                    <div class="relative group/firma flex flex-col items-center justify-center p-4 rounded-2xl border border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 hover:border-blue-500/50 transition-all duration-300 min-h-[140px] text-center shadow-sm">
+                                                        {{-- Grid background pattern for transparent PNG --}}
+                                                        <div class="absolute inset-0 opacity-[0.03] dark:opacity-[0.05] rounded-2xl bg-[radial-gradient(#000_1px,transparent_1px)] dark:bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:12px_12px] pointer-events-none"></div>
+                                                        
+                                                        <input type="file" name="firma_pastor" id="firmaInput" class="hidden" accept="image/png" onchange="previewFirma(this)">
+                                                        
+                                                        <div id="firmaPreviewContainer" class="relative z-10 flex flex-col items-center justify-center w-full">
+                                                            @if($config->firma_pastor)
+                                                                <img id="firmaPreview" src="{{ asset('storage/config/' . $config->firma_pastor) }}" class="max-h-16 w-auto object-contain drop-shadow-sm mb-2 rounded-lg bg-slate-200/30 dark:bg-slate-950/30 p-2 border border-slate-300/30">
+                                                                <div id="firmaPlaceholder" class="hidden"></div>
+                                                            @else
+                                                                <img id="firmaPreview" src="" class="max-h-16 w-auto object-contain drop-shadow-sm mb-2 rounded-lg bg-slate-200/30 dark:bg-slate-950/30 p-2 border border-slate-300/30 hidden">
+                                                                <div id="firmaPlaceholder" class="flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 p-2">
+                                                                    <i class="fas fa-signature text-2xl mb-1.5 opacity-60"></i>
+                                                                    <span class="text-[10px] font-semibold text-slate-400 dark:text-slate-500">Sin firma cargada</span>
+                                                                </div>
+                                                            @endif
+                                                        </div>
+                                                        
+                                                        <label for="firmaInput" class="relative z-10 mt-2 py-2 px-4 rounded-xl border border-blue-500/30 dark:border-blue-500/40 bg-blue-500/10 hover:bg-blue-500/20 dark:bg-blue-500/10 dark:hover:bg-blue-500/20 text-blue-600 dark:text-blue-400 font-bold text-[10px] flex items-center justify-center gap-1.5 cursor-pointer transition-all shadow-sm">
+                                                            <i class="fas fa-camera text-sm"></i>
+                                                            <span id="firmaButtonText">{{ $config->firma_pastor ? 'Cambiar Firma' : 'Subir Firma' }}</span>
+                                                        </label>
+                                                        
+                                                        <div id="firmaFileName" class="relative z-10 text-[9px] text-slate-400 dark:text-slate-500 mt-2 max-w-full truncate font-medium">
+                                                            @if($config->firma_pastor)
+                                                                <span class="text-emerald-600 dark:text-emerald-400 font-bold flex items-center justify-center gap-1"><i class="fas fa-check-circle"></i> Firma activa</span>
+                                                            @else
+                                                                Sugerido: PNG transparente
+                                                            @endif
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Sello Iglesia (PNG Transparente) -->
+                                                <div>
+                                                    <label class="block text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">Sello Iglesia (PNG Transparente)</label>
+                                                    <div class="relative group/sello flex flex-col items-center justify-center p-4 rounded-2xl border border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/40 hover:border-blue-500/50 transition-all duration-300 min-h-[140px] text-center shadow-sm">
+                                                        {{-- Grid background pattern for transparent PNG --}}
+                                                        <div class="absolute inset-0 opacity-[0.03] dark:opacity-[0.05] rounded-2xl bg-[radial-gradient(#000_1px,transparent_1px)] dark:bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:12px_12px] pointer-events-none"></div>
+                                                        
+                                                        <input type="file" name="sello_iglesia" id="selloInput" class="hidden" accept="image/png" onchange="previewSello(this)">
+                                                        
+                                                        <div id="selloPreviewContainer" class="relative z-10 flex flex-col items-center justify-center w-full">
+                                                            @if($config->sello_iglesia)
+                                                                <img id="selloPreview" src="{{ asset('storage/config/' . $config->sello_iglesia) }}" class="max-h-16 w-auto object-contain drop-shadow-sm mb-2 rounded-lg bg-slate-200/30 dark:bg-slate-950/30 p-2 border border-slate-300/30">
+                                                                <div id="selloPlaceholder" class="hidden"></div>
+                                                            @else
+                                                                <img id="selloPreview" src="" class="max-h-16 w-auto object-contain drop-shadow-sm mb-2 rounded-lg bg-slate-200/30 dark:bg-slate-950/30 p-2 border border-slate-300/30 hidden">
+                                                                <div id="selloPlaceholder" class="flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 p-2">
+                                                                    <i class="fas fa-stamp text-2xl mb-1.5 opacity-60"></i>
+                                                                    <span class="text-[10px] font-semibold text-slate-400 dark:text-slate-500">Sin sello cargado</span>
+                                                                </div>
+                                                            @endif
+                                                        </div>
+                                                        
+                                                        <label for="selloInput" class="relative z-10 mt-2 py-2 px-4 rounded-xl border border-blue-500/30 dark:border-blue-500/40 bg-blue-500/10 hover:bg-blue-500/20 dark:bg-blue-500/10 dark:hover:bg-blue-500/20 text-blue-600 dark:text-blue-400 font-bold text-[10px] flex items-center justify-center gap-1.5 cursor-pointer transition-all shadow-sm">
+                                                            <i class="fas fa-camera text-sm"></i>
+                                                            <span id="selloButtonText">{{ $config->sello_iglesia ? 'Cambiar Sello' : 'Subir Sello' }}</span>
+                                                        </label>
+                                                        
+                                                        <div id="selloFileName" class="relative z-10 text-[9px] text-slate-400 dark:text-slate-500 mt-2 max-w-full truncate font-medium">
+                                                            @if($config->sello_iglesia)
+                                                                <span class="text-emerald-600 dark:text-emerald-400 font-bold flex items-center justify-center gap-1"><i class="fas fa-check-circle"></i> Sello activo</span>
+                                                            @else
+                                                                Sugerido: PNG transparente
+                                                            @endif
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
 
                                         <!-- Vista Previa y Subida de Logo (4 Columnas) -->
@@ -271,7 +355,7 @@
                                         </div>
                                         <div>
                                             <label class="block text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">Teléfono de Oficina</label>
-                                            <input type="text" name="telefono" class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all shadow-sm" value="{{ $config->telefono }}">
+                                            <input type="text" name="telefono" maxlength="8" oninput="this.value = this.value.replace(/[^0-9]/g, '').substring(0, 8)" class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all shadow-sm" value="{{ $config->telefono }}">
                                         </div>
                                         <div>
                                             <label class="block text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">Correo Electrónico Oficial</label>
@@ -416,15 +500,16 @@
                                         </div>
                                     </td>
                                     <td class="py-4 text-center">
-                                        @if($user->rol === 'administrador')
+                                        @php $userRole = $user->getRoleNames()->first() ?? 'ujier'; @endphp
+                                        @if($userRole === 'administrador')
                                             <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-100 dark:border-rose-500/20 uppercase tracking-wider">
                                                 <i class="fas fa-crown text-xs"></i> Administrador
                                             </span>
-                                        @elseif($user->rol === 'tesorero')
+                                        @elseif($userRole === 'tesorero')
                                             <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-500/20 uppercase tracking-wider">
                                                 <i class="fas fa-coins text-xs"></i> Tesorero
                                             </span>
-                                        @elseif($user->rol === 'lider')
+                                        @elseif($userRole === 'lider')
                                             <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border border-cyan-500/20 uppercase tracking-wider">
                                                 <i class="fas fa-user-tie text-xs"></i> Líder Célula
                                             </span>
@@ -480,19 +565,28 @@
                         <i class="fas fa-shield-alt"></i>
                     </div>
                     <div>
-                        <h5 class="text-lg font-bold text-slate-900 dark:text-white tracking-tight mb-1">Matriz de Permisos por Rol (RBAC)</h5>
+                        <h5 class="text-lg font-bold text-slate-900 dark:text-white tracking-tight mb-1">Matriz de Permisos por Rol</h5>
                         <p class="text-xs text-slate-500 dark:text-slate-400 mb-0">Configura dinámicamente a qué módulos tiene acceso cada nivel de usuario en el sistema</p>
                     </div>
                 </div>
             </div>
 
             @php
-                $rolePermissions = session('role_permissions', [
-                    'administrador' => ['miembros', 'familias', 'celulas', 'asistencia', 'tesoreria', 'reportes', 'configuracion'],
-                    'tesorero' => ['miembros', 'familias', 'asistencia', 'tesoreria', 'reportes'],
-                    'lider' => ['miembros', 'familias', 'celulas', 'asistencia'],
-                    'ujier' => ['asistencia']
-                ]);
+                // Cargar permisos desde Spatie en lugar de sesión
+                $permissionToModule = [
+                    'ver_miembros' => 'miembros',
+                    'ver_familias' => 'familias',
+                    'ver_celulas' => 'celulas',
+                    'ver_asistencia' => 'asistencia',
+                    'ver_tesoreria' => 'tesoreria',
+                    'ver_reportes' => 'reportes',
+                    'ver_configuracion' => 'configuracion',
+                ];
+                $rolePermissions = [];
+                foreach (['administrador', 'tesorero', 'lider', 'ujier'] as $rn) {
+                    $spatieRole = \Spatie\Permission\Models\Role::findByName($rn, 'web');
+                    $rolePermissions[$rn] = $spatieRole->permissions->pluck('name')->map(fn($p) => $permissionToModule[$p] ?? null)->filter()->values()->toArray();
+                }
                 $modulosDisponibles = [
                     'miembros' => ['nombre' => '👥 Miembros', 'desc' => 'Gestión de feligreses'],
                     'familias' => ['nombre' => '🏠 Familias', 'desc' => 'Núcleos familiares'],
@@ -570,11 +664,11 @@
         <template x-if="showModalCrearUsuario">
             <div class="fixed inset-0 z-[9999] overflow-y-auto flex items-center justify-center p-4" aria-labelledby="modal-title" role="dialog" aria-modal="true">
                 <!-- Overlay -->
-                <div @click="showModalCrearUsuario = false; document.getElementById('formModalCrearUsuario').reset()" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm"></div>
+                <div @click="document.getElementById('formModalCrearUsuario')?.reset(); showModalCrearUsuario = false" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm"></div>
                 
                 <!-- Contenedor del Modal -->
-                <div @click.away="showModalCrearUsuario = false; document.getElementById('formModalCrearUsuario').reset()"
-                     @keydown.escape.window="showModalCrearUsuario = false; document.getElementById('formModalCrearUsuario').reset()"
+                <div 
+                     @keydown.escape.window="document.getElementById('formModalCrearUsuario')?.reset(); showModalCrearUsuario = false"
                      class="relative bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800/80 max-w-md w-full overflow-hidden z-10 text-left p-0">
                     
                     <div class="border-b border-slate-200 dark:border-slate-800 p-6 flex items-center justify-between bg-slate-50/50 dark:bg-slate-800/50">
@@ -584,12 +678,12 @@
                             </div>
                             <span>Nuevo Usuario</span>
                         </h6>
-                        <button type="button" class="text-slate-400 hover:text-slate-500 dark:hover:text-slate-300 border-0 bg-transparent cursor-pointer transition-colors" @click="showModalCrearUsuario = false; document.getElementById('formModalCrearUsuario').reset()">
+                        <button type="button" class="text-slate-400 hover:text-slate-500 dark:hover:text-slate-300 border-0 bg-transparent cursor-pointer transition-colors" @click="document.getElementById('formModalCrearUsuario')?.reset(); showModalCrearUsuario = false">
                             <i class="fas fa-times text-lg"></i>
                         </button>
                     </div>
 
-                    <form id="formModalCrearUsuario" action="{{ route('usuarios.store') }}" method="POST" @submit="isSubmitting = true" class="m-0">
+                    <form id="formModalCrearUsuario" action="{{ route('usuarios.store') }}" method="POST" @submit="if ($el.checkValidity()) { isSubmitting = true }" class="m-0">
                         @csrf
                         <div class="p-6 text-left space-y-4">
                             <div>
@@ -609,6 +703,18 @@
                                     <option value="ujier">📱 Ujier (Solo Asistencia QR)</option>
                                 </select>
                             </div>
+                            <div class="mt-4">
+                                <label class="block text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">Organización / Departamento</label>
+                                <select name="organizacion_id" class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all shadow-sm cursor-pointer">
+                                    <option value="">Ninguna (Acceso Global / Sin asignar)</option>
+                                    @foreach($organizaciones as $org)
+                                        <option value="{{ $org->id }}" {{ (isset($user) && $user->organizacion_id == $org->id) ? 'selected' : '' }}>
+                                            {{ $org->nombre }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                <p class="text-[10px] text-slate-500 mt-1">Obligatorio para Tesoreros y Líderes para restringir su acceso.</p>
+                            </div>
                             <div>
                                 <label class="block text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">Contraseña Inicial *</label>
                                 <div class="flex rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 overflow-hidden shadow-sm focus-within:ring-2 focus-within:ring-blue-500/20 focus-within:border-blue-500 transition-all">
@@ -621,7 +727,7 @@
                             </div>
                         </div>
                         <div class="border-t border-slate-200 dark:border-slate-800 p-4 bg-slate-50/50 dark:bg-slate-800/50 flex justify-end gap-3">
-                            <button type="button" @click="showModalCrearUsuario = false; document.getElementById('formModalCrearUsuario').reset()" class="px-5 py-2.5 text-xs font-bold text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700/60 rounded-xl transition-all border-0 bg-transparent cursor-pointer">Cancelar</button>
+                            <button type="button" @click="document.getElementById('formModalCrearUsuario')?.reset(); showModalCrearUsuario = false" class="px-5 py-2.5 text-xs font-bold text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700/60 rounded-xl transition-all border-0 bg-transparent cursor-pointer">Cancelar</button>
                             <button type="submit" :disabled="isSubmitting" class="btn-bento-primary px-6 py-3 rounded-xl text-xs font-bold flex items-center justify-center gap-2 disabled:opacity-50 transition-all cursor-pointer disabled:cursor-not-allowed">
                                 <span x-show="!isSubmitting" class="flex items-center gap-2">
                                     <i class="fas fa-user-check"></i> <span>Crear Usuario</span>
@@ -642,11 +748,11 @@
             <template x-if="showModalEditarUsuario === {{ $user->id }}">
                 <div class="fixed inset-0 z-[9999] overflow-y-auto flex items-center justify-center p-4" aria-labelledby="modal-title" role="dialog" aria-modal="true">
                     <!-- Overlay -->
-                    <div @click="showModalEditarUsuario = null; document.getElementById('formModalEditarUsuario_{{ $user->id }}').reset()" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm"></div>
+                    <div @click="document.getElementById('formModalEditarUsuario_{{ $user->id }}')?.reset(); showModalEditarUsuario = null" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm"></div>
                     
                     <!-- Contenedor del Modal -->
-                    <div @click.away="showModalEditarUsuario = null; document.getElementById('formModalEditarUsuario_{{ $user->id }}').reset()"
-                         @keydown.escape.window="showModalEditarUsuario = null; document.getElementById('formModalEditarUsuario_{{ $user->id }}').reset()"
+                    <div 
+                         @keydown.escape.window="document.getElementById('formModalEditarUsuario_{{ $user->id }}')?.reset(); showModalEditarUsuario = null"
                          class="relative bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800/80 max-w-md w-full overflow-hidden z-10 text-left p-0">
                         
                         <div class="border-b border-slate-200 dark:border-slate-800 p-6 flex items-center justify-between bg-slate-50/50 dark:bg-slate-800/50">
@@ -656,12 +762,12 @@
                                 </div>
                                 <span>Editar Usuario</span>
                             </h6>
-                            <button type="button" class="text-slate-400 hover:text-slate-500 dark:hover:text-slate-300 border-0 bg-transparent cursor-pointer transition-colors" @click="showModalEditarUsuario = null; document.getElementById('formModalEditarUsuario_{{ $user->id }}').reset()">
+                            <button type="button" class="text-slate-400 hover:text-slate-500 dark:hover:text-slate-300 border-0 bg-transparent cursor-pointer transition-colors" @click="document.getElementById('formModalEditarUsuario_{{ $user->id }}')?.reset(); showModalEditarUsuario = null">
                                 <i class="fas fa-times text-lg"></i>
                             </button>
                         </div>
 
-                        <form id="formModalEditarUsuario_{{ $user->id }}" action="{{ route('usuarios.update', $user->id) }}" method="POST" @submit="isSubmitting = true" class="m-0">
+                        <form id="formModalEditarUsuario_{{ $user->id }}" action="{{ route('usuarios.update', $user->id) }}" method="POST" @submit="if ($el.checkValidity()) { isSubmitting = true }" class="m-0">
                             @csrf
                             @method('PUT')
                             <div class="p-6 text-left space-y-4">
@@ -676,11 +782,24 @@
                                 <div>
                                     <label class="block text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">Rol / Nivel de Acceso *</label>
                                     <select name="rol" class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all shadow-sm cursor-pointer" required>
-                                        <option value="administrador" {{ $user->rol === 'administrador' ? 'selected' : '' }}>👑 Administrador (Acceso Total)</option>
-                                        <option value="tesorero" {{ $user->rol === 'tesorero' ? 'selected' : '' }}>🪙 Tesorero (Solo Finanzas y Miembros)</option>
-                                        <option value="lider" {{ $user->rol === 'lider' ? 'selected' : '' }}>👥 Líder de Célula (Solo Células y Familias)</option>
-                                        <option value="ujier" {{ $user->rol === 'ujier' ? 'selected' : '' }}>📱 Ujier (Solo Asistencia QR)</option>
+                                        @php $editUserRole = $user->getRoleNames()->first() ?? 'ujier'; @endphp
+                                        <option value="administrador" {{ $editUserRole === 'administrador' ? 'selected' : '' }}>👑 Administrador (Acceso Total)</option>
+                                        <option value="tesorero" {{ $editUserRole === 'tesorero' ? 'selected' : '' }}>🪙 Tesorero (Solo Finanzas y Miembros)</option>
+                                        <option value="lider" {{ $editUserRole === 'lider' ? 'selected' : '' }}>👥 Líder de Célula (Solo Células y Familias)</option>
+                                        <option value="ujier" {{ $editUserRole === 'ujier' ? 'selected' : '' }}>📱 Ujier (Solo Asistencia QR)</option>
                                     </select>
+                                </div>
+                                <div class="mt-4">
+                                    <label class="block text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">Organización / Departamento</label>
+                                    <select name="organizacion_id" class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all shadow-sm cursor-pointer">
+                                        <option value="">Ninguna (Acceso Global / Sin asignar)</option>
+                                        @foreach($organizaciones as $org)
+                                            <option value="{{ $org->id }}" {{ (isset($user) && $user->organizacion_id == $org->id) ? 'selected' : '' }}>
+                                                {{ $org->nombre }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    <p class="text-[10px] text-slate-500 mt-1">Obligatorio para Tesoreros y Líderes para restringir su acceso.</p>
                                 </div>
                                 <div>
                                     <label class="block text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">Nueva Contraseña (Opcional)</label>
@@ -694,7 +813,7 @@
                                 </div>
                             </div>
                             <div class="border-t border-slate-200 dark:border-slate-800 p-4 bg-slate-50/50 dark:bg-slate-800/50 flex justify-end gap-3">
-                                <button type="button" @click="showModalEditarUsuario = null; document.getElementById('formModalEditarUsuario_{{ $user->id }}').reset()" class="px-5 py-2.5 text-xs font-bold text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700/60 rounded-xl transition-all border-0 bg-transparent cursor-pointer">Cancelar</button>
+                                <button type="button" @click="document.getElementById('formModalEditarUsuario_{{ $user->id }}')?.reset(); showModalEditarUsuario = null" class="px-5 py-2.5 text-xs font-bold text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700/60 rounded-xl transition-all border-0 bg-transparent cursor-pointer">Cancelar</button>
                                 <button type="submit" :disabled="isSubmitting" class="btn-bento-primary px-6 py-3 rounded-xl text-xs font-bold flex items-center justify-center gap-2 disabled:opacity-50 transition-all cursor-pointer disabled:cursor-not-allowed">
                                     <span x-show="!isSubmitting" class="flex items-center gap-2">
                                         <i class="fas fa-save"></i> <span>Guardar Cambios</span>
@@ -712,12 +831,32 @@
         @endforeach
     </div>
 
-    {{-- ===== PESTAÑA 3: CATÁLOGOS ===== --}}
+          {{-- ===== PESTAÑA 3: CATÁLOGOS ===== --}}
     <div x-show="tab === 'catalogos'" x-cloak>
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+        {{-- LAYOUT DE SUB-PESTAÑAS PARA CATÁLOGOS --}}
+        <div x-data="{ subTab: 'categorias' }" class="w-full">
             
-            {{-- Columna Izquierda (7 Columnas): Categorías Financieras + Cajas y Fondos Ministeriales --}}
-            <div class="lg:col-span-7 flex flex-col gap-8">
+            {{-- Menú de Píldoras (Pills) --}}
+            <div class="flex gap-2 mb-6 overflow-x-auto border-b border-slate-200 dark:border-slate-800 pb-4 custom-scrollbar">
+                <button @click="subTab = 'categorias'" :class="subTab === 'categorias' ? 'bg-indigo-50 text-indigo-600 dark:bg-indigo-500/10 dark:text-indigo-400 border-indigo-200 dark:border-indigo-500/30' : 'text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800/50 border-transparent'" class="px-4 py-2 rounded-xl text-sm font-bold transition-all border whitespace-nowrap">
+                    <i class="fa-solid fa-tags mr-2"></i> Categorías
+                </button>
+                <button @click="subTab = 'cajas'" :class="subTab === 'cajas' ? 'bg-indigo-50 text-indigo-600 dark:bg-indigo-500/10 dark:text-indigo-400 border-indigo-200 dark:border-indigo-500/30' : 'text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800/50 border-transparent'" class="px-4 py-2 rounded-xl text-sm font-bold transition-all border whitespace-nowrap">
+                    <i class="fa-solid fa-vault mr-2"></i> Cajas y Fondos
+                </button>
+                <button @click="subTab = 'organizaciones'" :class="subTab === 'organizaciones' ? 'bg-indigo-50 text-indigo-600 dark:bg-indigo-500/10 dark:text-indigo-400 border-indigo-200 dark:border-indigo-500/30' : 'text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800/50 border-transparent'" class="px-4 py-2 rounded-xl text-sm font-bold transition-all border whitespace-nowrap">
+                    <i class="fa-solid fa-sitemap mr-2"></i> Organizaciones/Elecciones
+                </button>
+                <button @click="subTab = 'ministerios'" :class="subTab === 'ministerios' ? 'bg-indigo-50 text-indigo-600 dark:bg-indigo-500/10 dark:text-indigo-400 border-indigo-200 dark:border-indigo-500/30' : 'text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800/50 border-transparent'" class="px-4 py-2 rounded-xl text-sm font-bold transition-all border whitespace-nowrap">
+                    <i class="fa-solid fa-users-rays mr-2"></i> Ministerios
+                </button>
+                <button @click="subTab = 'etapas'" :class="subTab === 'etapas' ? 'bg-indigo-50 text-indigo-600 dark:bg-indigo-500/10 dark:text-indigo-400 border-indigo-200 dark:border-indigo-500/30' : 'text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800/50 border-transparent'" class="px-4 py-2 rounded-xl text-sm font-bold transition-all border whitespace-nowrap">
+                    <i class="fa-solid fa-seedling mr-2"></i> Etapas
+                </button>
+            </div>
+
+            {{-- Contenedor: CATEGORIAS --}}
+            <div x-show="subTab === 'categorias'" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 translate-y-2" x-transition:enter-end="opacity-100 translate-y-0" style="display: none;" class="max-w-5xl">
                 {{-- 1. Categorías Financieras --}}
                 <div class="bento-card bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800/80 rounded-3xl p-8 shadow-xl flex flex-col justify-between relative overflow-hidden group flex-grow">
                     <!-- Glow de fondo -->
@@ -817,7 +956,10 @@
                         <span>Las categorías financieras estructuran los reportes contables de la iglesia.</span>
                     </div>
                 </div>
+            </div>
 
+            {{-- Contenedor: CAJAS --}}
+            <div x-show="subTab === 'cajas'" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 translate-y-2" x-transition:enter-end="opacity-100 translate-y-0" style="display: none;" class="max-w-5xl">
                 {{-- 2. Cajas y Fondos Ministeriales --}}
                 <div class="bento-card bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800/80 rounded-3xl p-8 shadow-xl flex flex-col justify-between relative overflow-hidden group flex-grow">
                     <!-- Glow de fondo -->
@@ -866,6 +1008,9 @@
                                                 <td class="py-4 text-right pr-6 pl-4">
                                                     <div class="flex items-center justify-end gap-2">
                                                         @if(!$account->trashed())
+                                                            <button type="button" @click="showModalEditarCaja = {{ $account->id }}" class="w-9 h-9 rounded-full border border-blue-500/20 dark:border-blue-500/30 bg-blue-500/10 hover:bg-blue-500/20 dark:bg-blue-500/10 dark:hover:bg-blue-500/20 text-blue-600 dark:text-blue-400 flex items-center justify-center transition-all cursor-pointer shadow-sm" title="Editar Caja">
+                                                                <i class="fas fa-edit text-xs"></i>
+                                                            </button>
                                                             <button type="button" @click="showConfirm(
                                                                 'Archivar Caja o Fondo Ministerial',
                                                                 '¿Estás seguro de archivar la caja «{{ addslashes($account->name) }}»? Los balances históricos y transacciones se mantendrán intactos para futuras auditorías.',
@@ -905,8 +1050,111 @@
                 </div>
             </div>
 
-            {{-- Columna Derecha (5 Columnas): Catálogos del Sistema (Ministerios y Etapas) --}}
-            <div class="lg:col-span-5 flex flex-col gap-8">
+            {{-- Contenedor: ORGANIZACIONES --}}
+            <div x-show="subTab === 'organizaciones'" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 translate-y-2" x-transition:enter-end="opacity-100 translate-y-0" style="display: none;" class="max-w-5xl">
+                {{-- 3. Organizaciones y Comités --}}
+                <div class="bento-card bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800/80 rounded-3xl p-8 shadow-xl flex flex-col justify-between relative overflow-hidden group flex-grow">
+                    <!-- Glow de fondo -->
+                    <div class="absolute -right-20 -top-20 w-60 h-60 bg-indigo-500/10 dark:bg-indigo-500/5 rounded-full blur-3xl group-hover:bg-indigo-500/20 transition-all duration-500"></div>
+
+                    <div>
+                        {{-- Header Bento --}}
+                        <div class="flex items-center justify-between mb-6 pb-5 border-b border-slate-100 dark:border-slate-800 flex-wrap gap-4">
+                            <div class="flex items-center gap-4">
+                                <div class="config-icon-box icon-box-purple group-hover:scale-110 transition-transform duration-500">
+                                    <i class="fas fa-sitemap"></i>
+                                </div>
+                                <div>
+                                    <h5 class="text-lg font-bold text-slate-900 dark:text-white tracking-tight mb-1">Organizaciones y Comités</h5>
+                                    <p class="text-xs text-slate-500 dark:text-slate-400 mb-0">Gestión de sociedades, comités y directivas ministeriales.</p>
+                                </div>
+                            </div>
+                            <button type="button" @click="showModalCrearOrganizacion = true" class="btn-bento-primary px-5 py-3 rounded-xl text-xs font-bold flex items-center gap-2 cursor-pointer transition-all">
+                                <i class="fas fa-plus text-sm"></i> <span>Nueva Organización</span>
+                            </button>
+                        </div>
+
+                        <div class="border border-slate-200 dark:border-slate-800/80 rounded-2xl overflow-hidden shadow-sm mb-4">
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left border-collapse">
+                                    <thead class="bg-slate-50 dark:bg-slate-800/80 text-slate-500 dark:text-slate-400 uppercase text-[11px] font-extrabold tracking-wider border-b border-slate-200 dark:border-slate-800/80">
+                                        <tr>
+                                            <th class="pl-6 pr-4 py-4">Organización</th>
+                                            <th class="py-4 text-center">Fondo Vinculado</th>
+                                            <th class="py-4 text-center">Estado</th>
+                                            <th class="py-4 text-right pr-6 pl-4">Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-slate-100 dark:divide-slate-800/60 bg-white dark:bg-slate-900/50 text-xs">
+                                        @foreach($organizaciones as $org)
+                                            <tr class="transition-all hover:bg-slate-50/80 dark:hover:bg-slate-800/30 {{ !$org->estado ? 'opacity-60 bg-slate-50/50 dark:bg-slate-800/30' : '' }}">
+                                                <td class="pl-6 pr-4 py-4">
+                                                    <div class="font-bold text-slate-900 dark:text-white">{{ $org->nombre }}</div>
+                                                    <div class="text-slate-500 dark:text-slate-400 text-[10px] font-normal mt-0.5">{{ Str::limit($org->descripcion, 60) }}</div>
+                                                </td>
+                                                <td class="py-4 text-center">
+                                                    @if($org->financialAccount)
+                                                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-semibold bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-500/20">
+                                                            <i class="fas fa-vault text-[10px]"></i> {{ $org->financialAccount->name }}
+                                                        </span>
+                                                    @else
+                                                        <span class="text-slate-400 dark:text-slate-600 italic">Ninguno</span>
+                                                    @endif
+                                                </td>
+                                                <td class="py-4 text-center">
+                                                    @if(!$org->estado)
+                                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-[11px] font-bold bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-100 dark:border-amber-500/20 uppercase tracking-wider">Archivado</span>
+                                                    @else
+                                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-[11px] font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 uppercase tracking-wider">Activa</span>
+                                                    @endif
+                                                </td>
+                                                <td class="py-4 text-right pr-6 pl-4">
+                                                    <div class="flex items-center justify-end gap-2">
+                                                        <button type="button" @click="showModalEditarOrganizacion = {{ $org->id }}" class="w-9 h-9 rounded-full border border-blue-500/20 dark:border-blue-500/30 bg-blue-500/10 hover:bg-blue-500/20 dark:bg-blue-500/10 dark:hover:bg-blue-500/20 text-blue-600 dark:text-blue-400 flex items-center justify-center transition-all cursor-pointer shadow-sm" title="Editar Organización">
+                                                            <i class="fas fa-edit text-xs"></i>
+                                                        </button>
+                                                        @if($org->estado)
+                                                            <button type="button" @click="showConfirm(
+                                                                'Archivar Organización',
+                                                                '¿Estás seguro de archivar la organización «{{ addslashes($org->nombre) }}»? Ya no estará visible para votaciones ni asignación pública.',
+                                                                '{{ route('configuracion.organizaciones.destroy', $org->id) }}',
+                                                                'DELETE',
+                                                                'Sí, Archivar',
+                                                                'btn-bento-danger'
+                                                            )" class="w-9 h-9 rounded-full border border-rose-200 dark:border-rose-800/80 bg-rose-50 hover:bg-rose-100 dark:bg-rose-500/10 dark:hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 flex items-center justify-center transition-all cursor-pointer shadow-sm" title="Archivar Organización">
+                                                                <i class="fas fa-trash-alt text-xs"></i>
+                                                            </button>
+                                                        @else
+                                                            <button type="button" @click="showConfirm(
+                                                                'Restaurar Organización',
+                                                                '¿Estás seguro de reactivar la organización «{{ addslashes($org->nombre) }}»?',
+                                                                '{{ route('configuracion.organizaciones.restore', $org->id) }}',
+                                                                'POST',
+                                                                'Sí, Restaurar',
+                                                                'btn-bento-success'
+                                                            )" class="w-9 h-9 rounded-full border border-emerald-200 dark:border-emerald-800/80 bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-500/10 dark:hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center transition-all cursor-pointer shadow-sm" title="Restaurar Organización">
+                                                                <i class="fas fa-rotate-left text-xs"></i>
+                                                            </button>
+                                                        @endif
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pt-4 border-t border-slate-100 dark:border-slate-800 text-slate-500 dark:text-slate-400 text-xs font-medium flex items-center gap-2.5 mt-auto">
+                        <i class="fas fa-info-circle text-indigo-500 text-base"></i>
+                        <span>Las organizaciones estructuran los padrones de miembros y procesos de elecciones.</span>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Contenedor: MINISTERIOS --}}
+            <div x-show="subTab === 'ministerios'" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 translate-y-2" x-transition:enter-end="opacity-100 translate-y-0" style="display: none;" class="max-w-5xl">
                 {{-- 1. Ministerios Activos --}}
                 <div class="bento-card bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800/80 rounded-3xl p-8 shadow-xl flex flex-col justify-between relative overflow-hidden group flex-grow">
                     <!-- Glow de fondo -->
@@ -941,7 +1189,10 @@
                         <span>Estos valores se asignan dinámicamente al crear o editar feligreses.</span>
                     </div>
                 </div>
+            </div>
 
+            {{-- Contenedor: ETAPAS --}}
+            <div x-show="subTab === 'etapas'" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 translate-y-2" x-transition:enter-end="opacity-100 translate-y-0" style="display: none;" class="max-w-5xl">
                 {{-- 2. Etapas de Consolidación --}}
                 <div class="bento-card bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800/80 rounded-3xl p-8 shadow-xl flex flex-col justify-between relative overflow-hidden group flex-grow">
                     <!-- Glow de fondo -->
@@ -1346,7 +1597,10 @@
     @include('configuracion.partials.modal-crear-categoria')
     @include('configuracion.partials.modal-editar-categoria')
     @include('configuracion.partials.modal-caja')
+    @include('configuracion.partials.modal-editar-caja')
     @include('configuracion.partials.modal-confirmacion')
+    @include('configuracion.partials.modal-crear-organizacion')
+    @include('configuracion.partials.modal-editar-organizacion')
 </div>
 @endsection
 
@@ -1381,6 +1635,48 @@
             
             reader.readAsDataURL(input.files[0]);
             fileNameDisplay.innerHTML = `<span class="text-blue-600 dark:text-blue-400 font-bold"><i class="fas fa-file-image mr-1"></i> ${input.files[0].name}</span>`;
+        }
+    }
+
+    function previewFirma(input) {
+        const preview = document.getElementById('firmaPreview');
+        const placeholder = document.getElementById('firmaPlaceholder');
+        const fileNameDisplay = document.getElementById('firmaFileName');
+        const buttonText = document.getElementById('firmaButtonText');
+        
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                preview.src = e.target.result;
+                preview.classList.remove('hidden');
+                if (placeholder) placeholder.classList.add('hidden');
+            }
+            
+            reader.readAsDataURL(input.files[0]);
+            fileNameDisplay.innerHTML = `<span class="text-emerald-600 dark:text-emerald-400 font-bold"><i class="fas fa-check-circle mr-1"></i> Listo para guardar</span>`;
+            if (buttonText) buttonText.innerText = 'Cambiar Firma';
+        }
+    }
+
+    function previewSello(input) {
+        const preview = document.getElementById('selloPreview');
+        const placeholder = document.getElementById('selloPlaceholder');
+        const fileNameDisplay = document.getElementById('selloFileName');
+        const buttonText = document.getElementById('selloButtonText');
+        
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                preview.src = e.target.result;
+                preview.classList.remove('hidden');
+                if (placeholder) placeholder.classList.add('hidden');
+            }
+            
+            reader.readAsDataURL(input.files[0]);
+            fileNameDisplay.innerHTML = `<span class="text-emerald-600 dark:text-emerald-400 font-bold"><i class="fas fa-check-circle mr-1"></i> Listo para guardar</span>`;
+            if (buttonText) buttonText.innerText = 'Cambiar Sello';
         }
     }
 

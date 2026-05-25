@@ -10,14 +10,26 @@ class Miembro extends Model
         'familia_id', 'nombres', 'apellidos', 'dpi', 'fecha_nacimiento', 
         'sexo', 'estado_civil', 'telefono', 'email', 'direccion', 
         'ciudad', 'nivel_academico', 'profesion', 'lugar_trabajo_estudio',
-        'ministerio', 'estado', 'foto', 'fecha_integracion', 'etapa_consolidacion'
+        'es_lider', 'estado', 'foto', 'fecha_integracion', 'fecha_bautismo', 'etapa_consolidacion'
     ];
 
     protected $casts = [
         'fecha_integracion' => 'date',
+        'fecha_bautismo' => 'date',
         'fecha_nacimiento' => 'date',
-        'estado' => 'boolean'
+        'estado' => 'boolean',
+        'es_lider' => 'boolean'
     ];
+
+    public function ministerios()
+    {
+        return $this->belongsToMany(Ministerio::class, 'miembro_ministerio');
+    }
+
+    public function getNombreCompletoAttribute()
+    {
+        return $this->nombres . ' ' . $this->apellidos;
+    }
 
     public function familia()
     {
@@ -33,4 +45,17 @@ class Miembro extends Model
     {
         return $this->hasMany(Celula::class, 'lider_id');
     }
+
+    public function organizaciones()
+    {
+        return $this->belongsToMany(Organizacion::class, 'miembro_organizacion', 'miembro_id', 'organizacion_id')
+            ->withPivot('puesto', 'fecha_asignacion', 'estado')
+            ->withTimestamps();
+    }
+
+    public function transacciones()
+    {
+        return $this->hasMany(Transaccion::class);
+    }
 }
+

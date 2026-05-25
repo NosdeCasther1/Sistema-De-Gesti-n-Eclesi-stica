@@ -5,22 +5,26 @@
     <style>
         @page { margin: 30px 40px 60px 40px; }
         body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #2b2b2b; margin: 0; padding: 0; font-size: 11px; line-height: 1.4; }
-        .header { text-align: center; border-bottom: 2px solid #0284c7; padding-bottom: 15px; margin-bottom: 25px; }
-        .church-name { font-size: 24px; font-weight: bold; color: #0f172a; margin: 0; text-transform: uppercase; letter-spacing: 0.5px; }
-        .report-title { font-size: 16px; font-weight: bold; color: #0284c7; margin: 4px 0; text-transform: uppercase; letter-spacing: 1px; }
+        .header { text-align: center; border-bottom: 3px solid #c9a227; padding-bottom: 15px; margin-bottom: 25px; }
+        .logo-img { max-height: 60px; margin-bottom: 10px; display: inline-block; }
+        .church-name { font-size: 24px; font-weight: bold; color: #6d0d0d; margin: 0; text-transform: uppercase; letter-spacing: 0.5px; }
+        .report-title { font-size: 16px; font-weight: bold; color: #6d0d0d; margin: 4px 0; text-transform: uppercase; letter-spacing: 1px; }
         .event-meta { font-size: 12px; color: #475569; margin-top: 5px; }
         
         .main-table { width: 100%; border-collapse: collapse; margin-bottom: 40px; }
-        .main-table th { background-color: #0f172a; color: #ffffff; text-align: left; padding: 10px 12px; font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; border: 1px solid #0f172a; }
+        .main-table th { background-color: #6d0d0d; color: #ffffff; text-align: left; padding: 10px 12px; font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; border: 1px solid #6d0d0d; }
         .main-table td { padding: 10px 12px; border-bottom: 1px solid #e2e8f0; border-left: 1px solid #e2e8f0; border-right: 1px solid #e2e8f0; font-size: 11px; vertical-align: middle; }
-        .main-table tr:nth-child(even) td { background-color: #f8fafc; }
+        .main-table tr:nth-child(even) td { background-color: #fcfaf5; }
         
         .footer { position: fixed; bottom: -30px; left: 0; right: 0; text-align: center; font-size: 9px; color: #94a3b8; border-top: 1px solid #e2e8f0; padding-top: 8px; }
-        .stats { margin-bottom: 20px; font-size: 12px; font-weight: bold; color: #0f172a; border-left: 4px solid #0284c7; padding-left: 10px; background-color: #f1f5f9; padding-top: 8px; padding-bottom: 8px; }
+        .stats { margin-bottom: 20px; font-size: 12px; font-weight: bold; color: #6d0d0d; border-left: 4px solid #c9a227; padding-left: 10px; background-color: #fcfaf5; padding-top: 8px; padding-bottom: 8px; }
     </style>
 </head>
 <body>
     <div class="header">
+        @if(!empty($logoBase64))
+            <img src="{{ $logoBase64 }}" class="logo-img">
+        @endif
         <h1 class="church-name">{{ $config->nombre_iglesia ?? 'AD REY DE REYES' }}</h1>
         <div class="report-title">Reporte de Asistencia a Evento / Culto</div>
         <div class="event-meta">

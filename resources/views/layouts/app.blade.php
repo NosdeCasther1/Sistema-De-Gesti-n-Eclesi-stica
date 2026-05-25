@@ -27,8 +27,44 @@
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <style>[x-cloak] { display: none !important; }</style>
     @stack('styles')
+    
+    <!-- Error boundary tracker script -->
+    <script>
+        window.addEventListener('error', function(e) {
+            console.error('Captured Error:', e);
+            setTimeout(function() {
+                var container = document.getElementById('js-runtime-error-box');
+                var message = document.getElementById('js-runtime-error-msg');
+                if (container && message) {
+                    container.classList.remove('hidden');
+                    container.style.display = 'block';
+                    message.innerHTML += '<div class="py-1 border-b border-red-500/30">❌ ' + e.message + ' <br><span class="opacity-75">en ' + e.filename + ':' + e.lineno + '</span></div>';
+                }
+            }, 100);
+        });
+        window.addEventListener('unhandledrejection', function(e) {
+            console.error('Captured Rejection:', e);
+            setTimeout(function() {
+                var container = document.getElementById('js-runtime-error-box');
+                var message = document.getElementById('js-runtime-error-msg');
+                if (container && message) {
+                    container.classList.remove('hidden');
+                    container.style.display = 'block';
+                    message.innerHTML += '<div class="py-1 border-b border-red-500/30">⚠️ Promise Rejection: ' + e.reason + '</div>';
+                }
+            }, 100);
+        });
+    </script>
 </head>
 <body>
+    <!-- Error overlay box -->
+    <div id="js-runtime-error-box" class="hidden" style="display:none; position: fixed; bottom: 20px; right: 20px; z-index: 100000; max-width: 450px; width: calc(100% - 40px); background: #7f1d1d; color: #fef2f2; padding: 16px; border-radius: 16px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); font-family: monospace; font-size: 11px; border: 1px solid #ef4444;">
+        <div style="font-weight: bold; margin-bottom: 8px; font-size: 12px; display: flex; items-center; justify-content: space-between;">
+            <span>🚨 Error de JavaScript Detectado</span>
+            <button onclick="document.getElementById('js-runtime-error-box').style.display='none'" style="background:transparent; border:none; color:white; cursor:pointer; font-weight:bold;">✕</button>
+        </div>
+        <div id="js-runtime-error-msg"></div>
+    </div>
     
 @php 
     try {
@@ -40,7 +76,7 @@
 <div class="sidebar-backdrop lg:hidden" id="sidebarBackdrop" onclick="toggleSidebar()"></div>
 
 <!-- Sidebar -->
-    <aside class="sidebar border-r border-slate-200 dark:border-slate-800 flex flex-col justify-between" id="sidebar">
+    <aside class="sidebar flex flex-col h-screen bg-white dark:bg-slate-950 border-r border-slate-200 dark:border-slate-800 pb-6" id="sidebar">
         <div class="sidebar-header">
             <div class="sidebar-logo-container flex items-center justify-between w-full mb-4">
                 <div class="flex items-center gap-2">
@@ -63,117 +99,142 @@
             </div>
         </div>
 
-        <div class="flex-grow overflow-auto py-2">
+        <div class="flex-1 overflow-y-auto custom-scrollbar px-4 space-y-6 mb-6">
+            @php
+                $authUser = auth()->user();
+                $currentRol = $authUser ? ($authUser->getRoleNames()->first() ?? 'administrador') : 'administrador';
+                $isAdmin = $authUser && $authUser->hasRole('administrador');
+
+                $baseClasses = "flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 text-sm font-bold border-l-4 border-transparent";
+                $activeClasses = "bg-indigo-50 dark:bg-indigo-500/10 text-indigo-700 dark:text-indigo-400 border-l-indigo-600 dark:border-l-indigo-400";
+                $inactiveClasses = "text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-slate-200";
+            @endphp
             <ul class="nav flex flex-col gap-1">
                 <li class="nav-item">
-                    <a href="{{ route('dashboard') }}" class="nav-link {{ request()->is('/') ? 'active' : '' }}">
-                        <i class="fas fa-chart-pie"></i> <span>Dashboard</span>
+                    @php $isActive = request()->is('/'); @endphp
+                    <a href="{{ route('dashboard') }}" class="{{ $baseClasses }} {{ $isActive ? $activeClasses : $inactiveClasses }}">
+                        <i class="fas fa-chart-pie text-lg {{ $isActive ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-400 dark:text-slate-500' }}"></i> <span>Dashboard</span>
                     </a>
                 </li>
-                @php
-                    $currentRol = session('current_rol', 'administrador');
-                    $rolePermissions = session('role_permissions', [
-                        'administrador' => ['miembros', 'familias', 'celulas', 'eventos', 'asistencia', 'tesoreria', 'reportes', 'configuracion'],
-                        'tesorero' => ['miembros', 'familias', 'eventos', 'asistencia', 'tesoreria', 'reportes'],
-                        'lider' => ['miembros', 'familias', 'celulas', 'eventos', 'asistencia'],
-                        'ujier' => ['asistencia']
-                    ]);
-                    $activeModules = $rolePermissions[$currentRol] ?? [];
-                @endphp
                 
-                @if(in_array('miembros', $activeModules) || in_array('familias', $activeModules) || in_array('celulas', $activeModules))
+                @if($isAdmin || ($authUser && ($authUser->can('ver_miembros') || $authUser->can('ver_familias') || $authUser->can('ver_celulas'))))
                 <div class="px-4 py-2 text-slate-500 font-bold tracking-wider uppercase text-xs dark:text-slate-400 mt-2 mb-1">Membresía</div>
-                @if(in_array('miembros', $activeModules))
+                @if($isAdmin || ($authUser && $authUser->can('ver_miembros')))
                 <li class="nav-item">
-                    <a href="{{ route('miembros.index') }}" class="nav-link {{ request()->is('miembros*') ? 'active' : '' }}">
-                        <i class="fas fa-users"></i> <span>Miembros</span>
+                    @php $isActive = request()->is('miembros*'); @endphp
+                    <a href="{{ route('miembros.index') }}" class="{{ $baseClasses }} {{ $isActive ? $activeClasses : $inactiveClasses }}">
+                        <i class="fas fa-users text-lg {{ $isActive ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-400 dark:text-slate-500' }}"></i> <span>Miembros</span>
                     </a>
                 </li>
                 @endif
-                @if(in_array('familias', $activeModules))
+                @if($isAdmin || ($authUser && $authUser->can('ver_familias')))
                 <li class="nav-item">
-                    <a href="{{ route('familias.index') }}" class="nav-link {{ request()->is('familias*') ? 'active' : '' }}">
-                        <i class="fas fa-home"></i> <span>Familias</span>
+                    @php $isActive = request()->is('familias*'); @endphp
+                    <a href="{{ route('familias.index') }}" class="{{ $baseClasses }} {{ $isActive ? $activeClasses : $inactiveClasses }}">
+                        <i class="fas fa-home text-lg {{ $isActive ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-400 dark:text-slate-500' }}"></i> <span>Familias</span>
                     </a>
                 </li>
                 @endif
-                @if(in_array('celulas', $activeModules))
+                @if($isAdmin || ($authUser && $authUser->can('ver_celulas')))
                 <li class="nav-item">
-                    <a href="{{ route('celulas.index') }}" class="nav-link {{ request()->is('celulas*') ? 'active' : '' }}">
-                        <i class="fas fa-network-wired"></i> <span>Células</span>
+                    @php $isActive = request()->is('celulas*'); @endphp
+                    <a href="{{ route('celulas.index') }}" class="{{ $baseClasses }} {{ $isActive ? $activeClasses : $inactiveClasses }}">
+                        <i class="fas fa-network-wired text-lg {{ $isActive ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-400 dark:text-slate-500' }}"></i> <span>Células</span>
                     </a>
                 </li>
                 @endif
+                <li class="nav-item">
+                    @php $isActive = request()->is('organizaciones*'); @endphp
+                    <a href="{{ route('organizaciones.index') }}" class="{{ $baseClasses }} {{ $isActive ? $activeClasses : $inactiveClasses }}">
+                        <i class="fas fa-sitemap text-lg {{ $isActive ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-400 dark:text-slate-500' }}"></i> <span>Organizaciones/Elecciones</span>
+                    </a>
+                </li>
                 @endif
 
-                @if(in_array('eventos', $activeModules) || in_array('asistencia', $activeModules) || in_array('tesoreria', $activeModules))
+                @if($isAdmin || ($authUser && ($authUser->can('ver_eventos') || $authUser->can('ver_asistencia') || $authUser->can('ver_tesoreria'))))
                 <div class="px-4 py-2 text-slate-500 font-bold tracking-wider uppercase text-xs dark:text-slate-400 mt-3 mb-1">Ministerio</div>
-                @if(in_array('eventos', $activeModules))
+                @if($isAdmin || ($authUser && $authUser->can('ver_eventos')))
                 <li class="nav-item">
-                    <a href="{{ route('eventos.index') }}" class="nav-link {{ request()->is('eventos*') ? 'active' : '' }}">
-                        <i class="fas fa-calendar-alt"></i> <span>Eventos</span>
+                    @php $isActive = request()->is('eventos*'); @endphp
+                    <a href="{{ route('eventos.index') }}" class="{{ $baseClasses }} {{ $isActive ? $activeClasses : $inactiveClasses }}">
+                        <i class="fas fa-calendar-alt text-lg {{ $isActive ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-400 dark:text-slate-500' }}"></i> <span>Eventos</span>
                     </a>
                 </li>
                 @endif
-                @if(in_array('asistencia', $activeModules))
+                @if($isAdmin || ($authUser && $authUser->can('ver_asistencia')))
                 <li class="nav-item">
-                    <a href="{{ route('asistencia.scanner') }}" class="nav-link {{ request()->is('asistencia*') ? 'active' : '' }}">
-                        <i class="fas fa-qrcode"></i> <span>Asistencia QR</span>
+                    @php $isActive = request()->is('asistencia*'); @endphp
+                    <a href="{{ route('asistencia.scanner') }}" class="{{ $baseClasses }} {{ $isActive ? $activeClasses : $inactiveClasses }}">
+                        <i class="fas fa-qrcode text-lg {{ $isActive ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-400 dark:text-slate-500' }}"></i> <span>Asistencia QR</span>
                     </a>
                 </li>
                 @endif
-                @if(in_array('tesoreria', $activeModules))
+                @if($isAdmin || ($authUser && $authUser->can('ver_tesoreria')))
                 <li class="nav-item">
-                    <a href="{{ route('tesoreria.index') }}" class="nav-link {{ request()->is('tesoreria*') ? 'active' : '' }}">
-                        <i class="fas fa-wallet"></i> <span>Tesorería</span>
+                    @php $isActive = request()->is('tesoreria*'); @endphp
+                    <a href="{{ route('tesoreria.index') }}" class="{{ $baseClasses }} {{ $isActive ? $activeClasses : $inactiveClasses }}">
+                        <i class="fas fa-wallet text-lg {{ $isActive ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-400 dark:text-slate-500' }}"></i> <span>Tesorería</span>
                     </a>
                 </li>
                 @endif
                 @endif
 
-                @if(in_array('reportes', $activeModules) || in_array('configuracion', $activeModules))
+                @if($isAdmin || ($authUser && ($authUser->can('ver_reportes') || $authUser->can('ver_configuracion'))))
                 <div class="px-4 py-2 text-slate-500 font-bold tracking-wider uppercase text-xs dark:text-slate-400 mt-3 mb-1">Admin</div>
-                @if(in_array('reportes', $activeModules))
+                @if($isAdmin || ($authUser && $authUser->can('ver_reportes')))
                 <li class="nav-item">
-                    <a href="{{ route('reportes.index') }}" class="nav-link {{ request()->is('reportes*') ? 'active' : '' }}">
-                        <i class="fas fa-file-invoice"></i> <span>Reportes</span>
+                    @php $isActive = request()->is('reportes*'); @endphp
+                    <a href="{{ route('reportes.index') }}" class="{{ $baseClasses }} {{ $isActive ? $activeClasses : $inactiveClasses }}">
+                        <i class="fas fa-file-invoice text-lg {{ $isActive ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-400 dark:text-slate-500' }}"></i> <span>Reportes</span>
                     </a>
                 </li>
                 @endif
-                @if(in_array('configuracion', $activeModules))
+                @if($isAdmin)
                 <li class="nav-item">
-                    <a href="{{ route('configuracion.index') }}" class="nav-link {{ request()->is('configuracion*') ? 'active' : '' }}">
-                        <i class="fas fa-cog"></i> <span>Configuración</span>
+                    @php $isActive = request()->is('configuracion*'); @endphp
+                    <a href="{{ route('configuracion.index') }}" class="{{ $baseClasses }} {{ $isActive ? $activeClasses : $inactiveClasses }}">
+                        <i class="fas fa-cog text-lg {{ $isActive ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-400 dark:text-slate-500' }}"></i> <span>Configuración</span>
+                    </a>
+                </li>
+                @endif
+                @if($isAdmin)
+                <li class="nav-item">
+                    @php $isActive = request()->is('votar*'); @endphp
+                    <a href="{{ route('votar.index') }}" class="{{ $baseClasses }} {{ $isActive ? $activeClasses : $inactiveClasses }}">
+                        <i class="fas fa-vote-yea text-lg {{ $isActive ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-400 dark:text-slate-500' }}"></i> <span>Portal del Votante</span>
                     </a>
                 </li>
                 @endif
                 @endif
+
+                <li class="nav-item">
+                    @php $isActive = request()->is('acerca-de*'); @endphp
+                    <a href="{{ route('acerca') }}" class="{{ $baseClasses }} {{ $isActive ? $activeClasses : $inactiveClasses }}">
+                        <i class="fas fa-info-circle text-lg {{ $isActive ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-400 dark:text-slate-500' }}"></i> <span>Acerca de</span>
+                    </a>
+                </li>
             </ul>
         </div>
 
-        <div class="p-4 border-t border-slate-200 dark:border-slate-700/50 mt-auto">
-            @php
-                $gcConnected = session()->has('google_calendar_token');
-            @endphp
-            <div class="p-3 rounded-2xl border border-slate-200 dark:border-slate-800/50 bg-slate-50 dark:bg-slate-800/30 shadow-sm text-left">
-                <div class="flex items-center justify-between mb-2">
-                    <span class="font-bold text-slate-800 dark:text-white text-xs"><i class="fas fa-server text-blue-500 mr-1"></i> Estado del Sistema</span>
-                    <span class="bg-emerald-100 text-emerald-600 dark:bg-emerald-500/15 dark:text-emerald-400 border border-emerald-500/30 rounded-full px-2 py-1 font-bold flex items-center gap-1" style="font-size: 0.68rem;">
-                        <i class="fas fa-circle" style="font-size: 0.45rem; animation: pulse 2s infinite;"></i> <span>Online</span>
+        @if($isAdmin)
+        <div class="mt-auto px-4 pb-4 shrink-0">
+            <div class="flex items-center justify-center gap-2.5 text-[10px] font-bold text-slate-400 dark:text-slate-500 tracking-wider">
+                {{-- Indicador de Pulso --}}
+                <div class="flex items-center gap-1.5" title="Sistema Operativo">
+                    <span class="relative flex h-2 w-2">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
                     </span>
+                    <span class="uppercase">Online</span>
                 </div>
-                <div class="flex items-center justify-between text-gray-500 mb-1" style="font-size: 0.74rem;">
-                    <span>Sincronización API</span>
-                    <span class="{{ $gcConnected ? 'text-emerald-500' : 'text-amber-500' }} font-semibold">
-                        <i class="{{ $gcConnected ? 'fas fa-check-circle' : 'fas fa-exclamation-triangle' }} mr-1"></i> {{ $gcConnected ? 'Conectada' : 'Inactiva' }}
-                    </span>
-                </div>
-                <div class="flex items-center justify-between text-gray-500" style="font-size: 0.74rem;">
-                    <span>Versión Actual</span>
-                    <span class="font-semibold text-slate-600 dark:text-slate-400">v1.2.0 Bento</span>
-                </div>
+                
+                <span class="text-slate-300 dark:text-slate-700">•</span>
+                
+                {{-- Versión --}}
+                <span title="Versión Actual">v1.2.0 Bento</span>
             </div>
         </div>
+        @endif
     </aside>
 
     <!-- Main Content -->
@@ -203,9 +264,9 @@
 
             {{-- Right: Theme + Simulador RBAC + User --}}
             <div class="flex items-center gap-3">
-                {{-- Simulador de Rol RBAC --}}
+                {{-- Simulador de Rol RBAC (Solo entorno local) --}}
+                @if(app()->isLocal())
                 <div class="relative" x-data="{ open: false }">
-                    @php $currentRol = session('current_rol', 'administrador'); @endphp
                     <button @click="open = !open" class="border border-blue-500 text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-500/10 rounded-full px-3 py-1.5 font-bold flex items-center gap-2 shadow-sm text-sm">
                         @if($currentRol === 'administrador')
                             <i class="fas fa-crown text-red-500"></i> <span class="hidden sm:inline">Administrador</span>
@@ -225,6 +286,7 @@
                         <li><a class="block px-4 py-2 hover:bg-slate-50 dark:hover:bg-slate-700/50 flex items-center gap-2 {{ $currentRol === 'ujier' ? 'bg-blue-500/10 text-blue-600 font-bold' : 'text-slate-700 dark:text-slate-300' }}" href="{{ route('switch.role', 'ujier') }}"><i class="fas fa-user text-gray-500 w-4"></i> Ujier (Asistencia QR)</a></li>
                     </ul>
                 </div>
+                @endif
 
                 <button class="theme-toggle" onclick="toggleTheme()" title="Cambiar Tema">
                     <i class="fas fa-moon" id="themeIcon"></i>
@@ -234,39 +296,42 @@
                 <div class="relative" x-data="{ open: false }">
                     <div @click="open = !open" class="flex items-center gap-2" role="button" tabindex="0" style="cursor: pointer;" title="Opciones de Sesión">
                         <div class="flex-col text-right hidden md:flex">
-                            <span class="font-bold leading-none capitalize text-slate-800 dark:text-white" style="font-size:0.88rem;">{{ session('current_rol', 'administrador') }}</span>
+                            <span class="font-bold leading-none capitalize text-slate-800 dark:text-white" style="font-size:0.88rem;">{{ $authUser ? $authUser->nombre : $currentRol }}</span>
                             <span class="text-gray-500 leading-none mt-1 font-medium" style="font-size:0.72rem;">{{ now()->translatedFormat('l, d M') }}</span>
                         </div>
                         <div class="rounded-full flex items-center justify-center font-bold text-white shadow-sm"
                              style="width:38px;height:38px;font-size:0.9rem;background:linear-gradient(135deg,#3b82f6,#6366f1);flex-shrink:0;">
-                            {{ strtoupper(substr(session('current_rol', 'administrador'), 0, 1)) }}
+                            {{ strtoupper(substr($authUser ? $authUser->nombre : $currentRol, 0, 1)) }}
                         </div>
                     </div>
                     <ul x-show="open" @click.outside="open = false" x-transition style="display:none;" class="absolute right-0 mt-2 w-64 bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700 py-2 z-50">
                         <li>
                             <div class="px-4 py-2">
-                                <div class="font-bold text-slate-800 dark:text-white capitalize">{{ session('current_rol', 'administrador') }}</div>
-                                <div class="text-gray-500 text-xs">{{ session('current_rol', 'administrador') }}@iglesia.com</div>
+                                <div class="font-bold text-slate-800 dark:text-white capitalize">{{ $authUser ? $authUser->nombre : $currentRol }}</div>
+                                <div class="text-gray-500 text-xs">{{ $authUser ? $authUser->email : ($currentRol . '@iglesia.com') }}</div>
                             </div>
                         </li>
                         <li><hr class="border-t border-slate-200 dark:border-slate-700/50 my-1"></li>
-                        @if($currentRol === 'administrador')
                         <li>
-                            <a class="block px-4 py-2 hover:bg-slate-50 dark:hover:bg-slate-700/50 flex items-center gap-2 text-slate-700 dark:text-slate-300" href="{{ route('configuracion.index', ['tab' => 'usuarios']) }}">
-                                <i class="fas fa-user-cog text-blue-500 w-4"></i> Mi Perfil / Cuenta
+                            <a href="{{ route('profile.edit') }}" class="flex items-center gap-3 px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-white transition-colors">
+                                <i class="fa-solid fa-user-gear text-slate-400"></i> Mi Perfil / Cuenta
                             </a>
                         </li>
+                        @if($isAdmin)
                         <li>
-                            <a class="block px-4 py-2 hover:bg-slate-50 dark:hover:bg-slate-700/50 flex items-center gap-2 text-slate-700 dark:text-slate-300" href="{{ route('configuracion.index', ['tab' => 'sistema']) }}">
-                                <i class="fas fa-sliders-h text-cyan-500 w-4"></i> Ajustes del Sistema
+                            <a href="{{ route('configuracion.index') }}" class="flex items-center gap-3 px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-white transition-colors">
+                                <i class="fa-solid fa-sliders text-slate-400"></i> Ajustes del Sistema
                             </a>
                         </li>
-                        <li><hr class="border-t border-slate-200 dark:border-slate-700/50 my-1"></li>
                         @endif
+                        <li><div class="border-t border-slate-200 dark:border-slate-700/50 my-1"></div></li>
                         <li>
-                            <a class="block px-4 py-2 hover:bg-red-50 dark:hover:bg-red-900/20 flex items-center gap-2 text-red-500" href="{{ route('dashboard') }}" onclick="alert('Sesión cerrada exitosamente (Simulación).');">
-                                <i class="fas fa-sign-out-alt w-4"></i> Cerrar Sesión
-                            </a>
+                            <form method="POST" action="{{ route('logout') }}" x-data>
+                                @csrf
+                                <button type="submit" class="w-full flex items-center gap-3 px-4 py-2 text-sm text-rose-500 hover:bg-rose-500/10 hover:text-rose-400 transition-colors text-left font-medium">
+                                    <i class="fa-solid fa-arrow-right-from-bracket"></i> Cerrar Sesión
+                                </button>
+                            </form>
                         </li>
                     </ul>
                 </div>

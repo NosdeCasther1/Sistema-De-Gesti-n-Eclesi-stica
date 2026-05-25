@@ -11,6 +11,8 @@ use App\Models\FinancialAccount;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use App\Models\Configuracion;
+use App\Models\Eleccion;
+use App\Models\Candidato;
 use Carbon\Carbon;
 
 class ReporteController extends Controller
@@ -40,8 +42,9 @@ class ReporteController extends Controller
         $totalCelulas = Celula::count();
         $mesActual = Carbon::now()->translatedFormat('F');
         $accounts = FinancialAccount::withSum('transactions as total_balance', 'amount')->get();
+        $elecciones = Eleccion::with('organizacion')->orderBy('created_at', 'desc')->get();
 
-        return view('reportes.index', compact('totalMiembros', 'totalCelulas', 'mesActual', 'config', 'accounts'));
+        return view('reportes.index', compact('totalMiembros', 'totalCelulas', 'mesActual', 'config', 'accounts', 'elecciones'));
     }
 
     public function reportarAsistenciaCelula(Request $request, $celula_id)
@@ -92,7 +95,7 @@ class ReporteController extends Controller
     public function reportarMiembros()
     {
         ini_set('memory_limit', '256M');
-        $miembros = Miembro::orderBy('apellidos')->get();
+        $miembros = Miembro::with('ministerios')->orderBy('apellidos')->get();
         
         $config = $this->getConfig();
         $logoBase64 = $this->getLogoBase64($config);
@@ -125,7 +128,7 @@ class ReporteController extends Controller
     public function reportarBautizados()
     {
         ini_set('memory_limit', '256M');
-        $miembros = Miembro::where('etapa_consolidacion', 'Bautizado')
+        $miembros = Miembro::with('ministerios')->where('etapa_consolidacion', 'Bautizado')
             ->orderBy('apellidos')
             ->get();
         
@@ -149,5 +152,195 @@ class ReporteController extends Controller
         $logoBase64 = $this->getLogoBase64($config);
         $pdf = Pdf::loadView('reportes.ingresos_familia', compact('familias', 'desde', 'hasta', 'config', 'logoBase64'));
         return $pdf->setPaper('letter', 'portrait')->stream('Ingresos-por-Familia.pdf');
+    }
+
+    public function reportarVotacionesEscrutinio(Eleccion $eleccion)
+    {
+        ini_set('memory_limit', '256M');
+        $eleccion->load('organizacion');
+        $organizacion = $eleccion->organizacion;
+        $candidatos = Candidato::with('miembro')
+            ->where('eleccion_id', $eleccion->id)
+            ->get();
+
+        $esAbsoluta = $eleccion->tipo_mayoria === 'absoluta';
+
+        $resultados = $candidatos->groupBy('puesto_postulado')->map(function ($grupoCandidatos) use ($esAbsoluta) {
+            $totalVotosPuesto = $grupoCandidatos->sum(function ($candidato) {
+                return $candidato->votos_digitales + $candidato->votos_manuales;
+            });
+
+            $grupoCandidatos = $grupoCandidatos->map(function ($candidato) {
+                $candidato->votos_totales = $candidato->votos_digitales + $candidato->votos_manuales;
+                return $candidato;
+            });
+
+            $maxVotos = $grupoCandidatos->max('votos_totales');
+
+            return $grupoCandidatos->map(function ($candidato) use ($totalVotosPuesto, $maxVotos, $esAbsoluta) {
+                $candidato->porcentaje = $totalVotosPuesto > 0 ? round(($candidato->votos_totales / $totalVotosPuesto) * 100, 2) : 0;
+                $candidato->es_ganador = false;
+                $candidato->requiere_segunda_vuelta = false;
+
+                if ($candidato->votos_totales === $maxVotos && $maxVotos > 0) {
+                    if ($esAbsoluta) {
+                        if ($candidato->votos_totales > ($totalVotosPuesto / 2)) {
+                            $candidato->es_ganador = true;
+                        } else {
+                            $candidato->requiere_segunda_vuelta = true;
+                        }
+                    } else {
+                        $candidato->es_ganador = true;
+                    }
+                }
+
+                return $candidato;
+            })->sortByDesc('votos_totales')->values();
+        });
+
+        $totalPadron = $organizacion->miembros()->wherePivot('estado', true)->count();
+        $totalVotantesUnicos = \Illuminate\Support\Facades\DB::table('registro_votantes')
+            ->where('eleccion_id', $eleccion->id)
+            ->distinct()
+            ->count('miembro_id');
+
+        $config = $this->getConfig();
+        $logoBase64 = $this->getLogoBase64($config);
+
+        $pdf = Pdf::loadView('elecciones.reporte_escrutinio', compact(
+            'eleccion',
+            'organizacion',
+            'resultados',
+            'totalPadron',
+            'totalVotantesUnicos',
+            'config',
+            'logoBase64'
+        ));
+
+        return $pdf->stream("Acta_Escrutinio_{$eleccion->id}.pdf");
+    }
+
+    public function reportarVotacionesParticipantes(Eleccion $eleccion)
+    {
+        ini_set('memory_limit', '256M');
+        $eleccion->load('organizacion');
+        $organizacion = $eleccion->organizacion;
+
+        $participantes = \Illuminate\Support\Facades\DB::table('registro_votantes')
+            ->join('miembros', 'registro_votantes.miembro_id', '=', 'miembros.id')
+            ->where('registro_votantes.eleccion_id', $eleccion->id)
+            ->select('miembros.nombres', 'miembros.apellidos', 'registro_votantes.puesto_votado', 'registro_votantes.modalidad', 'registro_votantes.created_at')
+            ->orderBy('registro_votantes.created_at', 'asc')
+            ->get();
+
+        $totalPadron = $organizacion->miembros()->wherePivot('estado', true)->count();
+        $totalVotantesUnicos = \Illuminate\Support\Facades\DB::table('registro_votantes')
+            ->where('eleccion_id', $eleccion->id)
+            ->distinct()
+            ->count('miembro_id');
+
+        $votosDigitales = \Illuminate\Support\Facades\DB::table('registro_votantes')
+            ->where('eleccion_id', $eleccion->id)
+            ->where('modalidad', 'digital')
+            ->count();
+
+        $votosManuales = \Illuminate\Support\Facades\DB::table('registro_votantes')
+            ->where('eleccion_id', $eleccion->id)
+            ->where('modalidad', 'manual')
+            ->count();
+
+        $config = $this->getConfig();
+        $logoBase64 = $this->getLogoBase64($config);
+
+        $pdf = Pdf::loadView('reportes.votaciones_participantes', compact(
+            'eleccion',
+            'organizacion',
+            'participantes',
+            'totalPadron',
+            'totalVotantesUnicos',
+            'votosDigitales',
+            'votosManuales',
+            'config',
+            'logoBase64'
+        ));
+
+        return $pdf->stream("Participantes_Votantes_{$eleccion->id}.pdf");
+    }
+
+    public function reportarVotacionesConformacion(Eleccion $eleccion)
+    {
+        ini_set('memory_limit', '256M');
+        $eleccion->load('organizacion');
+        $organizacion = $eleccion->organizacion;
+        $candidatos = Candidato::with('miembro')
+            ->where('eleccion_id', $eleccion->id)
+            ->get();
+
+        $esAbsoluta = $eleccion->tipo_mayoria === 'absoluta';
+
+        $resultados = $candidatos->groupBy('puesto_postulado')->map(function ($grupoCandidatos) use ($esAbsoluta) {
+            $totalVotosPuesto = $grupoCandidatos->sum(function ($candidato) {
+                return $candidato->votos_digitales + $candidato->votos_manuales;
+            });
+
+            $grupoCandidatos = $grupoCandidatos->map(function ($candidato) {
+                $candidato->votos_totales = $candidato->votos_digitales + $candidato->votos_manuales;
+                return $candidato;
+            });
+
+            $maxVotos = $grupoCandidatos->max('votos_totales');
+
+            return $grupoCandidatos->map(function ($candidato) use ($totalVotosPuesto, $maxVotos, $esAbsoluta) {
+                $candidato->porcentaje = $totalVotosPuesto > 0 ? round(($candidato->votos_totales / $totalVotosPuesto) * 100, 2) : 0;
+                $candidato->es_ganador = false;
+
+                if ($candidato->votos_totales === $maxVotos && $maxVotos > 0) {
+                    if ($esAbsoluta) {
+                        if ($candidato->votos_totales > ($totalVotosPuesto / 2)) {
+                            $candidato->es_ganador = true;
+                        }
+                    } else {
+                        $candidato->es_ganador = true;
+                    }
+                }
+
+                return $candidato;
+            })->sortByDesc('votos_totales')->values();
+        });
+
+        $directivaConformada = [];
+        foreach ($resultados as $puesto => $cands) {
+            $ganador = $cands->firstWhere('es_ganador', true);
+            if ($ganador) {
+                $directivaConformada[] = [
+                    'puesto' => $puesto,
+                    'nombre' => $ganador->miembro->nombre_completo,
+                    'votos' => $ganador->votos_totales,
+                    'porcentaje' => $ganador->porcentaje,
+                    'estado' => 'Electo'
+                ];
+            } else {
+                $directivaConformada[] = [
+                    'puesto' => $puesto,
+                    'nombre' => 'VACANTE (Requiere Segunda Vuelta o Sin Votos)',
+                    'votos' => '-',
+                    'porcentaje' => '-',
+                    'estado' => 'Vacante'
+                ];
+            }
+        }
+
+        $config = $this->getConfig();
+        $logoBase64 = $this->getLogoBase64($config);
+
+        $pdf = Pdf::loadView('reportes.votaciones_conformacion', compact(
+            'eleccion',
+            'organizacion',
+            'directivaConformada',
+            'config',
+            'logoBase64'
+        ));
+
+        return $pdf->stream("Conformacion_Directiva_{$eleccion->id}.pdf");
     }
 }

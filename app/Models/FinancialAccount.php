@@ -50,4 +50,12 @@ class FinancialAccount extends Model
             }
         );
     }
+
+    /**
+     * Relación con Organización vinculada (una a una).
+     */
+    public function organizacion(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(Organizacion::class, 'financial_account_id');
+    }
 }

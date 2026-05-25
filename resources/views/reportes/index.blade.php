@@ -86,6 +86,19 @@
         transform: translateY(-2px);
     }
 
+    .btn-bento-votaciones {
+        background: linear-gradient(135deg, #6d0d0d, #c9a227) !important;
+        color: white !important;
+        box-shadow: 0 4px 14px rgba(109,13,13,0.25) !important;
+        border: none !important;
+        transition: all 0.3s ease !important;
+    }
+    .btn-bento-votaciones:hover {
+        background: linear-gradient(135deg, #590a0a, #b08c20) !important;
+        box-shadow: 0 6px 20px rgba(109,13,13,0.35) !important;
+        transform: translateY(-2px);
+    }
+
     /* Icon Boxes Premium (Bulletproof Gradients & Dimensions) */
     .report-icon-box {
         width: 52px !important;
@@ -140,6 +153,7 @@
     .icon-box-asistencia { background: linear-gradient(135deg, #0891b2, #06b6d4) !important; color: white !important; }
     .icon-box-bautizados { background: linear-gradient(135deg, #d97706, #f59e0b) !important; color: white !important; }
     .icon-box-familia { background: linear-gradient(135deg, #e11d48, #f43f5e) !important; color: white !important; }
+    .icon-box-votaciones { background: linear-gradient(135deg, #6d0d0d, #c9a227) !important; color: white !important; }
 </style>
 @endpush
 
@@ -379,7 +393,7 @@
                         <label class="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5 block">Seleccionar Evento / Culto</label>
                         <select class="w-full rounded-xl border border-slate-300 dark:border-slate-700/50 bg-white dark:bg-slate-800 px-3.5 py-3 text-slate-900 dark:text-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500 dark:focus:border-cyan-500 transition-all shadow-sm mb-3.5" id="select-reporte-evento">
                             <option value="" class="text-slate-900 bg-white dark:text-white dark:bg-slate-800">Seleccione un evento...</option>
-                            @php $eventosRep = \App\Models\Evento::orderBy('fecha_inicio', 'desc')->take(30)->get(); @endphp
+                            @php $eventosRep = \App\Models\Evento::orderBy('fecha_inicio', 'asc')->get(); @endphp
                             @foreach($eventosRep as $evRep)
                                 <option value="{{ $evRep->id }}" class="text-slate-900 bg-white dark:text-white dark:bg-slate-800">{{ \Carbon\Carbon::parse($evRep->fecha_inicio)->translatedFormat('d M Y') }} - {{ $evRep->titulo }}</option>
                             @endforeach
@@ -428,6 +442,66 @@
             </div>
         </div>
 
+        <!-- ==========================================
+             6. REPORTE DE VOTACIONES Y ELECCIONES (VINO / ORO)
+        ========================================== -->
+        <div class="bento-card bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800/80 rounded-2xl p-6 shadow-sm hover:shadow-xl flex flex-col justify-between relative overflow-hidden group md:col-span-2 lg:col-span-3">
+            <!-- Glow de fondo -->
+            <div class="absolute -right-10 -top-10 w-40 h-40 bg-red-900/10 dark:bg-red-950/5 rounded-full blur-3xl group-hover:bg-red-900/20 transition-all duration-500"></div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center my-auto">
+                <!-- Columna Izquierda: Información y Descripción -->
+                <div>
+                    <!-- Header Card -->
+                    <div class="flex items-center gap-4 mb-5">
+                        <div class="report-icon-box icon-box-votaciones group-hover:scale-110 transition-transform duration-500">
+                            <i class="fas fa-check-to-slot"></i>
+                        </div>
+                        <div>
+                            <h5 class="text-lg font-bold text-slate-900 dark:text-white tracking-tight mb-1">Votaciones y Elecciones</h5>
+                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-red-50 dark:bg-red-950/20 text-red-700 dark:text-red-400 border border-red-100 dark:border-red-900/20">
+                                <i class="fas fa-box-archive text-xs"></i> Escrutinio y Directivas
+                            </span>
+                        </div>
+                    </div>
+                    <!-- Descripción -->
+                    <p class="text-xs text-slate-600 dark:text-slate-400 font-normal leading-relaxed mb-0">
+                        Genera las actas oficiales de escrutinio electoral, visualiza y descarga el padrón de participantes que ejercieron su voto, y obtén el reporte definitivo de la conformación de la organización con la junta directiva electa.
+                    </p>
+                </div>
+
+                <!-- Columna Derecha: Selección y Botones de Acción -->
+                <div class="space-y-4 bg-slate-50/60 dark:bg-slate-800/40 p-5 rounded-2xl border border-slate-100 dark:border-slate-800/60 shadow-inner">
+                    <div>
+                        <label class="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5 block">Seleccionar Proceso Electoral</label>
+                        <select class="w-full rounded-xl border border-slate-300 dark:border-slate-700/50 bg-white dark:bg-slate-800 px-3.5 py-3 text-slate-900 dark:text-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-700 dark:focus:border-red-700 transition-all shadow-sm" id="select-reporte-eleccion">
+                            <option value="" class="text-slate-900 bg-white dark:text-white dark:bg-slate-800">Seleccione una elección...</option>
+                            @foreach($elecciones as $elec)
+                                <option value="{{ $elec->id }}" class="text-slate-900 bg-white dark:text-white dark:bg-slate-800">
+                                    {{ $elec->organizacion->nombre }} - {{ $elec->titulo }} ({{ ucfirst($elec->estado) }})
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-2">
+                        <button type="button" onclick="generarReporteVotacion('escrutinio')" class="btn-bento-votaciones py-3 px-3 rounded-xl font-bold text-[10px] flex items-center justify-center gap-1.5 cursor-pointer text-center">
+                            <i class="fas fa-file-contract text-sm"></i>
+                            <span>Acta Escrutinio</span>
+                        </button>
+                        <button type="button" onclick="generarReporteVotacion('participantes')" class="btn-bento-votaciones py-3 px-3 rounded-xl font-bold text-[10px] flex items-center justify-center gap-1.5 cursor-pointer text-center">
+                            <i class="fas fa-users text-sm"></i>
+                            <span>¿Quiénes Votaron?</span>
+                        </button>
+                        <button type="button" onclick="generarReporteVotacion('conformacion')" class="btn-bento-votaciones py-3 px-3 rounded-xl font-bold text-[10px] flex items-center justify-center gap-1.5 cursor-pointer text-center">
+                            <i class="fas fa-sitemap text-sm"></i>
+                            <span>Conformación Org.</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 
     <!-- ==========================================
@@ -456,7 +530,7 @@
                      x-transition:leave="transition ease-in duration-200"
                      x-transition:leave-start="opacity-100 translate-y-0 scale-100"
                      x-transition:leave-end="opacity-0 translate-y-8 scale-95"
-                     @click.away="showTesoreriaModal = false"
+                     @click.outside="showTesoreriaModal = false"
                      @keydown.escape.window="showTesoreriaModal = false"
                      class="w-full max-w-lg bg-white dark:bg-slate-900 rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.3)] overflow-hidden border border-slate-100 dark:border-slate-800 my-8 flex flex-col text-left">
                     
@@ -562,6 +636,21 @@
             const url = "{{ route('reportes.asistencia_evento', ':id') }}".replace(':id', eventoId);
             window.open(url, '_blank');
         }
+    }
+
+    function generarReporteVotacion(tipo) {
+        const eleccionId = document.getElementById('select-reporte-eleccion').value;
+        if (!eleccionId) { alert('Por favor selecciona un proceso electoral'); return; }
+        
+        let url = '';
+        if (tipo === 'escrutinio') {
+            url = "{{ route('reportes.votaciones.escrutinio', ':id') }}".replace(':id', eleccionId);
+        } else if (tipo === 'participantes') {
+            url = "{{ route('reportes.votaciones.participantes', ':id') }}".replace(':id', eleccionId);
+        } else if (tipo === 'conformacion') {
+            url = "{{ route('reportes.votaciones.conformacion', ':id') }}".replace(':id', eleccionId);
+        }
+        window.open(url, '_blank');
     }
 </script>
 @endpush

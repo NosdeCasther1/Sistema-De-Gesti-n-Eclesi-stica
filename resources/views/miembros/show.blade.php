@@ -74,10 +74,18 @@
             </h1>
             <p class="text-xs text-slate-500 dark:text-slate-400 mb-0 font-medium">Revisión general de expediente y generación de carnet de identificación</p>
         </div>
-        <a href="{{ route('miembros.index') }}" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl text-xs font-bold bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/60 shadow-sm transition-all no-underline">
-            <i class="fas fa-arrow-left text-sm"></i>
-            <span>Volver al listado</span>
-        </a>
+        <div class="flex gap-2">
+            <a href="{{ route('miembros.carta_recomendacion', $miembro->id) }}" target="_blank" class="flex items-center gap-2 px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-50 transition-colors shadow-sm">
+                <i class="fa-solid fa-file-signature text-indigo-500"></i> Recomendación
+            </a>
+            <a href="{{ route('miembros.carta_traslado', $miembro->id) }}" target="_blank" class="flex items-center gap-2 px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-50 transition-colors shadow-sm">
+                <i class="fa-solid fa-paper-plane text-emerald-500"></i> Traslado
+            </a>
+            <a href="{{ route('miembros.index') }}" class="inline-flex items-center gap-2 px-5 py-2 rounded-xl text-sm font-bold bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/60 shadow-sm transition-all no-underline">
+                <i class="fas fa-arrow-left text-sm"></i>
+                <span>Volver al listado</span>
+            </a>
+        </div>
     </div>
 
     <!-- Grid Bento Principal -->
@@ -103,7 +111,12 @@
                 <h4 class="text-xl font-black text-slate-900 dark:text-white mb-1 tracking-tight">{{ $miembro->nombres }} {{ $miembro->apellidos }}</h4>
                 <div class="mb-6">
                     <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-500/20 shadow-sm">
-                        <i class="fas fa-church text-xs"></i> {{ $miembro->ministerio ?? 'Sin Ministerio Asignado' }}
+                        <i class="fas fa-church text-xs"></i> 
+                        @if($miembro->ministerios->isNotEmpty())
+                            {{ $miembro->es_lider ? 'Líder - ' : '' }}{{ $miembro->ministerios->pluck('nombre')->implode(', ') }}
+                        @else
+                            {{ $miembro->es_lider ? 'Líder' : 'Sin Ministerio Asignado' }}
+                        @endif
                     </span>
                 </div>
 
@@ -113,6 +126,12 @@
                         <i class="fas fa-id-card text-base"></i>
                         <span>Descargar Carnet Oficial</span>
                     </a>
+                    @if($miembro->etapa_consolidacion == 'Bautizado' || $miembro->fecha_bautismo)
+                    <a href="{{ route('miembros.certificado_bautismo', $miembro->id) }}" target="_blank" class="w-full py-3.5 px-5 rounded-2xl font-bold text-xs flex items-center justify-center gap-2 bg-yellow-50 dark:bg-yellow-500/10 hover:bg-yellow-100 dark:hover:bg-yellow-500/20 text-yellow-700 dark:text-yellow-400 border border-yellow-200 dark:border-yellow-500/30 transition-all no-underline shadow-sm cursor-pointer">
+                        <i class="fa-solid fa-certificate text-yellow-600 dark:text-yellow-500 text-base"></i>
+                        <span>Certificado de Bautismo</span>
+                    </a>
+                    @endif
                     <a href="{{ route('miembros.edit', $miembro->id) }}" class="w-full py-3.5 px-5 rounded-2xl font-bold text-xs flex items-center justify-center gap-2 bg-amber-50 dark:bg-amber-500/10 hover:bg-amber-100 dark:hover:bg-amber-500/20 text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-500/30 transition-all no-underline shadow-sm cursor-pointer">
                         <i class="fas fa-user-edit text-base"></i>
                         <span>Editar Datos del Miembro</span>
@@ -206,6 +225,14 @@
                             <i class="fas fa-calendar-check text-cyan-500"></i> Fecha de Integración
                         </span>
                         <span class="text-sm font-bold text-slate-900 dark:text-white tracking-tight">{{ $miembro->fecha_integracion ? $miembro->fecha_integracion->format('d/m/Y') : 'N/A' }}</span>
+                    </div>
+
+                    <!-- Fecha de Bautismo -->
+                    <div class="p-4 rounded-2xl bg-slate-50/60 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-800/60 shadow-inner flex flex-col justify-center">
+                        <span class="text-[11px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-1 flex items-center gap-1.5">
+                            <i class="fas fa-water text-blue-500"></i> Fecha de Bautismo
+                        </span>
+                        <span class="text-sm font-bold text-slate-900 dark:text-white tracking-tight">{{ $miembro->fecha_bautismo ? $miembro->fecha_bautismo->format('d/m/Y') : 'N/A' }}</span>
                     </div>
 
                     <!-- Dirección Residencial -->

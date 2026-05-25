@@ -23,28 +23,30 @@ class ConfiguracionController extends Controller
                 ]);
             }
 
-            $usuarios = Usuario::all();
+            $usuarios = Usuario::with('roles')->get();
             if ($usuarios->isEmpty()) {
-                Usuario::create([
+                $admin = Usuario::create([
                     'nombre' => 'Administrador',
                     'email' => 'admin@iglesia.com',
                     'password' => Hash::make('password123'),
-                    'rol' => 'administrador'
                 ]);
-                $usuarios = Usuario::all();
+                $admin->assignRole('administrador');
+                $usuarios = Usuario::with('roles')->get();
             }
 
             $categorias = CategoriaFinanciera::withTrashed()->get();
             if ($categorias->isEmpty()) {
-                CategoriaFinanciera::create(['nombre' => 'Diezmos', 'tipo' => 'ingreso']);
-                CategoriaFinanciera::create(['nombre' => 'Ofrendas', 'tipo' => 'ingreso']);
-                CategoriaFinanciera::create(['nombre' => 'Servicios Públicos', 'tipo' => 'gasto']);
+                CategoriaFinanciera::create(['nombre' => 'Diezmos', 'tipo' => 'Ingreso']);
+                CategoriaFinanciera::create(['nombre' => 'Ofrendas', 'tipo' => 'Ingreso']);
+                CategoriaFinanciera::create(['nombre' => 'Servicios Públicos', 'tipo' => 'Gasto']);
                 $categorias = CategoriaFinanciera::withTrashed()->get();
             }
 
             $accounts = \App\Models\FinancialAccount::withTrashed()->get();
+            $organizaciones = \App\Models\Organizacion::with('financialAccount')->get();
+            $adjustments = \App\Models\FinancialAccountAdjustment::with(['account', 'user'])->orderBy('created_at', 'desc')->get();
 
-            return view('configuracion.index', compact('config', 'usuarios', 'categorias', 'accounts'));
+            return view('configuracion.index', compact('config', 'usuarios', 'categorias', 'accounts', 'organizaciones', 'adjustments'));
         } catch (\Exception $e) {
             return redirect()->route('dashboard')->with('error', 'Error al cargar configuración. Asegúrate de ejecutar las migraciones: ' . $e->getMessage());
         }
@@ -58,22 +60,113 @@ class ConfiguracionController extends Controller
             'nombre_iglesia' => 'required|string|max:255',
             'pastor_general' => 'nullable|string|max:255',
             'direccion' => 'nullable|string|max:255',
-            'telefono' => 'nullable|string|max:20',
+            'telefono' => 'nullable|numeric|digits:8',
             'email' => 'nullable|email|max:255',
             'moneda' => 'required|string|max:5',
-            'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:15360', // Permite webp y hasta 15MB para soportar la subida de imágenes grandes antes del redimensionamiento
+            'firma_pastor' => 'nullable|image|mimes:png|max:5120', // Se recomienda PNG para transparencia
+            'sello_iglesia' => 'nullable|image|mimes:png|max:5120', // Se recomienda PNG para transparencia
         ]);
 
-        $data = $request->except('logo');
+        $data = $request->except(['logo', 'firma_pastor', 'sello_iglesia']);
 
         if ($request->hasFile('logo')) {
             if ($config->logo) {
                 Storage::disk('public')->delete('config/' . $config->logo);
             }
             $file = $request->file('logo');
-            $filename = 'logo_' . time() . '.' . $file->getClientOriginalExtension();
+            
+            // Intentar convertir a PNG y redimensionar si es gigante para máxima compatibilidad con DomPDF
+            $extension = strtolower($file->getClientOriginalExtension());
+            $filename = 'logo_' . time() . '.png';
+            $destinationPath = storage_path('app/public/config/' . $filename);
+            
+            if (!file_exists(dirname($destinationPath))) {
+                mkdir(dirname($destinationPath), 0755, true);
+            }
+
+            $converted = false;
+            try {
+                $img = null;
+                if ($extension === 'jpeg' || $extension === 'jpg') {
+                    $img = @imagecreatefromjpeg($file->getRealPath());
+                } elseif ($extension === 'png') {
+                    $img = @imagecreatefrompng($file->getRealPath());
+                } elseif ($extension === 'gif') {
+                    $img = @imagecreatefromgif($file->getRealPath());
+                } elseif ($extension === 'webp') {
+                    if (function_exists('imagecreatefromwebp')) {
+                        $img = @imagecreatefromwebp($file->getRealPath());
+                    }
+                }
+                
+                if ($img) {
+                    imagealphablending($img, false);
+                    imagesavealpha($img, true);
+                    
+                    // Si la imagen es gigantesca (ej. 6250x6250), la redimensionamos a un tamaño máximo de 800px
+                    // para evitar que DomPDF se quede sin memoria al generar el PDF.
+                    $width = imagesx($img);
+                    $height = imagesy($img);
+                    $maxDim = 800;
+                    
+                    if ($width > $maxDim || $height > $maxDim) {
+                        if ($width > $height) {
+                            $newWidth = $maxDim;
+                            $newHeight = intval($height * ($maxDim / $width));
+                        } else {
+                            $newHeight = $maxDim;
+                            $newWidth = intval($width * ($maxDim / $height));
+                        }
+                        
+                        $resizedImg = imagecreatetruecolor($newWidth, $newHeight);
+                        imagealphablending($resizedImg, false);
+                        imagesavealpha($resizedImg, true);
+                        
+                        // Preservar canal alfa en el redimensionamiento
+                        $transparent = imagecolorallocatealpha($resizedImg, 255, 255, 255, 127);
+                        imagefill($resizedImg, 0, 0, $transparent);
+                        
+                        imagecopyresampled($resizedImg, $img, 0, 0, 0, 0, $newWidth, $newHeight, $width, $height);
+                        imagedestroy($img);
+                        $img = $resizedImg;
+                    }
+                    
+                    $converted = imagepng($img, $destinationPath, 8);
+                    imagedestroy($img);
+                }
+            } catch (\Throwable $e) {
+                \Log::error("Error converting/resizing logo: " . $e->getMessage());
+            }
+
+            if ($converted) {
+                $data['logo'] = $filename;
+            } else {
+                // Si la conversión falla (por falta de memoria u otra causa), guardamos el original
+                $filename = 'logo_' . time() . '.' . $file->getClientOriginalExtension();
+                $file->storeAs('config', $filename, 'public');
+                $data['logo'] = $filename;
+            }
+        }
+
+        if ($request->hasFile('firma_pastor')) {
+            if ($config->firma_pastor) {
+                Storage::disk('public')->delete('config/' . $config->firma_pastor);
+            }
+            $file = $request->file('firma_pastor');
+            $filename = 'firma_' . time() . '.' . $file->getClientOriginalExtension();
             $file->storeAs('config', $filename, 'public');
-            $data['logo'] = $filename;
+            $data['firma_pastor'] = $filename;
+        }
+
+        if ($request->hasFile('sello_iglesia')) {
+            if ($config->sello_iglesia) {
+                Storage::disk('public')->delete('config/' . $config->sello_iglesia);
+            }
+            $file = $request->file('sello_iglesia');
+            $filename = 'sello_' . time() . '.' . $file->getClientOriginalExtension();
+            $file->storeAs('config', $filename, 'public');
+            $data['sello_iglesia'] = $filename;
         }
 
         $config->update($data);
@@ -87,15 +180,20 @@ class ConfiguracionController extends Controller
             'nombre' => 'required|string|max:255',
             'email' => 'required|email|unique:usuarios,email',
             'password' => 'required|string|min:6',
-            'rol' => 'required|string|in:administrador,tesorero,lider,ujier'
+            'rol' => 'required|string|in:administrador,tesorero,lider,ujier',
+            'organizacion_id' => 'nullable|exists:organizaciones,id',
         ]);
 
-        Usuario::create([
+        $usuario = Usuario::create([
             'nombre' => $request->nombre,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'rol' => $request->rol
         ]);
+
+        $usuario->organizacion_id = $request->organizacion_id;
+        $usuario->save();
+
+        $usuario->assignRole($request->rol);
 
         return redirect()->route('configuracion.index')->with(['success' => 'Usuario creado exitosamente.', 'active_tab' => 'usuarios']);
     }
@@ -105,7 +203,8 @@ class ConfiguracionController extends Controller
         $rules = [
             'nombre' => 'required|string|max:255',
             'email' => 'required|email|unique:usuarios,email,' . $usuario->id,
-            'rol' => 'required|string|in:administrador,tesorero,lider,ujier'
+            'rol' => 'required|string|in:administrador,tesorero,lider,ujier',
+            'organizacion_id' => 'nullable|exists:organizaciones,id',
         ];
 
         if ($request->filled('password')) {
@@ -117,7 +216,6 @@ class ConfiguracionController extends Controller
         $data = [
             'nombre' => $request->nombre,
             'email' => $request->email,
-            'rol' => $request->rol
         ];
 
         if ($request->filled('password')) {
@@ -125,6 +223,10 @@ class ConfiguracionController extends Controller
         }
 
         $usuario->update($data);
+        $usuario->organizacion_id = $request->organizacion_id;
+        $usuario->save();
+        
+        $usuario->syncRoles([$request->rol]);
 
         return redirect()->route('configuracion.index')->with(['success' => 'Usuario actualizado exitosamente.', 'active_tab' => 'usuarios']);
     }
@@ -144,10 +246,13 @@ class ConfiguracionController extends Controller
     {
         $request->validate([
             'nombre' => 'required|string|max:255',
-            'tipo' => 'required|string|in:ingreso,gasto'
+            'tipo' => 'required|string|in:ingreso,gasto,Ingreso,Gasto'
         ]);
 
-        CategoriaFinanciera::create($request->all());
+        $data = $request->all();
+        $data['tipo'] = ucfirst(strtolower($data['tipo']));
+
+        CategoriaFinanciera::create($data);
 
         return redirect()->route('configuracion.index')->with(['success' => 'Categoría financiera creada exitosamente.', 'active_tab' => 'catalogos']);
     }
@@ -156,10 +261,13 @@ class ConfiguracionController extends Controller
     {
         $request->validate([
             'nombre' => 'required|string|max:255',
-            'tipo' => 'required|string|in:ingreso,gasto'
+            'tipo' => 'required|string|in:ingreso,gasto,Ingreso,Gasto'
         ]);
 
-        $categoria->update($request->all());
+        $data = $request->all();
+        $data['tipo'] = ucfirst(strtolower($data['tipo']));
+
+        $categoria->update($data);
 
         return redirect()->route('configuracion.index')->with(['success' => 'Categoría financiera actualizada exitosamente.', 'active_tab' => 'catalogos']);
     }
@@ -210,11 +318,38 @@ class ConfiguracionController extends Controller
     public function updatePermisos(Request $request)
     {
         $permisos = $request->input('permisos', []);
-        
-        // El administrador siempre tiene acceso total a todos los módulos
-        $permisos['administrador'] = ['miembros', 'familias', 'celulas', 'asistencia', 'tesoreria', 'reportes', 'configuracion'];
 
-        session(['role_permissions' => $permisos]);
+        // Mapa de módulos UI → permisos Spatie
+        $moduleToPermission = [
+            'miembros' => 'ver_miembros',
+            'familias' => 'ver_familias',
+            'celulas' => 'ver_celulas',
+            'asistencia' => 'ver_asistencia',
+            'tesoreria' => 'ver_tesoreria',
+            'reportes' => 'ver_reportes',
+            'configuracion' => 'ver_configuracion',
+            'eventos' => 'ver_eventos',
+        ];
+
+        // El administrador siempre tiene acceso total — no se modifica
+        $rolesEditables = ['tesorero', 'lider', 'ujier'];
+
+        foreach ($rolesEditables as $roleName) {
+            $role = \Spatie\Permission\Models\Role::findByName($roleName, 'web');
+            $modulosAsignados = $permisos[$roleName] ?? [];
+
+            $permissionNames = [];
+            foreach ($modulosAsignados as $modulo) {
+                if (isset($moduleToPermission[$modulo])) {
+                    $permissionNames[] = $moduleToPermission[$modulo];
+                }
+            }
+
+            $role->syncPermissions($permissionNames);
+        }
+
+        // Limpiar caché de permisos de Spatie
+        app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
 
         return redirect()->route('configuracion.index')->with(['success' => 'Matriz de acceso a módulos por rol actualizada exitosamente.', 'active_tab' => 'usuarios']);
     }
@@ -233,6 +368,73 @@ class ConfiguracionController extends Controller
         }
     }
 
+    public function updateAccount(Request $request, $id)
+    {
+        $account = \App\Models\FinancialAccount::withTrashed()->findOrFail($id);
+
+        $nameChanged = $request->name !== $account->name;
+        $balanceChanged = (float)$request->initial_balance !== (float)$account->initial_balance;
+
+        $rules = [
+            'name' => 'required|string|max:100|unique:financial_accounts,name,' . $id,
+            'initial_balance' => 'required|numeric|min:0',
+            'description' => 'nullable|string|max:255',
+        ];
+
+        if ($nameChanged || $balanceChanged) {
+            $rules['justification'] = 'required|string|min:10|max:1000';
+        } else {
+            $rules['justification'] = 'nullable|string|max:1000';
+        }
+
+        $request->validate($rules, [
+            'name.unique' => 'Ya existe una caja con este nombre.',
+            'initial_balance.min' => 'El saldo inicial no puede ser negativo.',
+            'justification.required' => 'La justificación es obligatoria si modifica el nombre o saldo inicial.',
+            'justification.min' => 'La justificación debe tener al menos 10 caracteres.',
+        ]);
+
+        try {
+            \DB::transaction(function () use ($account, $request, $nameChanged, $balanceChanged) {
+                $oldName = $account->name;
+                $oldBalance = $account->initial_balance;
+
+                $account->update([
+                    'name' => $request->name,
+                    'initial_balance' => $request->initial_balance,
+                    'description' => $request->description,
+                ]);
+
+                if ($nameChanged) {
+                    \App\Models\FinancialAccountAdjustment::create([
+                        'financial_account_id' => $account->id,
+                        'user_id' => auth()->id(),
+                        'field_changed' => 'name',
+                        'old_value' => $oldName,
+                        'new_value' => $request->name,
+                        'justification' => $request->justification,
+                    ]);
+                }
+
+                if ($balanceChanged) {
+                    \App\Models\FinancialAccountAdjustment::create([
+                        'financial_account_id' => $account->id,
+                        'user_id' => auth()->id(),
+                        'field_changed' => 'initial_balance',
+                        'old_value' => $oldBalance,
+                        'new_value' => $request->initial_balance,
+                        'justification' => $request->justification,
+                    ]);
+                }
+            });
+
+            return redirect()->route('configuracion.index')->with(['success' => 'Caja/Fondo actualizada correctamente con registro de auditoría.', 'active_tab' => 'catalogos']);
+        } catch (\Exception $e) {
+            \Log::error("Error al actualizar Caja: " . $e->getMessage());
+            return redirect()->route('configuracion.index')->with(['error' => 'Error al actualizar la caja: ' . $e->getMessage(), 'active_tab' => 'catalogos']);
+        }
+    }
+
     public function destroyAccount($id)
     {
         $account = \App\Models\FinancialAccount::withTrashed()->findOrFail($id);
@@ -247,5 +449,61 @@ class ConfiguracionController extends Controller
         $account->restore();
 
         return redirect()->route('configuracion.index')->with(['success' => 'Caja reactivada con éxito.', 'active_tab' => 'catalogos']);
+    }
+
+    public function storeOrganizacion(Request $request)
+    {
+        $request->validate([
+            'nombre' => 'required|string|max:255',
+            'descripcion' => 'nullable|string',
+            'financial_account_id' => 'nullable|exists:financial_accounts,id',
+            'estado' => 'nullable|boolean'
+        ]);
+
+        \App\Models\Organizacion::create([
+            'nombre' => $request->nombre,
+            'descripcion' => $request->descripcion,
+            'financial_account_id' => $request->financial_account_id,
+            'estado' => $request->has('estado') ? (bool) $request->estado : true
+        ]);
+
+        return redirect()->route('configuracion.index')->with(['success' => 'Organización creada exitosamente.', 'active_tab' => 'catalogos']);
+    }
+
+    public function updateOrganizacion(Request $request, $id)
+    {
+        $organizacion = \App\Models\Organizacion::findOrFail($id);
+
+        $request->validate([
+            'nombre' => 'required|string|max:255',
+            'descripcion' => 'nullable|string',
+            'financial_account_id' => 'nullable|exists:financial_accounts,id',
+            'estado' => 'nullable|boolean'
+        ]);
+
+        $organizacion->update([
+            'nombre' => $request->nombre,
+            'descripcion' => $request->descripcion,
+            'financial_account_id' => $request->financial_account_id,
+            'estado' => $request->has('estado') ? (bool) $request->estado : $organizacion->estado
+        ]);
+
+        return redirect()->route('configuracion.index')->with(['success' => 'Organización actualizada exitosamente.', 'active_tab' => 'catalogos']);
+    }
+
+    public function destroyOrganizacion($id)
+    {
+        $organizacion = \App\Models\Organizacion::findOrFail($id);
+        $organizacion->update(['estado' => false]);
+
+        return redirect()->route('configuracion.index')->with(['success' => 'Organización archivada correctamente.', 'active_tab' => 'catalogos']);
+    }
+
+    public function restoreOrganizacion($id)
+    {
+        $organizacion = \App\Models\Organizacion::findOrFail($id);
+        $organizacion->update(['estado' => true]);
+
+        return redirect()->route('configuracion.index')->with(['success' => 'Organización reactivada con éxito.', 'active_tab' => 'catalogos']);
     }
 }

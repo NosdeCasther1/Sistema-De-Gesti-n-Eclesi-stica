@@ -25,9 +25,12 @@ class DashboardController extends Controller
             ->get();
 
         $mesActual = now()->month;
+        $driver = DB::connection()->getDriverName();
+        $orderRaw = $driver === 'sqlite' ? "strftime('%d', fecha_nacimiento) ASC" : 'DAY(fecha_nacimiento) ASC';
+
         $cumpleañeros = Miembro::whereMonth('fecha_nacimiento', $mesActual)
             ->where('estado', true)
-            ->orderByRaw('DAY(fecha_nacimiento) ASC')
+            ->orderByRaw($orderRaw)
             ->get()
             ->map(function ($miembro) {
                 $fechaNac = \Carbon\Carbon::parse($miembro->fecha_nacimiento);

@@ -1,11 +1,11 @@
 <template x-if="showModalCrearCategoria">
     <div class="fixed inset-0 z-[9999] overflow-y-auto flex items-center justify-center p-4" aria-labelledby="modal-title" role="dialog" aria-modal="true">
         <!-- Overlay -->
-        <div @click="showModalCrearCategoria = false; document.getElementById('formModalCrearCategoria').reset()" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm"></div>
+        <div @click="document.getElementById('formModalCrearCategoria')?.reset(); showModalCrearCategoria = false" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm"></div>
         
         <!-- Contenedor del Modal -->
-        <div @click.away="showModalCrearCategoria = false; document.getElementById('formModalCrearCategoria').reset()"
-             @keydown.escape.window="showModalCrearCategoria = false; document.getElementById('formModalCrearCategoria').reset()"
+        <div 
+             @keydown.escape.window="document.getElementById('formModalCrearCategoria')?.reset(); showModalCrearCategoria = false"
              class="relative bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800/80 max-w-md w-full overflow-hidden z-10 text-left p-0 group">
             
             <div class="border-b border-slate-200 dark:border-slate-800 p-6 flex items-center justify-between bg-slate-50/50 dark:bg-slate-800/50">
@@ -15,12 +15,12 @@
                     </div>
                     <span>Nueva Categoría Financiera</span>
                 </h6>
-                <button type="button" class="text-slate-400 hover:text-slate-500 dark:hover:text-slate-300 border-0 bg-transparent cursor-pointer transition-colors" @click="showModalCrearCategoria = false; document.getElementById('formModalCrearCategoria').reset()">
+                <button type="button" class="text-slate-400 hover:text-slate-500 dark:hover:text-slate-300 border-0 bg-transparent cursor-pointer transition-colors" @click="document.getElementById('formModalCrearCategoria')?.reset(); showModalCrearCategoria = false">
                     <i class="fas fa-times text-lg"></i>
                 </button>
             </div>
 
-            <form id="formModalCrearCategoria" action="{{ route('categorias.store') }}" method="POST" @submit="isSubmitting = true" class="m-0">
+            <form id="formModalCrearCategoria" action="{{ route('categorias.store') }}" method="POST" @submit="if ($el.checkValidity()) { isSubmitting = true }" class="m-0">
                 @csrf
                 <div class="p-6 text-left space-y-4">
                     <div>
@@ -37,7 +37,7 @@
                 </div>
 
                 <div class="border-t border-slate-200 dark:border-slate-800 p-4 bg-slate-50/50 dark:bg-slate-800/50 flex justify-end gap-3">
-                    <button type="button" @click="showModalCrearCategoria = false; document.getElementById('formModalCrearCategoria').reset()" class="px-5 py-2.5 text-xs font-bold text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700/60 rounded-xl transition-all border-0 bg-transparent cursor-pointer">Cancelar</button>
+                    <button type="button" @click="document.getElementById('formModalCrearCategoria')?.reset(); showModalCrearCategoria = false" class="px-5 py-2.5 text-xs font-bold text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700/60 rounded-xl transition-all border-0 bg-transparent cursor-pointer">Cancelar</button>
                     
                     <button type="submit" :disabled="isSubmitting" 
                             class="btn-bento-warning px-6 py-2.5 rounded-xl text-xs font-bold flex items-center justify-center gap-2 disabled:opacity-50 transition-all cursor-pointer disabled:cursor-not-allowed border-0">

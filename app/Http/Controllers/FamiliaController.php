@@ -46,7 +46,7 @@ class FamiliaController extends Controller
         $request->validate([
             'nombre' => 'required|string|max:100|unique:familias,nombre',
             'direccion' => 'nullable|string|max:255',
-            'telefono_principal' => 'nullable|string|max:20',
+            'telefono_principal' => 'nullable|numeric|digits:8',
             'notas' => 'nullable|string',
             'celula_id' => 'nullable|exists:celulas,id'
         ]);
@@ -61,7 +61,7 @@ class FamiliaController extends Controller
      */
     public function show(string $id)
     {
-        $familia = \App\Models\Familia::with('miembros', 'celula')->findOrFail($id);
+        $familia = \App\Models\Familia::with('miembros.ministerios', 'celula')->findOrFail($id);
         return view('familias.show', compact('familia'));
     }
 
@@ -83,7 +83,7 @@ class FamiliaController extends Controller
         $request->validate([
             'nombre' => 'required|string|max:100|unique:familias,nombre,' . $id,
             'direccion' => 'nullable|string|max:255',
-            'telefono_principal' => 'nullable|string|max:20',
+            'telefono_principal' => 'nullable|numeric|digits:8',
             'notas' => 'nullable|string',
             'celula_id' => 'nullable|exists:celulas,id'
         ]);

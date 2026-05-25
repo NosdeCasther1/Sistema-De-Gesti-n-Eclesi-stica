@@ -13,6 +13,8 @@ class Configuracion extends Model
         'telefono',
         'email',
         'logo',
+        'firma_pastor',
+        'sello_iglesia',
         'moneda'
     ];
 }

@@ -264,12 +264,15 @@
         text-shadow: 0 1px 2px rgba(0,0,0,0.5) !important;
         letter-spacing: 0.01em !important;
     }
-    /* Eventos de bloque horizontal (ej. multidiarios en grilla) */
+    /* Eventos de bloque (multi-día o todo el día) en Modo Oscuro */
+    .dark .fc-daygrid-block-event:not(.fc-list-event),
     .dark .fc-h-event:not(.fc-list-event) {
         background-color: var(--fc-event-bg-color, #3b82f6) !important;
         border-left: none !important;
         background-image: linear-gradient(rgba(255, 255, 255, 0.15), rgba(0, 0, 0, 0.1)) !important;
     }
+    .dark .fc-daygrid-block-event:not(.fc-list-event) .fc-event-main,
+    .dark .fc-daygrid-block-event:not(.fc-list-event) .fc-event-title,
     .dark .fc-h-event:not(.fc-list-event) .fc-event-main,
     .dark .fc-h-event:not(.fc-list-event) .fc-event-title {
         color: #ffffff !important;
@@ -387,30 +390,134 @@
         display: none !important;
     }
 
-    /* Estilos de Impresión de Alta Fidelidad (Solo Calendario) */
+
+
+
+    /* --- 1. ESTILOS PREMIUM PARA FULLCALENDAR (MODO CLARO) --- */
+    /* Estilo base para todos los eventos */
+    .fc-event:not(.fc-list-event) {
+        border: 1px solid rgba(0, 0, 0, 0.02) !important;
+        border-radius: 6px !important;
+        padding: 3px 6px !important;
+        font-size: 0.78rem !important;
+        font-weight: 600 !important;
+        cursor: pointer !important;
+        margin-bottom: 3px !important;
+        transition: transform 0.15s ease;
+    }
+
+    /* 1.1 EVENTOS TIPO "DOT" o TIMED (Eventos de un solo día con hora específica) */
+    .fc-daygrid-dot-event:not(.fc-list-event),
+    .fc-event:not(.fc-daygrid-block-event):not(.fc-h-event):not(.fc-list-event) {
+        background-color: var(--fc-event-bg-color-alpha, rgba(79, 70, 229, 0.1)) !important;
+        border-left: 4px solid var(--fc-event-border-color, #4f46e5) !important;
+    }
+    
+    .fc-daygrid-dot-event:not(.fc-list-event) .fc-event-main,
+    .fc-daygrid-dot-event:not(.fc-list-event) .fc-event-title,
+    .fc-daygrid-dot-event:not(.fc-list-event) .fc-event-time,
+    .fc-event:not(.fc-daygrid-block-event):not(.fc-h-event):not(.fc-list-event) .fc-event-main,
+    .fc-event:not(.fc-daygrid-block-event):not(.fc-h-event):not(.fc-list-event) .fc-event-title,
+    .fc-event:not(.fc-daygrid-block-event):not(.fc-h-event):not(.fc-list-event) .fc-event-time {
+        color: var(--fc-event-text-color, #4338ca) !important;
+        font-weight: 700 !important;
+    }
+
+    /* 1.2 EVENTOS DE BLOQUE (Eventos todo el día o multi-día) */
+    .fc-daygrid-block-event:not(.fc-list-event),
+    .fc-h-event:not(.fc-list-event) {
+        background-color: var(--fc-event-bg-color, #4f46e5) !important;
+        border-left: none !important;
+        background-image: linear-gradient(rgba(255, 255, 255, 0.15), rgba(0, 0, 0, 0.05)) !important;
+    }
+
+    .fc-daygrid-block-event:not(.fc-list-event) .fc-event-main,
+    .fc-daygrid-block-event:not(.fc-list-event) .fc-event-title,
+    .fc-daygrid-block-event:not(.fc-list-event) .fc-event-time,
+    .fc-h-event:not(.fc-list-event) .fc-event-main,
+    .fc-h-event:not(.fc-list-event) .fc-event-title,
+    .fc-h-event:not(.fc-list-event) .fc-event-time {
+        color: #ffffff !important;
+        font-weight: 700 !important;
+        text-shadow: 0 1px 2px rgba(0,0,0,0.2) !important;
+    }
+    /* Quitar bordes pesados del calendario */
+    .fc-theme-standard td, .fc-theme-standard th { border-color: rgba(148, 163, 184, 0.2) !important; }
+    .dark .fc-theme-standard td, .dark .fc-theme-standard th { border-color: rgba(51, 65, 85, 0.5) !important; }
+
+    /* ==========================================================================
+       ESTILOS DE IMPRESIÓN DE ALTA FIDELIDAD (COMPLETO Y EN UNA SOLA PÁGINA)
+       ========================================================================== */
     @media print {
-        @page { size: landscape; margin: 0.5cm; }
+        @page { 
+            size: landscape; 
+            margin: 0.4cm; 
+        }
         
-        body, html, .main-content, .bento-container, .card-module {
+        /* 1. LIBERACIÓN ABSOLUTA DE CONTENEDORES Y ALTURAS FIJAS */
+        html, body, #app, .main-content, main, .bento-container, .card-module, #calendar, .fc {
             background: white !important;
             color: black !important;
+            overflow: visible !important;
+            height: auto !important;
+            max-height: none !important;
+            min-height: 0 !important;
             margin: 0 !important;
             padding: 0 !important;
             width: 100% !important;
             max-width: 100% !important;
-            height: auto !important;
-            min-height: 0 !important;
-            border: none !important;
             box-shadow: none !important;
+            border: none !important;
+            display: block !important;
         }
 
-        /* Mostrar cabecera corporativa al imprimir */
+        /* Optimización de escala para asegurar que todo quepa en una sola página landscape */
+        .bento-container {
+            zoom: 0.78 !important;
+        }
+        /* Fallback para Firefox usando scale */
+        @-moz-document url-prefix() {
+            .bento-container {
+                transform: scale(0.78);
+                transform-origin: top left;
+                width: 128% !important;
+            }
+        }
+
+        /* Evitar saltos de página dentro del calendario */
+        #calendar, .fc, .fc-scrollgrid {
+            page-break-inside: avoid !important;
+            break-inside: avoid !important;
+        }
+
+        /* 2. OCULTAR ELEMENTOS INNECESARIOS (BARRA LATERAL, NAVEGACIÓN, BOTONES) */
+        aside, #sidebar, .sidebar, header, .header, footer, button, .btn, .no-print, .print-hidden,
+        .fc-header-toolbar, .fc-toolbar, .fc-toolbar-chunk, .fc-button-group {
+            display: none !important;
+            visibility: hidden !important;
+            opacity: 0 !important;
+            height: 0 !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+        .main-content {
+            margin-left: 0 !important;
+            padding: 0 !important;
+        }
+
+        .main-content > main {
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+
+        /* 3. MOSTRAR CABECERA CORPORATIVA CON ANCHO COMPLETO Y MÁS COMPACTA */
         .print-header {
             display: block !important;
             width: 100% !important;
             border-bottom: 2px solid #cbd5e1 !important;
-            padding-bottom: 12px !important;
-            margin-bottom: 20px !important;
+            padding-bottom: 6px !important;
+            margin-bottom: 10px !important;
         }
 
         .print-header-flex {
@@ -422,7 +529,7 @@
         .print-header-left {
             display: flex !important;
             align-items: center !important;
-            gap: 15px !important;
+            gap: 10px !important;
         }
 
         .print-logo-container {
@@ -431,19 +538,19 @@
             justify-content: center !important;
             background-color: #f1f5f9 !important;
             border: 1px solid #cbd5e1 !important;
-            border-radius: 12px !important;
-            height: 65px !important;
-            width: 65px !important;
+            border-radius: 6px !important;
+            height: 42px !important;
+            width: 42px !important;
         }
 
         .print-logo-img {
-            max-height: 58px !important;
-            max-width: 58px !important;
+            max-height: 36px !important;
+            max-width: 36px !important;
             object-fit: contain !important;
         }
 
         .print-church-title {
-            font-size: 22px !important;
+            font-size: 16px !important;
             font-weight: 700 !important;
             color: #0f172a !important;
             margin: 0 !important;
@@ -451,46 +558,58 @@
         }
 
         .print-church-subtitle {
-            font-size: 10px !important;
+            font-size: 8px !important;
             font-weight: 600 !important;
             color: #64748b !important;
-            margin: 2px 0 0 0 !important;
+            margin: 1px 0 0 0 !important;
             text-transform: uppercase !important;
             letter-spacing: 0.05em !important;
         }
 
         .print-info-right {
             text-align: right !important;
-            font-size: 10px !important;
+            font-size: 8px !important;
             color: #334155 !important;
-            line-height: 1.5 !important;
+            line-height: 1.3 !important;
         }
 
-        /* Corregir desplazamientos y márgenes de la barra lateral y cabeceras */
-        .sidebar, #sidebar, header, .header, footer, .no-print {
-            display: none !important;
+        /* 4. PREVENIR SCROLLS Y FORZAR AJUSTE DE ALTURA EN FULLCALENDAR */
+        .fc-scroller, .fc-scroller-harness {
+            overflow: visible !important;
+            height: auto !important;
         }
 
-        .main-content {
-            margin-left: 0 !important;
-            padding: 0 !important;
+        .fc-view-harness, .fc-view-harness-active {
+            height: auto !important;
+            min-height: 0 !important;
         }
 
-        .main-content > main {
-            padding-top: 0 !important;
-            margin: 0 !important;
+        .fc-scrollgrid {
+            height: auto !important;
         }
 
-        /* Hacer que el calendario y todas sus tablas se adapten perfectamente al ancho completo */
-        #calendar, 
-        .fc, 
+        .fc-daygrid-body, .fc-scrollgrid-sync-table {
+            height: auto !important;
+        }
+
+        /* Anular las alturas de las filas fijas inyectadas por JS sin romper el posicionamiento interno de celdas */
+        .fc-daygrid-row,
+        .fc-scrollgrid-sync-table tr {
+            height: auto !important;
+        }
+
+        .fc-daygrid-day-frame {
+            height: 100% !important; /* Permitir que ocupe todo el espacio de la fila */
+            min-height: 48px !important; /* Altura reducida a 48px para forzar una sola página de impresión */
+        }
+
+        /* Ajustar ancho de tablas del calendario al 100% */
         .fc-view-harness, 
         .fc-view, 
         .fc-daygrid, 
         .fc-scrollgrid, 
         .fc-scrollgrid-sync-table, 
         .fc-col-header, 
-        .fc-daygrid-body,
         .fc-daygrid-body table, 
         .fc-scrollgrid-sync-table table,
         .fc-scrollgrid-section-body table,
@@ -498,40 +617,21 @@
             width: 100% !important;
             max-width: 100% !important;
             min-width: 100% !important;
-        }
-
-        .fc-scrollgrid, 
-        .fc-scrollgrid-sync-table, 
-        .fc-col-header,
-        .fc-scrollgrid-section-body table,
-        .fc-scrollgrid-section-header table {
             table-layout: fixed !important;
         }
 
-        /* Eliminar scrollbars y overflows en la hoja de impresión */
-        .fc-scroller, 
-        .fc-scroller-harness,
-        .overflow-auto,
-        .card-module,
-        main,
-        .bento-container {
-            overflow: visible !important;
-            height: auto !important;
+        .fc-scrollgrid {
+            border-collapse: collapse !important;
         }
 
-        #calendar {
-            height: auto !important;
-            margin: 0 !important;
-            padding: 0 !important;
-        }
-
-        .fc-header-toolbar {
-            margin-bottom: 15px !important;
-        }
-
-        /* Optimizar legibilidad y contraste de los eventos */
+        /* 5. DISEÑO DE CELDAS Y EVENTOS PARA IMPRESIÓN */
         .fc {
             color: #000000 !important;
+        }
+
+        .fc-col-header-cell {
+            padding: 3px 0 !important;
+            background-color: #f8fafc !important;
         }
 
         .fc-col-header-cell-cushion, 
@@ -539,13 +639,41 @@
             color: #000000 !important;
             font-weight: 700 !important;
             text-decoration: none !important;
+            font-size: 10px !important;
         }
 
+        .fc-daygrid-day-number {
+            padding: 2px 4px !important;
+        }
+
+        /* Optimizar eventos en la impresión (usar bordes negros/grises y texto negro sobre fondo blanco/gris claro) */
         .fc-event {
+            background-color: #f8fafc !important;
+            border: 1px solid #cbd5e1 !important;
+            border-left: 3px solid var(--fc-event-border-color, #4f46e5) !important; /* Mantener color de categoría como indicador visual */
+            color: #0f172a !important;
+            padding: 1px 3px !important;
+            margin-bottom: 1px !important;
+            page-break-inside: avoid !important;
+            border-radius: 3px !important;
+        }
+
+        .fc-event .fc-event-main,
+        .fc-event .fc-event-title,
+        .fc-event .fc-event-time {
+            color: #0f172a !important;
+            font-weight: 700 !important;
+            font-size: 9px !important;
+            line-height: 1.1 !important;
+            white-space: normal !important; /* Permitir saltos de línea para que los títulos se lean completos */
+        }
+
+        /* Para eventos de bloque (multi-día) en la impresión, usar fondo un poco más oscuro o gris suave */
+        .fc-daygrid-block-event,
+        .fc-h-event {
             background-color: #f1f5f9 !important;
             border: 1px solid #cbd5e1 !important;
-            color: #0f172a !important;
-            padding: 2px 4px !important;
+            border-left: 3px solid var(--fc-event-border-color, #4f46e5) !important;
         }
     }
 </style>
@@ -587,21 +715,23 @@
         </div>
     </div>
     <!-- ===== ENCABEZADO Y BOTONES DE VISTA ===== -->
-    <div class="flex justify-between items-center mb-4 flex-wrap gap-3 flex-shrink-0 no-print">
-        <!-- Compact Google Calendar Connection Status -->
+    <div class="flex justify-between items-center mb-4 flex-wrap gap-3 flex-shrink-0 no-print print-hidden">
+        <!-- ===== CONTROL RÁPIDO DE GOOGLE CALENDAR ===== -->
         <div class="flex items-center">
             @if($isConnected)
-                <span class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full text-xs font-semibold bg-emerald-500/10 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 shadow-sm" title="Google Calendar Conectado y Sincronizando">
-                    <i class="fab fa-google text-emerald-500"></i>
-                    <span class="font-bold hidden sm:inline">Google Calendar: Activo</span>
-                    <span class="font-bold sm:hidden">GCal: Activo</span>
-                </span>
+                {{-- Botón de Sincronización Manual --}}
+                <form action="{{ route('google.calendar.sync') }}" method="POST" class="inline">
+                    @csrf
+                    <button type="submit" class="flex items-center gap-2 px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors shadow-sm" title="Sincronizar eventos con Google Calendar">
+                        <svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                        Sincronizar Calendar
+                    </button>
+                </form>
             @else
-                <a href="{{ route('google.calendar.connect') }}" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full text-xs font-semibold bg-amber-500/10 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 hover:bg-amber-500/20 dark:hover:bg-amber-500/20 transition-all shadow-sm" title="¡Sincronización con Google Calendar Inactiva! Haz clic para vincular.">
-                    <i class="fab fa-google text-amber-500"></i>
-                    <span class="font-bold hidden sm:inline">Google Calendar: Vincular Cuenta</span>
-                    <span class="font-bold sm:hidden">GCal: Vincular</span>
-                    <i class="fas fa-exclamation-circle text-amber-500 animate-pulse"></i>
+                {{-- Botón de Conexión Rápida --}}
+                <a href="{{ route('google.calendar.connect') }}" class="flex items-center gap-2 px-4 py-2 bg-white dark:bg-slate-800 border border-red-200 dark:border-red-900/50 rounded-xl text-sm font-bold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors shadow-sm" title="Vincular cuenta de Google Calendar">
+                    <i class="fab fa-google text-red-500"></i>
+                    Vincular Google Calendar
                 </a>
             @endif
         </div>
@@ -620,7 +750,7 @@
     </div>
 
     <!-- BUSCADOR Y FILTROS (Solo visible en modo lista) -->
-    <div :class="viewMode === 'list' ? 'card-module p-4 mb-4 shadow-sm flex-shrink-0' : 'hidden-important'">
+    <div :class="viewMode === 'list' ? 'card-module p-4 mb-4 shadow-sm flex-shrink-0 print-hidden' : 'hidden-important'">
         <form action="{{ route('eventos.index') }}" method="GET" id="searchForm">
             <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
                 <div class="md:col-span-8 relative">
@@ -667,7 +797,7 @@
                 </thead>
                 <tbody class="border-top-0 divide-y divide-slate-200 dark:divide-slate-700/50">
                     @forelse($eventos as $evento)
-                        <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors border-b border-slate-200 dark:border-slate-800/50 last:border-0">
+                        <tr class="group hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors border-b border-slate-200 dark:border-slate-800/50 last:border-0">
                             <td class="pl-4 py-3">
                                 <div class="flex items-center gap-3">
                                     @php
@@ -687,8 +817,13 @@
                                         $iconClass = $icons[$evento->tipo] ?? 'fas fa-calendar-alt';
                                     @endphp
 
-                                    <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 {{ $colorClass }}">
-                                        <i class="{{ $iconClass }} text-lg"></i>
+                                    <div class="h-12 w-12 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 flex flex-col items-center justify-center shrink-0 shadow-inner group-hover:border-indigo-300 dark:group-hover:border-indigo-600 transition-colors">
+                                        <span class="text-[8px] font-black uppercase tracking-widest text-rose-500 dark:text-rose-400">
+                                            {{ \Carbon\Carbon::parse($evento->fecha_inicio ?? $evento->fecha)->translatedFormat('M') }}
+                                        </span>
+                                        <span class="text-lg font-black text-slate-800 dark:text-white leading-none mt-0.5">
+                                            {{ \Carbon\Carbon::parse($evento->fecha_inicio ?? $evento->fecha)->format('d') }}
+                                        </span>
                                     </div>
                                     <div>
                                         <div class="font-bold text-slate-900 dark:text-white mb-0.5">{{ $evento->titulo }}</div>
@@ -777,12 +912,12 @@
 
     <!-- ===== CONTENIDO VISTA CALENDARIO ===== -->
     <div :class="viewMode === 'calendar' ? 'card-module p-4 shadow-sm flex flex-col flex-grow mb-4 min-h-0' : 'hidden-important'">
-        <div class="flex justify-between items-center mb-4 flex-wrap gap-3 border-b border-slate-200 dark:border-slate-800 pb-3 flex-shrink-0 no-print">
+        <div class="flex justify-between items-center mb-4 flex-wrap gap-3 border-b border-slate-200 dark:border-slate-800 pb-3 flex-shrink-0 no-print print-hidden">
             <div>
                 <h5 class="font-bold text-slate-800 dark:text-white mb-1"><i class="fas fa-calendar-alt text-blue-500 mr-2"></i> Vista Mensual Interactiva</h5>
                 <p class="text-slate-500 dark:text-slate-400 text-sm mb-0">Haz clic en cualquier día para agendar un evento en esa fecha</p>
             </div>
-            <button onclick="window.print()" class="btn-print-premium bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 px-4 py-2 rounded-full font-bold shadow-sm flex items-center gap-2">
+            <button onclick="window.print()" class="btn-print-premium bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 px-4 py-2 rounded-full font-bold shadow-sm flex items-center gap-2 print-hidden">
                 <i class="fas fa-print"></i> <span>Imprimir Calendario</span>
             </button>
         </div>
@@ -848,9 +983,19 @@
 
                 // Inyectar colores dinámicos premium para Modo Oscuro y Claro
                 if (info.event.backgroundColor) {
-                    info.el.style.setProperty('--fc-event-border-color', info.event.backgroundColor, 'important');
-                    info.el.style.setProperty('--fc-event-bg-color', info.event.backgroundColor, 'important');
-                    info.el.style.setProperty('--fc-event-bg-color-alpha', info.event.backgroundColor + '25', 'important'); // 15% opacity hex
+                    var baseColor = info.event.backgroundColor.toLowerCase();
+                    info.el.style.setProperty('--fc-event-border-color', baseColor, 'important');
+                    info.el.style.setProperty('--fc-event-bg-color', baseColor, 'important');
+                    info.el.style.setProperty('--fc-event-bg-color-alpha', baseColor + '1e', 'important'); // ~12% opacity (1e in hex is 30/255)
+                    
+                    var textColors = {
+                        '#3b82f6': '#1d4ed8', // Servicio (Azul oscuro)
+                        '#10b981': '#065f46', // Célula (Verde oscuro)
+                        '#f59e0b': '#92400e', // Reunión (Miel/marrón)
+                        '#8b5cf6': '#5b21b6'  // Especial (Púrpura oscuro)
+                    };
+                    var textColor = textColors[baseColor] || '#1e293b';
+                    info.el.style.setProperty('--fc-event-text-color', textColor, 'important');
                 }
             }
         });

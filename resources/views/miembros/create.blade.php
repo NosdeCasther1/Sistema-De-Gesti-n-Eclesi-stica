@@ -121,7 +121,8 @@
                     </div>
                     <div>
                         <label class="block text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">DPI / Documento de Identidad *</label>
-                        <input type="text" name="dpi" value="{{ old('dpi') }}" placeholder="Número de documento oficial" required
+                        <input type="text" name="dpi" value="{{ old('dpi') }}" placeholder="Ej: 1950601561305 (13 dígitos)" required
+                               maxlength="13" oninput="this.value = this.value.replace(/[^0-9]/g, '').substring(0, 13)"
                                class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 px-4 py-3.5 text-slate-900 dark:text-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all shadow-sm font-mono">
                     </div>
                     <div>
@@ -149,7 +150,8 @@
                     </div>
                     <div>
                         <label class="block text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">Teléfono</label>
-                        <input type="text" name="telefono" value="{{ old('telefono') }}" placeholder="Ej: 5555-1234"
+                        <input type="text" name="telefono" value="{{ old('telefono') }}" placeholder="Ej: 55551234 (8 dígitos)"
+                               maxlength="8" oninput="this.value = this.value.replace(/[^0-9]/g, '').substring(0, 8)"
                                class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 px-4 py-3.5 text-slate-900 dark:text-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all shadow-sm font-mono">
                     </div>
                     <div>
@@ -221,26 +223,84 @@
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
-                    <div>
-                        <label class="block text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">Ministerio</label>
-                        <input type="text" name="ministerio" value="{{ old('ministerio') }}" placeholder="Ej: Alabanza, Jóvenes, Damas..."
-                               class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 px-4 py-3.5 text-slate-900 dark:text-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all shadow-sm">
+                    {{-- ESTADO DEL MIEMBRO --}}
+                    <div class="md:col-span-2 mb-6" x-data="{ activo: true }">
+                        <label class="block text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-3">Estado del Miembro</label>
+                        <div class="grid grid-cols-2 gap-3">
+                            <label @click="activo = true"
+                                   :class="activo ? 'bg-emerald-50 dark:bg-emerald-500/15 border-emerald-500 text-emerald-700 dark:text-emerald-300 shadow-md shadow-emerald-500/10' : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 hover:border-slate-400'"
+                                   class="cursor-pointer border-2 rounded-2xl p-4 flex items-center gap-3 transition-all duration-200">
+                                <input type="radio" name="estado" value="1" x-bind:checked="activo" class="sr-only">
+                                <div :class="activo ? 'bg-emerald-500' : 'bg-slate-300 dark:bg-slate-600'" class="w-5 h-5 rounded-full flex items-center justify-center transition-colors shrink-0">
+                                    <i class="fas fa-check text-white text-[9px]"></i>
+                                </div>
+                                <div>
+                                    <p class="text-xs font-black leading-tight">Miembro Activo</p>
+                                    <p class="text-[10px] font-medium opacity-70 leading-tight">Puede votar y participar</p>
+                                </div>
+                            </label>
+                            <label @click="activo = false"
+                                   :class="!activo ? 'bg-rose-50 dark:bg-rose-500/15 border-rose-500 text-rose-700 dark:text-rose-300 shadow-md shadow-rose-500/10' : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 hover:border-slate-400'"
+                                   class="cursor-pointer border-2 rounded-2xl p-4 flex items-center gap-3 transition-all duration-200">
+                                <input type="radio" name="estado" value="0" x-bind:checked="!activo" class="sr-only">
+                                <div :class="!activo ? 'bg-rose-500' : 'bg-slate-300 dark:bg-slate-600'" class="w-5 h-5 rounded-full flex items-center justify-center transition-colors shrink-0">
+                                    <i class="fas fa-times text-white text-[9px]"></i>
+                                </div>
+                                <div>
+                                    <p class="text-xs font-black leading-tight">Miembro Inactivo</p>
+                                    <p class="text-[10px] font-medium opacity-70 leading-tight">Sin privilegios de voto</p>
+                                </div>
+                            </label>
+                        </div>
                     </div>
-                    <div>
-                        <label class="block text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">Etapa de Consolidación</label>
-                        <select name="etapa_consolidacion" class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all shadow-sm cursor-pointer">
-                            <option value="Nuevo"          {{ old('etapa_consolidacion') == 'Nuevo' ? 'selected' : '' }}>Nuevo</option>
-                            <option value="En Discipulado" {{ old('etapa_consolidacion') == 'En Discipulado' ? 'selected' : '' }}>En Discipulado</option>
-                            <option value="Asignado a Célula" {{ old('etapa_consolidacion') == 'Asignado a Célula' ? 'selected' : '' }}>Asignado a Célula</option>
-                            <option value="Bautizado"      {{ old('etapa_consolidacion') == 'Bautizado' ? 'selected' : '' }}>Bautizado</option>
-                        </select>
+
+                    {{-- ETAPA DE CONSOLIDACIÓN ESPIRITUAL --}}
+                    <div class="md:col-span-2 mb-6">
+                        <label class="block text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-3">Etapa de Consolidación Espiritual *</label>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-3" x-data="{ etapa: '{{ old('etapa_consolidacion', 'Nuevo') }}' }">
+
+                            @php
+                            $etapas = [
+                                ['value' => 'Nuevo',            'icon' => 'fa-star',        'color' => 'slate',   'label' => 'Nuevo'],
+                                ['value' => 'En Discipulado',   'icon' => 'fa-book-open',   'color' => 'blue',    'label' => 'En Discipulado'],
+                                ['value' => 'Asignado a Célula','icon' => 'fa-users',        'color' => 'purple',  'label' => 'Asignado a Célula'],
+                                ['value' => 'Bautizado',        'icon' => 'fa-dove',         'color' => 'emerald', 'label' => 'Bautizado ✓'],
+                            ];
+                            @endphp
+
+                            @foreach($etapas as $e)
+                            <label @click="etapa = '{{ $e['value'] }}'"
+                                   :class="etapa === '{{ $e['value'] }}'
+                                       ? '{{ $e['color'] === 'emerald' ? 'bg-emerald-50 dark:bg-emerald-900 border-emerald-500 text-emerald-700 dark:text-emerald-300 shadow-md' : ($e['color'] === 'blue' ? 'bg-blue-50 dark:bg-blue-900 border-blue-500 text-blue-700 dark:text-blue-300 shadow-md' : ($e['color'] === 'purple' ? 'bg-purple-50 dark:bg-purple-900 border-purple-500 text-purple-700 dark:text-purple-300 shadow-md' : 'bg-slate-100 dark:bg-slate-800 border-slate-400 text-slate-800 dark:text-white shadow-md')) }}'
+                                       : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 hover:border-slate-400 dark:hover:border-slate-500'"
+                                   class="cursor-pointer border-2 rounded-2xl p-4 flex flex-col items-center justify-center gap-2 text-center transition-all duration-200">
+                                <input type="radio" name="etapa_consolidacion" value="{{ $e['value'] }}" x-bind:checked="etapa === '{{ $e['value'] }}'" class="sr-only">
+                                <i class="fas {{ $e['icon'] }} text-xl"></i>
+                                <span class="text-[11px] font-bold leading-tight">{{ $e['label'] }}</span>
+                            </label>
+                            @endforeach
+                        </div>
+                        <p class="text-[10px] text-amber-600 dark:text-amber-400 mt-2 font-semibold"><i class="fas fa-info-circle mr-1"></i>Solo los miembros <strong>Bautizados</strong> pueden votar en elecciones.</p>
                     </div>
-                    <div>
-                        <label class="block text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">Fecha de Integración / Bautismo</label>
-                        <input type="date" name="fecha_integracion" value="{{ old('fecha_integracion', now()->format('Y-m-d')) }}"
-                               class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all shadow-sm">
+
+                    {{-- FECHAS DE INTEGRACIÓN Y BAUTISMO --}}
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        <div>
+                            <label class="block text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">
+                                <i class="fas fa-calendar-alt text-amber-500 mr-1"></i> Fecha de Integración a la Iglesia
+                            </label>
+                            <input type="date" name="fecha_integracion" value="{{ old('fecha_integracion', now()->format('Y-m-d')) }}"
+                                   class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all shadow-sm">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">
+                                <i class="fas fa-water text-blue-500 mr-1"></i> Fecha de Bautismo en Aguas
+                            </label>
+                            <input type="date" name="fecha_bautismo" value="{{ old('fecha_bautismo') }}"
+                                   class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all shadow-sm">
+                        </div>
                     </div>
-                    <div>
+                    <div class="mb-6">
                         <label class="block text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">Familia (Núcleo Familiar)</label>
                         <select name="familia_id" class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all shadow-sm cursor-pointer">
                             <option value="">Seleccionar Familia (Opcional)</option>
@@ -248,6 +308,46 @@
                                 <option value="{{ $f->id }}" {{ old('familia_id') == $f->id ? 'selected' : '' }}>{{ $f->nombre }}</option>
                             @endforeach
                         </select>
+                    </div>
+
+                    {{-- ORGANIZACIONES / SOCIEDADES A LAS QUE PERTENECE --}}
+                    <div class="md:col-span-2 mb-6">
+                        <label class="block text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-3">Organizaciones / Sociedades a las que pertenece</label>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                            @foreach($organizaciones as $org)
+                                <label class="flex items-center p-3 border border-slate-200 dark:border-slate-800/80 rounded-xl cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors">
+                                    <input type="checkbox" name="organizaciones[]" value="{{ $org->id }}" 
+                                           {{ in_array($org->id, old('organizaciones', [])) ? 'checked' : '' }}
+                                           class="rounded text-blue-600 focus:ring-blue-500 w-4 h-4 transition-colors">
+                                    <span class="ml-3 text-xs font-semibold text-slate-700 dark:text-slate-300">{{ $org->nombre }}</span>
+                                </label>
+                            @endforeach
+                        </div>
+                    </div>
+
+                    {{-- MINISTERIOS EN LOS QUE SIRVE --}}
+                    <div class="md:col-span-2 mb-6">
+                        <label class="block text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-3">Ministerios en los que sirve</label>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                            @foreach($ministerios as $min)
+                                <label class="flex items-center p-3 border rounded-xl hover:bg-slate-50 dark:border-slate-700 dark:hover:bg-slate-800 cursor-pointer transition-colors">
+                                    <input type="checkbox" name="ministerios[]" value="{{ $min->id }}" 
+                                    {{ (is_array(old('ministerios')) ? in_array($min->id, old('ministerios')) : (isset($miembro) && $miembro->ministerios->contains($min->id))) ? 'checked' : '' }}
+                                    class="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500">
+                                    <span class="ml-2 text-sm text-slate-700 dark:text-slate-300">{{ $min->nombre }}</span>
+                                </label>
+                            @endforeach
+                        </div>
+                    </div>
+
+                    {{-- LIDERAZGO ACTIVO --}}
+                    <div class="md:col-span-2 mb-6">
+                        <div class="flex items-center">
+                            <input id="es_lider" name="es_lider" type="checkbox" value="1" {{ (old('es_lider', $miembro->es_lider ?? false)) ? 'checked' : '' }} class="h-5 w-5 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500">
+                            <label for="es_lider" class="ml-3 block text-sm font-bold text-slate-700 dark:text-slate-300">
+                                Este miembro ejerce un cargo de Liderazgo activo.
+                            </label>
+                        </div>
                     </div>
                 </div>
             </div>

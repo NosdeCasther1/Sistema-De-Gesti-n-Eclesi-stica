@@ -68,5 +68,14 @@ class GoogleCalendarController extends Controller
 
         return redirect()->route('configuracion.index')->with('success', 'Calendario seleccionado exitosamente. Eventos sincronizados limpios de otras agendas.');
     }
+
+    public function sync()
+    {
+        if ($this->googleService->isConnected()) {
+            $count = $this->googleService->syncEventsToDatabase();
+            return redirect()->back()->with('success', "Eventos de Google Calendar sincronizados exitosamente ($count eventos procesados).");
+        }
+        return redirect()->back()->with('error', 'Google Calendar no está conectado.');
+    }
 }
 

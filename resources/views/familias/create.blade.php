@@ -117,7 +117,8 @@
                     </div>
                     <div>
                         <label class="block text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">Teléfono Principal</label>
-                        <input type="text" name="telefono_principal" value="{{ old('telefono_principal') }}" placeholder="Ej: 5555-1234"
+                        <input type="text" name="telefono_principal" value="{{ old('telefono_principal') }}" placeholder="Ej: 55551234 (8 dígitos)"
+                               maxlength="8" oninput="this.value = this.value.replace(/[^0-9]/g, '').substring(0, 8)"
                                class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 px-4 py-3.5 text-slate-900 dark:text-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all shadow-sm font-mono">
                     </div>
                     <div>

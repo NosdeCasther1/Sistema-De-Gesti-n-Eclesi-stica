@@ -20,6 +20,18 @@ class ReporteTesoreriaController extends Controller
             'type' => 'nullable|in:income,expense',
         ]);
 
+        $user = auth()->user();
+        if (!$user->hasRole('administrador') && $user->organizacion_id) {
+            $userOrg = $user->organizacion;
+            $userAccountId = $userOrg ? $userOrg->financial_account_id : null;
+            
+            if ($request->account_id && $request->account_id != $userAccountId) {
+                abort(403, 'No autorizado.');
+            }
+            
+            $request->merge(['account_id' => $userAccountId ?? -1]);
+        }
+
         // Optimización: Traemos la cuenta y categoría
         $query = FinancialTransaction::with(['account', 'category'])
             ->whereBetween('transaction_date', [$request->fecha_inicio, $request->fecha_fin])

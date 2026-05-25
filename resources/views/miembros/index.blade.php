@@ -67,7 +67,7 @@ main {
 {{-- ===== ACCIONES ===== --}}
 <div class="flex justify-end mb-4 flex-shrink-0">
     <div class="flex gap-2">
-        <a href="{{ route('reportes.miembros') }}" target="_blank"
+        <a href="{{ route('reportes.miembros', request()->all()) }}" target="_blank"
            class="border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 px-4 py-2 rounded-full font-bold shadow-sm flex items-center gap-2 transition-colors">
             <i class="fas fa-file-pdf"></i><span class="hidden md:inline">Reporte PDF</span>
         </a>
@@ -79,50 +79,48 @@ main {
 </div>
 
 {{-- ===== FILTROS ===== --}}
-<div class="card-module p-4 mb-4 shadow-sm flex-shrink-0">
-    <form action="{{ route('miembros.index') }}" method="GET" id="searchForm">
-        <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
-            <div class="md:col-span-5 relative">
-                <label class="block text-sm mb-1 font-bold text-slate-700 dark:text-slate-300">Búsqueda Rápida</label>
+<div class="card-module p-6 mb-5 shadow-xl flex-shrink-0 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl relative overflow-hidden group">
+    <!-- Glow de fondo sutil -->
+    <div class="absolute -right-20 -top-20 w-60 h-60 bg-blue-500/10 dark:bg-blue-500/5 rounded-full blur-3xl pointer-events-none"></div>
+
+    <form action="{{ route('miembros.index') }}" method="GET" id="searchForm" class="relative z-10 m-0">
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-5 items-end">
+            <div class="md:col-span-6 relative">
+                <label class="block text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">Búsqueda Rápida</label>
                 <div class="relative flex items-center w-full">
-                    <span class="absolute left-3 text-slate-400"><i class="fas fa-search"></i></span>
-                    <input type="text" name="search" id="searchInput" class="w-full pl-10 pr-10 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                    <span class="absolute left-4 text-slate-400 dark:text-slate-500"><i class="fas fa-search"></i></span>
+                    <input type="text" name="search" id="searchInput" class="w-full pl-11 pr-11 py-3.5 rounded-2xl border border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 text-slate-900 dark:text-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all shadow-sm"
                            placeholder="Nombre, DPI, Teléfono..." value="{{ $search }}" autocomplete="off">
-                    <button type="button" class="absolute right-3 text-slate-400 hover:text-slate-600 clear-search" id="clearSearch" title="Limpiar filtros" style="display: {{ ($search || $ministerio || $etapa) ? 'flex' : 'none' }}; align-items: center; justify-content: center;">
+                    <button type="button" class="absolute right-3 text-slate-400 hover:text-rose-500 clear-search transition-colors" id="clearSearch" title="Limpiar filtros" style="display: {{ ($search || $ministerio || $etapa) ? 'flex' : 'none' }}; align-items: center; justify-content: center;">
                         <i class="fas fa-times-circle text-lg"></i>
                     </button>
                 </div>
             </div>
             <div class="md:col-span-3">
-                <label class="block text-sm mb-1 font-bold text-slate-700 dark:text-slate-300">Ministerio</label>
-                <select name="ministerio" class="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all" id="ministerioSelect">
+                <label class="block text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">Ministerio</label>
+                <select name="ministerio" class="w-full pl-4 pr-10 py-3.5 rounded-2xl border border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 text-slate-900 dark:text-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all shadow-sm cursor-pointer appearance-none" id="ministerioSelect">
                     <option value="">Todos</option>
                     @foreach($ministerios as $m)
-                        <option value="{{ $m }}" {{ $ministerio == $m ? 'selected' : '' }}>{{ $m }}</option>
+                        <option value="{{ $m->id }}" {{ request('ministerio') == $m->id ? 'selected' : '' }}>{{ $m->nombre }}</option>
                     @endforeach
                 </select>
             </div>
             <div class="md:col-span-3">
-                <label class="block text-sm mb-1 font-bold text-slate-700 dark:text-slate-300">Consolidación</label>
-                <select name="etapa" class="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all" id="etapaSelect">
+                <label class="block text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">Consolidación</label>
+                <select name="etapa" class="w-full pl-4 pr-10 py-3.5 rounded-2xl border border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 text-slate-900 dark:text-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all shadow-sm cursor-pointer appearance-none" id="etapaSelect">
                     <option value="">Todas las Etapas</option>
                     @foreach($etapas as $e)
                         <option value="{{ $e }}" {{ $etapa == $e ? 'selected' : '' }}>{{ $e }}</option>
                     @endforeach
                 </select>
             </div>
-            <div class="md:col-span-1">
-                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white rounded-lg py-2 flex items-center justify-center transition-colors" title="Aplicar filtros">
-                    <i class="fas fa-filter"></i>
-                </button>
-            </div>
         </div>
     </form>
 </div>
 
-{{-- ===== TABLA ===== --}}
-<div class="card-module p-0 overflow-hidden shadow-sm flex flex-col flex-grow" style="min-height: 0;">
-    <div id="table-results" class="results-transition flex flex-col overflow-hidden flex-grow" style="min-height: 0;">
+{{-- ===== BENTO GRID ===== --}}
+<div class="flex-grow flex flex-col relative overflow-hidden" style="min-height: 0;">
+    <div id="table-results" class="results-transition flex flex-col flex-grow h-full overflow-hidden" style="min-height: 0;">
         @include('miembros._table')
     </div>
 </div>

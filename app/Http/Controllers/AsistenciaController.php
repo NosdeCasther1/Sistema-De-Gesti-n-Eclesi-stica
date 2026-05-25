@@ -29,9 +29,20 @@ class AsistenciaController extends Controller
 
     public function create(Request $request)
     {
-        $celula_id = $request->query('celula_id');
-        $evento_id = $request->query('evento_id');
-        $miembros = Miembro::orderBy('nombres')->get();
+        $celula_id = $request->query('celula_id') ?: null;
+        $evento_id = $request->query('evento_id') ?: null;
+        
+        $today = now()->toDateString();
+        
+        // Exclude members who have already registered attendance today for this context
+        $excluirIds = Asistencia::where('fecha', $today)
+            ->where('celula_id', $celula_id)
+            ->where('evento_id', $evento_id)
+            ->pluck('miembro_id');
+
+        $miembros = Miembro::whereNotIn('id', $excluirIds)
+            ->orderBy('nombres')
+            ->get();
         
         $contexto = null;
         if ($celula_id) $contexto = Celula::find($celula_id);
@@ -53,11 +64,14 @@ class AsistenciaController extends Controller
             'hora' => 'required'
         ]);
 
+        $celula_id = $request->celula_id ?: null;
+        $evento_id = $request->evento_id ?: null;
+
         // Evitar duplicados el mismo día para el mismo contexto
         $exists = Asistencia::where('miembro_id', $request->miembro_id)
             ->where('fecha', $request->fecha)
-            ->where('celula_id', $request->celula_id)
-            ->where('evento_id', $request->evento_id)
+            ->where('celula_id', $celula_id)
+            ->where('evento_id', $evento_id)
             ->exists();
 
         if ($exists) {
@@ -78,6 +92,9 @@ class AsistenciaController extends Controller
             ]);
         }
 
-        return redirect()->back()->with('success', 'Asistencia registrada para ' . $miembro->nombres . '.');
+        return redirect()->route('asistencia.scanner', [
+            'celula_id' => $celula_id,
+            'evento_id' => $evento_id
+        ])->with('success', 'Asistencia registrada para ' . $miembro->nombres . '.');
     }
 }

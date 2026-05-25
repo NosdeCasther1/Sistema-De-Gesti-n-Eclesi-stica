@@ -8,13 +8,31 @@
 <i class="fas fa-wallet fs-5"></i>
 @endsection
 
+@push('styles')
+<style>
+    .main-content > main {
+        padding-top: calc(60px + 0.75rem) !important;
+    }
+    @media (max-width: 991.98px) {
+        .main-content > main {
+            padding-top: calc(56px + 0.75rem) !important;
+        }
+    }
+</style>
+@endpush
+
 @section('content')
-<!-- Contenedor Principal Alpine.js -->
 <div x-data="{ 
     showIncomeModal: false, 
     showExpenseModal: false, 
     showTransferModal: false,
     activeTab: '{{ $activeTab ?? 'all' }}',
+    accountNames: {
+        'all': 'Todas las cajas',
+        @foreach($accounts as $acc)
+        '{{ $acc->id }}': '{{ $acc->name }}',
+        @endforeach
+    },
     isFetching: false,
     switchTab(tab, url) {
         if (this.activeTab === tab) return;
@@ -24,7 +42,7 @@
         if (searchInput) searchInput.value = tab;
         window.history.pushState(null, '', url);
         
-        fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+        fetch(url)
             .then(res => res.text())
             .then(html => {
                 const parser = new DOMParser();
@@ -44,147 +62,230 @@
             })
             .catch(() => { window.location.href = url; });
     }
-}" class="flex flex-col h-[calc(100vh-180px)] min-h-0 overflow-hidden">
-
-    <!-- Panel Superior Estático (SaaS Bento Compacto) -->
-    <div class="shrink-0 flex-none pb-3">
-        <!-- Botones de Acción Superior -->
-        <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
-            <div>
-                <h5 class="fw-bold mb-0 text-slate-800 dark:text-white d-flex align-items-center gap-2" style="font-size: 1.15rem;">
-                    <i class="fas fa-chart-line" style="background: linear-gradient(135deg, #3b82f6, #6366f1); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"></i> Panel de Control Financiero
-                </h5>
-                <p class="text-muted small mb-0" style="font-size: 0.75rem;">Gestión contable inmutable por fondos ministeriales</p>
-            </div>
-            <div class="d-flex gap-2 flex-wrap">
-                <button @click="showIncomeModal = true" class="btn-action-treasury btn-income">
-                    <i class="fas fa-plus-circle"></i> <span>Nuevo Ingreso</span>
-                </button>
-                <button @click="showExpenseModal = true" class="btn-action-treasury btn-expense">
-                    <i class="fas fa-minus-circle"></i> <span>Registrar Gasto</span>
-                </button>
-                <button @click="showTransferModal = true" class="btn-action-treasury btn-transfer">
-                    <i class="fas fa-exchange-alt"></i> <span>Transferir Fondos</span>
-                </button>
-            </div>
-        </div>
-
-        <!-- Selector de Cajas (Premium Glassmorphism Tabs) -->
-        <div class="treasury-tabs mb-3 d-flex align-items-center justify-content-between flex-wrap gap-2 shadow-sm">
-            <div class="d-flex align-items-center gap-1 flex-wrap w-full">
-                <a href="{{ route('tesoreria.index', ['tab' => 'all', 'search' => request('search')]) }}" @click.prevent="switchTab('all', $el.href)"
-                        :class="activeTab === 'all' ? 'tab-active' : ''"
-                        class="tab-pill d-flex align-items-center gap-1.5 text-slate-600 dark:text-slate-300">
-                    <i class="fas fa-layer-group"></i> Todas las cajas
-                </a>
-                <a href="{{ route('tesoreria.index', ['tab' => 'general', 'search' => request('search')]) }}" @click.prevent="switchTab('general', $el.href)"
-                        :class="activeTab === 'general' ? 'tab-active' : ''"
-                        class="tab-pill d-flex align-items-center gap-1.5 text-slate-600 dark:text-slate-300">
-                    <i class="fas fa-box-open"></i> Caja General
-                </a>
-                <a href="{{ route('tesoreria.index', ['tab' => 'jovenes', 'search' => request('search')]) }}" @click.prevent="switchTab('jovenes', $el.href)"
-                        :class="activeTab === 'jovenes' ? 'tab-active' : ''"
-                        class="tab-pill d-flex align-items-center gap-1.5 text-slate-600 dark:text-slate-300">
-                    <i class="fas fa-users"></i> Caja Jóvenes
-                </a>
-                <a href="{{ route('tesoreria.index', ['tab' => 'misiones', 'search' => request('search')]) }}" @click.prevent="switchTab('misiones', $el.href)"
-                        :class="activeTab === 'misiones' ? 'tab-active' : ''"
-                        class="tab-pill d-flex align-items-center gap-1.5 text-slate-600 dark:text-slate-300">
-                    <i class="fas fa-globe-americas"></i> Fondo Misiones
-                </a>
-            </div>
-        </div>
-
-        <!-- Resumen Financiero (Tarjetas Premium con Glassmorphism) -->
-        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;" class="mb-3">
-            <div>
-                <div class="finance-card card-income bg-white dark:bg-slate-900 shadow-sm">
-                    <div class="d-flex justify-content-between align-items-center mb-1">
-                        <div class="text-slate-500 dark:text-slate-400 small text-uppercase fw-bold tracking-wider" style="font-size: 0.72rem;">Total Ingresos</div>
-                        <div class="card-icon"><i class="fas fa-arrow-trend-up"></i></div>
-                    </div>
-                    <div id="total-ingresos-val" class="card-amount">Q{{ number_format($totalIngresos, 2) }}</div>
-                    <div class="text-slate-400 dark:text-slate-500 d-flex align-items-center gap-1" style="font-size: 0.68rem;">
-                        <i class="fas fa-shield-check"></i> <span>Registros inmutables auditados</span>
-                    </div>
+}" class="w-full transition-colors duration-300 antialiased font-sans">
+    <div class="max-w-[1600px] mx-auto space-y-6">
+        
+        {{-- CAPA 1: HEADER & ACCIONES PRINCIPALES --}}
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm">
+            <div class="flex items-center gap-4">
+                <div class="h-12 w-12 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 flex items-center justify-center text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-500/20">
+                    <i class="fa-solid fa-vault text-xl"></i>
                 </div>
-            </div>
-            <div>
-                <div class="finance-card card-expense bg-white dark:bg-slate-900 shadow-sm">
-                    <div class="d-flex justify-content-between align-items-center mb-1">
-                        <div class="text-slate-500 dark:text-slate-400 small text-uppercase fw-bold tracking-wider" style="font-size: 0.72rem;">Total Gastos</div>
-                        <div class="card-icon"><i class="fas fa-arrow-trend-down"></i></div>
-                    </div>
-                    <div id="total-gastos-val" class="card-amount">Q{{ number_format($totalGastos, 2) }}</div>
-                    <div class="text-slate-400 dark:text-slate-500 d-flex align-items-center gap-1" style="font-size: 0.68rem;">
-                        <i class="fas fa-lock"></i> <span>Partidas de egreso autorizadas</span>
-                    </div>
+                <div>
+                    <h1 class="text-xl font-black text-slate-900 dark:text-white uppercase tracking-tight">Panel de Control Financiero</h1>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 font-medium">Gestión contable inmutable por fondos ministeriales.</p>
                 </div>
-            </div>
-            <div>
-                <div class="finance-card card-balance bg-white dark:bg-slate-900 shadow-sm">
-                    <div class="d-flex justify-content-between align-items-center mb-1">
-                        <div class="text-slate-500 dark:text-slate-400 small text-uppercase fw-bold tracking-wider" style="font-size: 0.72rem;">Balance Consolidado</div>
-                        <div class="card-icon"><i class="fas fa-scale-balanced"></i></div>
-                    </div>
-                    <div id="balance-val" class="card-amount">Q{{ number_format($balanceGeneral, 2) }}</div>
-                    <div class="text-slate-400 dark:text-slate-500 d-flex align-items-center gap-1" style="font-size: 0.68rem;">
-                        <i class="fas fa-coins"></i> <span>Disponibilidad financiera total</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-    </div>
-
-    <!-- Listado de Transacciones (Premium Ledger Container) -->
-    <div class="ledger-container bg-white dark:bg-slate-900 shadow-sm flex-1 min-h-0 flex flex-col overflow-hidden relative">
-        <div class="ledger-header shrink-0" style="display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap;">
-            <div style="display: flex; align-items: center; gap: 0.5rem; flex-shrink: 1; min-width: 0; flex-wrap: wrap;">
-                <h6 class="fw-bold mb-0 text-slate-800 dark:text-white" style="font-size: 0.95rem; white-space: nowrap; display: flex; align-items: center; gap: 0.5rem;">
-                    <i class="fas fa-book-open" style="background: linear-gradient(135deg, #6366f1, #8b5cf6); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"></i> Libro Diario de Movimientos
-                </h6>
-                <span class="status-indicator bg-slate-100 dark:bg-slate-800/50 text-slate-500 dark:text-slate-400" style="white-space: nowrap;">
-                    <i class="fas fa-shield-halved" style="font-size: 0.6rem;"></i> Auditoría Estricta
-                </span>
-                <span class="status-indicator bg-indigo-500/10 dark:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 font-bold" style="white-space: nowrap;">
-                    <i class="fas fa-circle text-xs" style="font-size: 0.45rem; color: #6366f1; animation: pulse 2s infinite;"></i>
-                    <span x-text="activeTab === 'all' ? 'Todas las cajas' : (activeTab === 'general' ? 'Caja General' : (activeTab === 'jovenes' ? 'Caja Jóvenes' : 'Fondo Misiones'))"></span>
-                </span>
             </div>
             
-            <div class="flex items-center gap-2.5 flex-wrap sm:flex-nowrap w-full sm:w-auto justify-end">
-                <!-- Filtro de Búsqueda Compacto -->
-                <div class="search-treasury shadow-sm relative flex-grow sm:flex-grow-0" style="border-radius: 2rem; height: 38px; width: 100%; max-width: 350px; min-width: 240px;">
-                    <form action="{{ route('tesoreria.index') }}" method="GET" id="searchForm" @submit.prevent class="m-0 h-full">
-                        <input type="hidden" name="tab" id="searchTabInput" value="{{ $activeTab ?? 'all' }}">
-                        <div class="flex items-center w-full h-full relative">
-                            <span class="absolute left-3 text-slate-400 dark:text-slate-500 pointer-events-none flex items-center justify-center" style="font-size: 0.95rem;">
-                                <i class="fas fa-search"></i>
-                            </span>
-                            <input type="text" name="search" id="searchInput" 
-                                   class="w-full h-full pl-9 pr-9 py-1 bg-transparent border-0 text-slate-800 dark:text-white font-medium focus:outline-none focus:ring-0 shadow-none text-xs"
-                                   style="box-shadow: none !important; background: transparent !important; border: none !important;"
-                                   placeholder="Buscar por descripción, miembro, referencia..." value="{{ request('search') }}" autocomplete="off">
-                            <button type="button" id="clearSearchBtn" class="absolute right-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-all flex items-center justify-center p-1.5 border-0 bg-transparent cursor-pointer" style="display: {{ request('search') ? 'flex' : 'none' }};">
-                                <i class="fas fa-times-circle" style="font-size: 1.1rem;"></i>
-                            </button>
-                        </div>
-                    </form>
-                </div>
-
-                <a href="{{ route('reportes.tesoreria') }}" target="_blank" style="flex-shrink: 0; background: linear-gradient(135deg, #64748b, #475569) !important; box-shadow: 0 4px 14px rgba(100,116,139,0.2) !important; font-size: 0.75rem !important; height: 38px; padding: 0 1.25rem !important; white-space: nowrap; border: none; border-radius: 2rem; font-weight: 700; display: inline-flex; align-items: center; gap: 0.5rem; color: white; text-decoration: none; cursor: pointer; transition: all 0.3s ease;">
-                    <i class="fas fa-file-pdf"></i> <span>Exportar PDF</span>
-                </a>
+            {{-- BOTONES DE ACCIÓN (Movidos a la derecha para no romper jerarquía de lectura) --}}
+            <div class="flex flex-wrap gap-3 w-full md:w-auto">
+                <button @click="showIncomeModal = true" class="flex-1 md:flex-none py-2.5 px-4 bg-emerald-500 hover:bg-emerald-600 text-white font-bold rounded-xl shadow-sm text-xs flex items-center justify-center transition-colors">
+                    <i class="fa-solid fa-circle-plus mr-2"></i> Nuevo Ingreso
+                </button>
+                <button @click="showExpenseModal = true" class="flex-1 md:flex-none py-2.5 px-4 bg-rose-500 hover:bg-rose-600 text-white font-bold rounded-xl shadow-sm text-xs flex items-center justify-center transition-colors">
+                    <i class="fa-solid fa-circle-minus mr-2"></i> Registrar Gasto
+                </button>
+                <button @click="showTransferModal = true" class="w-full md:w-auto py-2.5 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-sm text-xs flex items-center justify-center transition-colors">
+                    <i class="fa-solid fa-right-left mr-2"></i> Transferir Fondos
+                </button>
             </div>
         </div>
-        
-        <div id="table-results" class="flex-1 min-h-0 overflow-auto custom-scrollbar w-full">
-            @include('tesoreria._table')
-        </div>
-    </div>    
 
-      <!-- ==========================================
+        {{-- CAPA 2: CONTEXTO (FILTROS DE CAJAS) --}}
+        <div class="flex overflow-x-auto custom-scrollbar gap-2 pb-2">
+            <a href="{{ route('tesoreria.index', ['tab' => 'all', 'search' => request('search')]) }}" 
+               @click.prevent="switchTab('all', $el.href)"
+               :class="activeTab == 'all' ? 'bg-indigo-600 text-white shadow-sm' : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 shadow-sm transition-colors'"
+               class="whitespace-nowrap py-2 px-5 font-bold rounded-xl text-xs flex items-center no-underline">
+                <i class="fa-solid fa-layer-group mr-2"></i> Todas las cajas
+            </a>
+            @foreach($accounts as $account)
+            <a href="{{ route('tesoreria.index', ['tab' => $account->id, 'search' => request('search')]) }}" 
+               @click.prevent="switchTab('{{ $account->id }}', $el.href)"
+               :class="activeTab == '{{ $account->id }}' ? 'bg-indigo-600 text-white shadow-sm' : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 shadow-sm transition-colors'"
+               class="whitespace-nowrap py-2 px-5 font-bold rounded-xl text-xs flex items-center transition-colors no-underline">
+                <i class="fa-solid fa-box-archive mr-2 text-slate-400"></i> {{ $account->name }}
+            </a>
+            @endforeach
+        </div>
+
+        {{-- CAPA 3: RESUMEN FINANCIERO (KPIs) --}}
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {{-- Ingresos --}}
+            <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm flex flex-col justify-between">
+                <div class="flex justify-between items-start mb-4">
+                    <span class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest">Total Ingresos</span>
+                    <div class="w-8 h-8 rounded-lg bg-emerald-50 dark:bg-emerald-500/10 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
+                        <i class="fa-solid fa-arrow-trend-up"></i>
+                    </div>
+                </div>
+                <div>
+                    <h2 id="total-ingresos-val" class="text-3xl font-black text-emerald-600 dark:text-emerald-400 tracking-tight">Q{{ number_format($totalIngresos, 2) }}</h2>
+                    <p class="text-[10px] text-slate-400 dark:text-slate-500 mt-2 font-medium"><i class="fa-solid fa-lock mr-1"></i> Registros inmutables auditados</p>
+                </div>
+            </div>
+            {{-- Egresos --}}
+            <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm flex flex-col justify-between">
+                <div class="flex justify-between items-start mb-4">
+                    <span class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest">Total Gastos</span>
+                    <div class="w-8 h-8 rounded-lg bg-rose-50 dark:bg-rose-500/10 flex items-center justify-center text-rose-600 dark:text-rose-400">
+                        <i class="fa-solid fa-arrow-trend-down"></i>
+                    </div>
+                </div>
+                <div>
+                    <h2 id="total-gastos-val" class="text-3xl font-black text-rose-600 dark:text-rose-400 tracking-tight">Q{{ number_format($totalGastos, 2) }}</h2>
+                    <p class="text-[10px] text-slate-400 dark:text-slate-500 mt-2 font-medium"><i class="fa-solid fa-lock mr-1"></i> Partidas de egreso autorizadas</p>
+                </div>
+            </div>
+            {{-- Balance --}}
+            <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm flex flex-col justify-between">
+                <div class="flex justify-between items-start mb-4">
+                    <span class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest">Balance Consolidado</span>
+                    <div class="w-8 h-8 rounded-lg bg-indigo-50 dark:bg-indigo-500/10 flex items-center justify-center text-indigo-600 dark:text-indigo-400">
+                        <i class="fa-solid fa-scale-balanced"></i>
+                    </div>
+                </div>
+                <div>
+                    <h2 id="balance-val" class="text-3xl font-black text-indigo-600 dark:text-indigo-400 tracking-tight">Q{{ number_format($balanceGeneral, 2) }}</h2>
+                    <p class="text-[10px] text-slate-400 dark:text-slate-500 mt-2 font-medium"><i class="fa-solid fa-coins mr-1"></i> Disponibilidad financiera total</p>
+                </div>
+            </div>
+        </div>
+
+        {{-- CAPA 4: DETALLE (TABLA DE MOVIMIENTOS) --}}
+        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm overflow-hidden">
+            {{-- Barra de herramientas de tabla --}}
+            <div class="p-5 border-b border-slate-100 dark:border-slate-800 flex flex-col md:flex-row justify-between items-center gap-4 bg-slate-50/50 dark:bg-slate-950/50">
+                <div class="flex items-center gap-3 w-full md:w-auto">
+                    <h3 class="text-sm font-black text-slate-800 dark:text-white uppercase tracking-wider flex items-center">
+                        <i class="fa-solid fa-book mr-2 text-indigo-500"></i> Libro Diario de Movimientos
+                    </h3>
+                    <span class="hidden sm:inline-flex px-2 py-0.5 bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-[9px] font-bold rounded uppercase tracking-widest"><i class="fa-solid fa-shield-halved mr-1"></i> Auditoría Estricta</span>
+                    <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 bg-indigo-100 dark:bg-indigo-500/20 text-indigo-700 dark:text-indigo-400 text-[9px] font-bold rounded uppercase tracking-widest">
+                        <div class="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-pulse"></div>
+                        <span x-text="accountNames[activeTab] || 'Todas las cajas'"></span>
+                    </span>
+                </div>
+                <div class="flex flex-col sm:flex-row w-full md:w-auto gap-3 items-center">
+                    <div class="relative w-full md:w-64">
+                        <form action="{{ route('tesoreria.index') }}" method="GET" id="searchForm" @submit.prevent class="m-0 w-full relative flex items-center">
+                            <input type="hidden" name="tab" id="searchTabInput" value="{{ $activeTab ?? 'all' }}">
+                            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs">
+                                <i class="fa-solid fa-magnifying-glass"></i>
+                            </span>
+                            <input type="text" name="search" id="searchInput" 
+                                   class="w-full pl-9 pr-8 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-xs focus:ring-2 focus:ring-indigo-500 outline-none text-slate-700 dark:text-slate-200"
+                                   placeholder="Buscar por descripción..." value="{{ request('search') }}" autocomplete="off">
+                            <button type="button" id="clearSearchBtn" class="absolute right-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-all flex items-center justify-center p-1 border-0 bg-transparent cursor-pointer" style="display: {{ request('search') ? 'flex' : 'none' }};">
+                                <i class="fa-solid fa-circle-xmark"></i>
+                            </button>
+                        </form>
+                    </div>
+                    <a href="{{ route('reportes.tesoreria') }}" target="_blank" class="w-full sm:w-auto shrink-0 py-2 px-4 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 font-bold rounded-xl text-xs shadow-sm transition-colors flex items-center justify-center no-underline">
+                        <i class="fa-solid fa-file-pdf mr-2 text-rose-500"></i> Exportar PDF
+                    </a>
+                </div>
+            </div>
+
+            {{-- Tabla Responsiva --}}
+            <div id="table-results" class="overflow-x-auto custom-scrollbar">
+                @include('tesoreria._table')
+            </div>
+        </div>
+
+        {{-- Bitácora de Ajustes a Cajas y Fondos (Auditoría) --}}
+        <div class="bento-card bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800/80 rounded-3xl p-8 shadow-xl flex flex-col justify-between relative overflow-hidden group flex-grow">
+            <!-- Glow de fondo -->
+            <div class="absolute -right-20 -top-20 w-60 h-60 bg-blue-500/10 dark:bg-blue-500/5 rounded-full blur-3xl group-hover:bg-blue-500/20 transition-all duration-500"></div>
+
+            <div>
+                {{-- Header Bento --}}
+                <div class="flex items-center justify-between mb-6 pb-5 border-b border-slate-100 dark:border-slate-800 flex-wrap gap-4">
+                    <div class="flex items-center gap-4">
+                        <div class="config-icon-box icon-box-primary group-hover:scale-110 transition-transform duration-500">
+                            <i class="fas fa-history text-white"></i>
+                        </div>
+                        <div>
+                            <h5 class="text-lg font-bold text-slate-900 dark:text-white tracking-tight mb-1">Bitácora de Ajustes (Auditoría)</h5>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 mb-0">Registro y reporte de modificaciones críticas en Cajas/Fondos.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="border border-slate-200 dark:border-slate-800/80 rounded-2xl overflow-hidden shadow-sm mb-4">
+                    <div class="overflow-x-auto max-h-[350px] overflow-y-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead class="bg-slate-50 dark:bg-slate-800/80 text-slate-500 dark:text-slate-400 uppercase text-[11px] font-extrabold tracking-wider border-b border-slate-200 dark:border-slate-800/80 sticky top-0 z-10">
+                                <tr>
+                                    <th class="pl-6 pr-4 py-4">Fecha y Cuenta</th>
+                                    <th class="py-4">Campo</th>
+                                    <th class="py-4">Ajuste Realizado</th>
+                                    <th class="py-4">Justificación / Responsable</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100 dark:divide-slate-800/60 bg-white dark:bg-slate-900/50 text-xs">
+                                @forelse($adjustments as $adj)
+                                    <tr class="transition-all hover:bg-slate-50/80 dark:hover:bg-slate-800/30">
+                                        <td class="pl-6 pr-4 py-4">
+                                            <div class="font-bold text-slate-900 dark:text-white">{{ $adj->account->name ?? 'Cuenta Eliminada' }}</div>
+                                            <div class="text-[10px] text-slate-400 dark:text-slate-500 font-mono mt-0.5">{{ $adj->created_at->format('d/m/Y H:i') }}</div>
+                                        </td>
+                                        <td class="py-4 font-semibold">
+                                            @if($adj->field_changed === 'name')
+                                                <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20 uppercase tracking-wider">Nombre</span>
+                                            @elseif($adj->field_changed === 'initial_balance')
+                                                <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 uppercase tracking-wider">Saldo Inicial</span>
+                                            @else
+                                                <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-slate-500/10 text-slate-600 dark:text-slate-400 border border-slate-500/20 uppercase tracking-wider">{{ $adj->field_changed }}</span>
+                                            @endif
+                                        </td>
+                                        <td class="py-4 pr-4">
+                                            @if($adj->field_changed === 'initial_balance')
+                                                <div class="flex items-center gap-1.5 font-mono">
+                                                    <span class="text-rose-500 dark:text-rose-400 line-through">Q{{ number_format((float)$adj->old_value, 2) }}</span>
+                                                    <i class="fas fa-arrow-right text-[10px] text-slate-400"></i>
+                                                    <span class="text-emerald-600 dark:text-emerald-400 font-bold">Q{{ number_format((float)$adj->new_value, 2) }}</span>
+                                                </div>
+                                            @else
+                                                <div class="flex items-center gap-1.5">
+                                                    <span class="text-slate-500 dark:text-slate-400 line-through text-[11px] truncate max-w-[120px]" title="{{ $adj->old_value }}">{{ $adj->old_value }}</span>
+                                                    <i class="fas fa-arrow-right text-[10px] text-slate-400"></i>
+                                                    <span class="text-slate-900 dark:text-white font-bold text-[11px] truncate max-w-[120px]" title="{{ $adj->new_value }}">{{ $adj->new_value }}</span>
+                                                </div>
+                                            @endif
+                                        </td>
+                                        <td class="py-4 pr-6">
+                                            <div class="text-slate-700 dark:text-slate-300 font-medium italic mb-0.5 max-w-[220px] break-words">« {{ $adj->justification }} »</div>
+                                            <div class="text-[10px] text-slate-400 dark:text-slate-500 font-semibold flex items-center gap-1">
+                                                <i class="fas fa-user-shield text-[9px] text-blue-500"></i>
+                                                <span>{{ $adj->user->nombre ?? ($adj->user->name ?? 'Sistema/Admin') }}</span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="4" class="py-8 text-center text-slate-400 dark:text-slate-600 italic">
+                                            <div class="flex flex-col items-center justify-center gap-2">
+                                                <i class="fas fa-history text-2xl"></i>
+                                                <span>No se han registrado ajustes o auditorías de saldo todavía.</span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pt-4 border-t border-slate-100 dark:border-slate-800 text-slate-500 dark:text-slate-400 text-xs font-medium flex items-center gap-2.5 mt-auto">
+                <i class="fas fa-info-circle text-blue-500 text-base"></i>
+                <span>Registro de auditoría inmutable obligatorio para transparencia contable.</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==========================================
          MODAL: NUEVO INGRESO (VERDE)
     ========================================== -->
     <div x-cloak 
@@ -214,7 +315,7 @@
                  x-transition:leave="transition ease-in duration-200"
                  x-transition:leave-start="opacity-100 translate-y-0 scale-100"
                  x-transition:leave-end="opacity-0 translate-y-8 scale-95"
-                 @click.away="showIncomeModal = false"
+                 @click.outside="showIncomeModal = false"
                  @keydown.escape.window="showIncomeModal = false"
                  class="w-full max-w-2xl bg-white dark:bg-slate-900 rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.3)] overflow-hidden border border-slate-100 dark:border-slate-800 my-8 flex flex-col text-left">
             
@@ -356,7 +457,7 @@
                  x-transition:leave="transition ease-in duration-200"
                  x-transition:leave-start="opacity-100 translate-y-0 scale-100"
                  x-transition:leave-end="opacity-0 translate-y-8 scale-95"
-                 @click.away="showExpenseModal = false"
+                 @click.outside="showExpenseModal = false"
                  @keydown.escape.window="showExpenseModal = false"
                  class="w-full max-w-2xl bg-white dark:bg-slate-900 rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.3)] overflow-hidden border border-slate-100 dark:border-slate-800 my-8 flex flex-col text-left">
             
@@ -473,6 +574,13 @@
     ========================================== -->
     @include('tesoreria.partials.modal-transferencia')
 </div>
+
+<style>
+    .custom-scrollbar::-webkit-scrollbar { height: 6px; width: 6px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 10px; }
+    .dark .custom-scrollbar::-webkit-scrollbar-thumb { background-color: #334155; }
+</style>
 @endsection
 
 @push('styles')
@@ -484,200 +592,6 @@
 
     /* Evitar flash de modales Alpine.js al cargar la página */
     [x-cloak] { display: none !important; }
-
-    /* ========== PREMIUM TESORERIA DESIGN SYSTEM ========== */
-
-    /* Tarjetas de Resumen Financiero Premium */
-    .finance-card {
-        position: relative;
-        border-radius: 1.25rem;
-        padding: 1.25rem 1.5rem;
-        overflow: hidden;
-        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        border: 1px solid rgba(0,0,0,0.06);
-    }
-    .finance-card::before {
-        content: '';
-        position: absolute;
-        top: 0; left: 0;
-        width: 4px; height: 100%;
-        border-radius: 1.25rem 0 0 1.25rem;
-    }
-    .finance-card::after {
-        content: '';
-        position: absolute;
-        top: -50%; right: -30%;
-        width: 180px; height: 180px;
-        border-radius: 50%;
-        opacity: 0.04;
-        transition: all 0.5s ease;
-    }
-    .finance-card:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 20px 40px -10px rgba(0,0,0,0.1);
-    }
-    .finance-card:hover::after { opacity: 0.08; transform: scale(1.2); }
-
-    .finance-card.card-income::before { background: linear-gradient(180deg, #10b981, #059669); }
-    .finance-card.card-income::after { background: #10b981; }
-    .finance-card.card-expense::before { background: linear-gradient(180deg, #ef4444, #dc2626); }
-    .finance-card.card-expense::after { background: #ef4444; }
-    .finance-card.card-balance::before { background: linear-gradient(180deg, #6366f1, #4f46e5); }
-    .finance-card.card-balance::after { background: #6366f1; }
-
-    .finance-card .card-icon {
-        width: 44px; height: 44px;
-        border-radius: 14px;
-        display: flex; align-items: center; justify-content: center;
-        font-size: 1.1rem;
-        transition: all 0.3s ease;
-    }
-    .finance-card:hover .card-icon { transform: scale(1.1) rotate(-5deg); }
-
-    .card-income .card-icon { background: linear-gradient(135deg, rgba(16,185,129,0.12), rgba(5,150,105,0.08)); color: #10b981; }
-    .card-expense .card-icon { background: linear-gradient(135deg, rgba(239,68,68,0.12), rgba(220,38,38,0.08)); color: #ef4444; }
-    .card-balance .card-icon { background: linear-gradient(135deg, rgba(99,102,241,0.12), rgba(79,70,229,0.08)); color: #6366f1; }
-
-    .finance-card .card-amount {
-        font-size: 1.75rem; font-weight: 800;
-        letter-spacing: -0.03em; line-height: 1.1;
-        margin: 0.5rem 0 0.25rem;
-    }
-    .card-income .card-amount { color: #059669; }
-    .card-expense .card-amount { color: #dc2626; }
-    .card-balance .card-amount { color: #4f46e5; }
-
-    [data-theme='dark'] .finance-card {
-        background: linear-gradient(145deg, rgba(30,41,59,0.8), rgba(15,23,42,0.9)) !important;
-        border-color: rgba(255,255,255,0.06) !important;
-    }
-    [data-theme='dark'] .finance-card:hover {
-        box-shadow: 0 20px 40px -10px rgba(0,0,0,0.4);
-        border-color: rgba(255,255,255,0.1) !important;
-    }
-    [data-theme='dark'] .card-income .card-amount { color: #34d399; }
-    [data-theme='dark'] .card-expense .card-amount { color: #f87171; }
-    [data-theme='dark'] .card-balance .card-amount { color: #818cf8; }
-    [data-theme='dark'] .card-income .card-icon { background: rgba(16,185,129,0.15); color: #34d399; }
-    [data-theme='dark'] .card-expense .card-icon { background: rgba(239,68,68,0.15); color: #f87171; }
-    [data-theme='dark'] .card-balance .card-icon { background: rgba(99,102,241,0.15); color: #818cf8; }
-
-    /* Tab Selector Premium */
-    .treasury-tabs {
-        background: rgba(255,255,255,0.7);
-        backdrop-filter: blur(16px);
-        border: 1px solid rgba(0,0,0,0.06);
-        border-radius: 1rem;
-        padding: 0.35rem;
-    }
-    [data-theme='dark'] .treasury-tabs {
-        background: rgba(15,23,42,0.6) !important;
-        border-color: rgba(255,255,255,0.06) !important;
-    }
-    .tab-pill {
-        border-radius: 0.75rem !important;
-        padding: 0.45rem 1rem !important;
-        font-weight: 700 !important;
-        font-size: 0.78rem !important;
-        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
-        border: none !important;
-        cursor: pointer;
-    }
-    .tab-pill:hover:not(.tab-active) {
-        background: rgba(0,0,0,0.04) !important;
-    }
-    [data-theme='dark'] .tab-pill:hover:not(.tab-active) {
-        background: rgba(255,255,255,0.05) !important;
-    }
-    .tab-pill.tab-active {
-        background: linear-gradient(135deg, #3b82f6, #6366f1) !important;
-        color: white !important;
-        box-shadow: 0 4px 12px rgba(59,130,246,0.3) !important;
-    }
-
-    /* Botones de Acción Premium */
-    .btn-action-treasury {
-        border: none !important;
-        border-radius: 2rem !important;
-        padding: 0.5rem 1.25rem !important;
-        font-weight: 700 !important;
-        font-size: 0.82rem !important;
-        display: inline-flex !important;
-        align-items: center !important;
-        gap: 0.5rem !important;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-        cursor: pointer !important;
-        color: white !important;
-        position: relative;
-        overflow: hidden;
-    }
-    .btn-action-treasury::before {
-        content: '';
-        position: absolute;
-        top: 0; left: -100%; width: 100%; height: 100%;
-        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
-        transition: left 0.5s ease;
-    }
-    .btn-action-treasury:hover::before { left: 100%; }
-    .btn-action-treasury:hover { transform: translateY(-2px) scale(1.03); }
-    .btn-action-treasury:active { transform: translateY(0) scale(0.97); }
-    .btn-income { background: linear-gradient(135deg, #10b981, #059669) !important; box-shadow: 0 4px 14px rgba(16,185,129,0.25) !important; }
-    .btn-income:hover { box-shadow: 0 8px 20px rgba(16,185,129,0.35) !important; }
-    .btn-expense { background: linear-gradient(135deg, #ef4444, #dc2626) !important; box-shadow: 0 4px 14px rgba(239,68,68,0.25) !important; }
-    .btn-expense:hover { box-shadow: 0 8px 20px rgba(239,68,68,0.35) !important; }
-    .btn-transfer { background: linear-gradient(135deg, #6366f1, #4f46e5) !important; box-shadow: 0 4px 14px rgba(99,102,241,0.25) !important; }
-    .btn-transfer:hover { box-shadow: 0 8px 20px rgba(99,102,241,0.35) !important; }
-
-    /* Search Bar Premium */
-    .search-treasury {
-        border-radius: 1rem;
-        border: 1px solid rgba(0,0,0,0.06);
-        background: rgba(255,255,255,0.8);
-        backdrop-filter: blur(8px);
-        transition: all 0.3s ease;
-    }
-    .search-treasury:focus-within {
-        border-color: #6366f1;
-        box-shadow: 0 0 0 3px rgba(99,102,241,0.1);
-    }
-    [data-theme='dark'] .search-treasury {
-        background: rgba(15,23,42,0.5) !important;
-        border-color: rgba(255,255,255,0.06) !important;
-    }
-    [data-theme='dark'] .search-treasury:focus-within {
-        border-color: #818cf8 !important;
-        box-shadow: 0 0 0 3px rgba(129,140,248,0.1) !important;
-    }
-
-    /* Ledger Container Premium */
-    .ledger-container {
-        border-radius: 1.25rem;
-        border: 1px solid rgba(0,0,0,0.06);
-        overflow: hidden;
-    }
-    [data-theme='dark'] .ledger-container {
-        background: linear-gradient(145deg, rgba(30,41,59,0.6), rgba(15,23,42,0.8)) !important;
-        border-color: rgba(255,255,255,0.06) !important;
-    }
-    .ledger-header {
-        padding: 1rem 1.5rem;
-        border-bottom: 1px solid rgba(0,0,0,0.05);
-        background: rgba(248,250,252,0.5);
-        backdrop-filter: blur(8px);
-    }
-    [data-theme='dark'] .ledger-header {
-        background: rgba(15,23,42,0.4) !important;
-        border-color: rgba(255,255,255,0.04) !important;
-    }
-
-    /* Status Badge Indicator */
-    .status-indicator {
-        display: inline-flex; align-items: center; gap: 0.35rem;
-        padding: 0.15rem 0.75rem;
-        border-radius: 2rem;
-        font-size: 0.7rem; font-weight: 600;
-    }
-
 </style>
 @endpush
 
@@ -750,4 +664,3 @@
     });
 </script>
 @endpush
-

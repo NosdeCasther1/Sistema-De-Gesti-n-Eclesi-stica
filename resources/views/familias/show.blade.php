@@ -206,7 +206,14 @@
                                         <h6 class="text-sm font-bold text-slate-900 dark:text-white mb-0.5 tracking-tight group-hover/item:text-blue-600 dark:group-hover/item:text-blue-400 transition-colors">{{ $miembro->nombres }} {{ $miembro->apellidos }}</h6>
                                         <div class="flex items-center gap-3 text-[10px] text-slate-400 dark:text-slate-500 font-bold uppercase tracking-wider">
                                             <span class="flex items-center gap-1"><i class="fas fa-id-card"></i> {{ $miembro->dpi ?? 'Sin DPI' }}</span>
-                                            <span class="flex items-center gap-1"><i class="fas fa-church"></i> {{ $miembro->ministerio ?? 'Sin ministerio' }}</span>
+                                            <span class="flex items-center gap-1">
+                                                <i class="fas fa-church"></i> 
+                                                @if($miembro->ministerios->isNotEmpty())
+                                                    {{ $miembro->es_lider ? 'Líder - ' : '' }}{{ $miembro->ministerios->pluck('nombre')->implode(', ') }}
+                                                @else
+                                                    {{ $miembro->es_lider ? 'Líder' : 'Sin ministerio' }}
+                                                @endif
+                                            </span>
                                         </div>
                                     </div>
                                 </div>

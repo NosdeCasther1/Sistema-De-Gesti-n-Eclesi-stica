@@ -5,16 +5,31 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FamiliaController;
 use App\Http\Controllers\MiembroController;
+use App\Http\Controllers\VotoController;
+use App\Http\Controllers\OrganizacionController;
+use App\Http\Controllers\EleccionController;
+use App\Http\Controllers\PortalVotanteController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\AuthController;
 
-Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
-Route::get('/Inicio', [DashboardController::class, 'index']); // For legacy compatibility
+Route::middleware('guest')->group(function () {
+    Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
+    Route::post('/login', [AuthController::class, 'login']);
+});
 
-Route::get('/miembros/{miembro}/carnet', [MiembroController::class, 'generarCarnet'])->name('miembros.carnet');
+Route::middleware(['auth'])->group(function () {
+    Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/Inicio', [DashboardController::class, 'index']); // For legacy compatibility
+
+    Route::get('/miembros/{miembro}/carnet', [MiembroController::class, 'generarCarnet'])->name('miembros.carnet');
+    Route::get('/miembros/{miembro}/carta-recomendacion', [MiembroController::class, 'cartaRecomendacion'])->name('miembros.carta_recomendacion');
+    Route::get('/miembros/{miembro}/carta-traslado', [MiembroController::class, 'cartaTraslado'])->name('miembros.carta_traslado');
+    Route::get('/miembros/{miembro}/certificado-bautismo', [MiembroController::class, 'certificadoBautismo'])->name('miembros.certificado_bautismo');
 Route::resource('familias', FamiliaController::class);
 Route::resource('miembros', MiembroController::class);
 Route::resource('celulas', \App\Http\Controllers\CelulaController::class);
-Route::post('/tesoreria/transfer', [\App\Http\Controllers\TesoreriaController::class, 'transfer'])->name('tesoreria.transfer')->middleware('role:tesorero');
-Route::resource('tesoreria', \App\Http\Controllers\TesoreriaController::class)->middleware('role:tesorero');
+Route::post('/tesoreria/transfer', [\App\Http\Controllers\TesoreriaController::class, 'transfer'])->name('tesoreria.transfer')->middleware('role:tesorero|administrador');
+Route::resource('tesoreria', \App\Http\Controllers\TesoreriaController::class)->middleware('role:tesorero|administrador');
 Route::get('/reportes', [\App\Http\Controllers\ReporteController::class, 'index'])->name('reportes.index');
 Route::get('/reportes/tesoreria', [\App\Http\Controllers\ReporteController::class, 'reportarTesoreria'])->name('reportes.tesoreria');
 Route::get('/reportes/tesoreria/pdf', [\App\Http\Controllers\ReporteTesoreriaController::class, 'generateCorteCaja'])->name('reportes.tesoreria.pdf');
@@ -32,6 +47,7 @@ Route::get('/google-calendar/connect', [\App\Http\Controllers\GoogleCalendarCont
 Route::get('/google-calendar/callback', [\App\Http\Controllers\GoogleCalendarController::class, 'callback'])->name('google.calendar.callback');
 Route::post('/google-calendar/disconnect', [\App\Http\Controllers\GoogleCalendarController::class, 'disconnect'])->name('google.calendar.disconnect');
 Route::post('/google-calendar/select', [\App\Http\Controllers\GoogleCalendarController::class, 'selectCalendar'])->name('google.calendar.select');
+Route::post('/google-calendar/sync', [\App\Http\Controllers\GoogleCalendarController::class, 'sync'])->name('google.calendar.sync');
 
 
 // Asistencia QR
@@ -39,12 +55,18 @@ Route::get('/asistencia/scanner', [\App\Http\Controllers\AsistenciaController::c
 Route::get('/asistencia/manual', [\App\Http\Controllers\AsistenciaController::class, 'create'])->name('asistencia.manual');
 Route::post('/asistencia/registrar', [\App\Http\Controllers\AsistenciaController::class, 'registrar'])->name('asistencia.registrar');
 
-// Simulador de Rol (RBAC)
+// Simulador de Rol (RBAC) — Solo en entorno local
 Route::get('/switch-role/{rol}', function ($rol) {
-    if (in_array($rol, ['administrador', 'tesorero', 'lider', 'ujier'])) {
-        session(['current_rol' => $rol]);
+    if (!app()->isLocal()) {
+        abort(403, 'Simulación de roles deshabilitada en producción.');
     }
-    return redirect()->route('dashboard')->with('success', 'Nivel de acceso simulado cambiado a: ' . strtoupper($rol));
+    if (in_array($rol, ['administrador', 'tesorero', 'lider', 'ujier'])) {
+        $user = auth()->user() ?? \App\Models\Usuario::first();
+        if ($user) {
+            $user->syncRoles([$rol]);
+        }
+    }
+    return redirect()->route('dashboard')->with('success', 'Nivel de acceso cambiado a: ' . strtoupper($rol));
 })->name('switch.role');
 
 // Configuración (Solo Administradores)
@@ -63,11 +85,69 @@ Route::delete('/configuracion/categorias/{categoria}', [\App\Http\Controllers\Co
 Route::post('/configuracion/categorias/{id}/restore', [\App\Http\Controllers\ConfiguracionController::class, 'restoreCategoria'])->name('categorias.restore')->middleware('role:administrador');
 
 Route::post('/configuracion/accounts', [\App\Http\Controllers\ConfiguracionController::class, 'storeAccount'])->name('configuracion.accounts.store')->middleware('role:administrador');
+Route::put('/configuracion/accounts/{id}', [\App\Http\Controllers\ConfiguracionController::class, 'updateAccount'])->name('configuracion.accounts.update')->middleware('role:administrador');
 Route::delete('/configuracion/accounts/{id}', [\App\Http\Controllers\ConfiguracionController::class, 'destroyAccount'])->name('configuracion.accounts.destroy')->middleware('role:administrador');
 Route::post('/configuracion/accounts/{id}/restore', [\App\Http\Controllers\ConfiguracionController::class, 'restoreAccount'])->name('configuracion.accounts.restore')->middleware('role:administrador');
+
+// Organizaciones CRUD (dentro de Configuración - Solo Administradores)
+Route::post('/configuracion/organizaciones', [\App\Http\Controllers\ConfiguracionController::class, 'storeOrganizacion'])->name('configuracion.organizaciones.store')->middleware('role:administrador');
+Route::put('/configuracion/organizaciones/{id}', [\App\Http\Controllers\ConfiguracionController::class, 'updateOrganizacion'])->name('configuracion.organizaciones.update')->middleware('role:administrador');
+Route::delete('/configuracion/organizaciones/{id}', [\App\Http\Controllers\ConfiguracionController::class, 'destroyOrganizacion'])->name('configuracion.organizaciones.destroy')->middleware('role:administrador');
+Route::post('/configuracion/organizaciones/{id}/restore', [\App\Http\Controllers\ConfiguracionController::class, 'restoreOrganizacion'])->name('configuracion.organizaciones.restore')->middleware('role:administrador');
 
 // Sistema y Mantenimiento (dentro de Configuración - Solo Administradores)
 Route::post('/configuracion/sistema', [\App\Http\Controllers\ConfiguracionController::class, 'updateSistema'])->name('sistema.update')->middleware('role:administrador');
 Route::post('/configuracion/backup', [\App\Http\Controllers\ConfiguracionController::class, 'backupDatabase'])->name('sistema.backup')->middleware('role:administrador');
 Route::post('/configuracion/permisos', [\App\Http\Controllers\ConfiguracionController::class, 'updatePermisos'])->name('permisos.update')->middleware('role:administrador');
 
+// Módulo de Organizaciones y Votaciones
+    // Vista Principal Bento UI
+    Route::get('/organizaciones', [OrganizacionController::class, 'index'])->name('organizaciones.index');
+    
+    // Padrón de Organización (Solo Admins)
+    Route::post('/organizaciones/{organizacion}/sync-miembros', [OrganizacionController::class, 'syncMiembros'])
+        ->name('organizaciones.sync-miembros');
+        
+    // Emisión de Voto (Autoservicio y Asistido)
+    Route::post('/votos/emitir', [VotoController::class, 'store'])->name('votos.store');
+    
+    // Ciclo de Vida de la Elección
+    Route::patch('/elecciones/{eleccion}/estado', [EleccionController::class, 'cambiarEstado'])->name('elecciones.estado');
+    Route::post('/elecciones/{eleccion}/sync-candidatos', [EleccionController::class, 'syncCandidatos'])->name('elecciones.sync-candidatos');
+    Route::get('/elecciones/{eleccion}/kiosco', [EleccionController::class, 'kiosco'])->name('elecciones.kiosco');
+    Route::get('/elecciones/{eleccion}/reporte', [App\Http\Controllers\EleccionController::class, 'generarReporteFinal'])->name('elecciones.reporte');
+    Route::get('/elecciones/{eleccion}/live', [App\Http\Controllers\EleccionController::class, 'liveScreen'])->name('elecciones.live');
+    Route::get('/elecciones/{eleccion}/live-data', [App\Http\Controllers\EleccionController::class, 'liveData'])->name('elecciones.live.data');
+    
+    // Reportes de Votaciones y Elecciones
+    Route::get('/reportes/votaciones/{eleccion}/escrutinio', [\App\Http\Controllers\ReporteController::class, 'reportarVotacionesEscrutinio'])->name('reportes.votaciones.escrutinio');
+    Route::get('/reportes/votaciones/{eleccion}/participantes', [\App\Http\Controllers\ReporteController::class, 'reportarVotacionesParticipantes'])->name('reportes.votaciones.participantes');
+    Route::get('/reportes/votaciones/{eleccion}/conformacion', [\App\Http\Controllers\ReporteController::class, 'reportarVotacionesConformacion'])->name('reportes.votaciones.conformacion');
+    
+    // Iniciar nueva elección en una organización
+    Route::post('/organizaciones/{organizacion}/iniciar-eleccion', [OrganizacionController::class, 'iniciarEleccion'])->name('organizaciones.iniciar-eleccion');
+
+    // --- PORTAL DEL VOTANTE (MIEMBROS) ---
+    Route::get('/votar', [PortalVotanteController::class, 'index'])->name('votar.index');
+    Route::post('/votar/acceder', [PortalVotanteController::class, 'validarPin'])->name('votar.acceder');
+    Route::get('/votar/identificar', [PortalVotanteController::class, 'identificar'])->name('votar.identificar');
+    Route::post('/votar/identificar', [PortalVotanteController::class, 'procesarIdentificacion'])->name('votar.procesar-identificacion');
+    Route::get('/votar/papeleta', [PortalVotanteController::class, 'papeleta'])->name('votar.papeleta');
+    Route::post('/votar/cambiar-votante', [PortalVotanteController::class, 'cambiarVotante'])->name('votar.cambiar-votante');
+    Route::post('/votar/salir', [PortalVotanteController::class, 'salirPortal'])->name('votar.salir');
+    Route::get('/votar/buscar-miembro', [PortalVotanteController::class, 'buscarMiembro'])->name('votar.buscar-miembro');
+
+    // --- GESTIÓN DE RONDAS (ADMIN) ---
+    Route::patch('/elecciones/{eleccion}/ronda/abrir', [App\Http\Controllers\EleccionController::class, 'abrirRonda'])->name('elecciones.ronda.abrir');
+    Route::patch('/elecciones/{eleccion}/ronda/cerrar', [App\Http\Controllers\EleccionController::class, 'cerrarRonda'])->name('elecciones.ronda.cerrar');
+    Route::patch('/elecciones/{eleccion}/ronda/regenerar-pin', [App\Http\Controllers\EleccionController::class, 'regenerarPin'])->name('elecciones.ronda.regenerar-pin');
+    Route::post('/elecciones/{eleccion}/ronda/manuales', [App\Http\Controllers\EleccionController::class, 'registrarVotosManuales'])->name('elecciones.ronda.manuales');
+
+    // --- MI PERFIL Y SEGURIDAD ---
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::post('/profile/logout-other-devices', [ProfileController::class, 'logoutOtherDevices'])->name('profile.logoutOtherDevices');
+    Route::get('/acerca-de', function () {
+        return view('acerca');
+    })->name('acerca');
+    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+});

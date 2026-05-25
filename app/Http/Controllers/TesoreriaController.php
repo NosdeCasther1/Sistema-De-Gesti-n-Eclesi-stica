@@ -22,9 +22,16 @@ class TesoreriaController extends Controller
     {
         $activeTab = $request->query('tab', 'all');
         $search = $request->query('search');
+        $user = auth()->user();
 
-        // 1. Obtener cajas activas
-        $accounts = FinancialAccount::where('is_active', true)->whereNull('deleted_at')->get();
+        // 1. Obtener cajas activas (con scoping)
+        $accountsQuery = FinancialAccount::where('is_active', true)->whereNull('deleted_at');
+        if (!$user->hasRole('administrador') && $user->organizacion_id) {
+            $accountsQuery->whereHas('organizacion', function ($q) use ($user) {
+                $q->where('id', $user->organizacion_id);
+            });
+        }
+        $accounts = $accountsQuery->get();
 
         // 2. Obtener categorías separadas por tipo para los modales
         $incomeCategories = FinancialCategory::where('type', 'income')->where('is_active', true)->whereNull('deleted_at')->get();
@@ -32,14 +39,14 @@ class TesoreriaController extends Controller
 
         // Determinar qué cuenta filtrar basado en activeTab
         $selectedAccountId = null;
-        if ($activeTab === 'general') {
-            $acc = FinancialAccount::where('name', 'LIKE', '%General%')->first();
-            $selectedAccountId = $acc ? $acc->id : null;
-        } elseif ($activeTab === 'jovenes') {
-            $acc = FinancialAccount::where('name', 'LIKE', '%Jóvenes%')->first();
-            $selectedAccountId = $acc ? $acc->id : null;
-        } elseif ($activeTab === 'misiones') {
-            $acc = FinancialAccount::where('name', 'LIKE', '%Misiones%')->first();
+        if ($activeTab !== 'all') {
+            $accQuery = FinancialAccount::query();
+            if (!$user->hasRole('administrador') && $user->organizacion_id) {
+                $accQuery->whereHas('organizacion', function ($q) use ($user) {
+                    $q->where('id', $user->organizacion_id);
+                });
+            }
+            $acc = $accQuery->find($activeTab);
             $selectedAccountId = $acc ? $acc->id : null;
         }
 
@@ -50,6 +57,10 @@ class TesoreriaController extends Controller
 
         if ($selectedAccountId) {
             $transactionsQuery->where('account_id', $selectedAccountId);
+        } elseif (!$user->hasRole('administrador') && $user->organizacion_id) {
+            $transactionsQuery->whereHas('account.organizacion', function ($q) use ($user) {
+                $q->where('id', $user->organizacion_id);
+            });
         }
 
         if ($search) {
@@ -75,6 +86,13 @@ class TesoreriaController extends Controller
         if ($selectedAccountId) {
             $ingresosQuery->where('account_id', $selectedAccountId);
             $gastosQuery->where('account_id', $selectedAccountId);
+        } elseif (!$user->hasRole('administrador') && $user->organizacion_id) {
+            $ingresosQuery->whereHas('account.organizacion', function ($q) use ($user) {
+                $q->where('id', $user->organizacion_id);
+            });
+            $gastosQuery->whereHas('account.organizacion', function ($q) use ($user) {
+                $q->where('id', $user->organizacion_id);
+            });
         }
 
         $totalIngresos = $ingresosQuery->sum('amount');
@@ -84,8 +102,14 @@ class TesoreriaController extends Controller
             // El balance de una caja individual incluye su balance inicial
             $balanceGeneral = $acc->initial_balance + $totalIngresos - $totalGastos;
         } else {
-            // Balance consolidado total
-            $initialBalances = FinancialAccount::where('is_active', true)->sum('initial_balance');
+            // Balance consolidado total (filtrado por scoping si aplica)
+            $initialBalancesQuery = FinancialAccount::where('is_active', true);
+            if (!$user->hasRole('administrador') && $user->organizacion_id) {
+                $initialBalancesQuery->whereHas('organizacion', function ($q) use ($user) {
+                    $q->where('id', $user->organizacion_id);
+                });
+            }
+            $initialBalances = $initialBalancesQuery->sum('initial_balance');
             $balanceGeneral = $initialBalances + $totalIngresos - $totalGastos;
         }
 
@@ -93,6 +117,16 @@ class TesoreriaController extends Controller
         if ($request->ajax()) {
             return view('tesoreria._table', compact('recentTransactions'))->render();
         }
+
+        $adjustmentsQuery = \App\Models\FinancialAccountAdjustment::with(['account', 'user'])->orderBy('created_at', 'desc');
+        if (!$user->hasRole('administrador') && $user->organizacion_id) {
+            $adjustmentsQuery->whereHas('account', function ($q) use ($user) {
+                $q->whereHas('organizacion', function ($orgQ) use ($user) {
+                    $orgQ->where('id', $user->organizacion_id);
+                });
+            });
+        }
+        $adjustments = $adjustmentsQuery->get();
 
         // Enviar todo empaquetado a la vista
         return view('tesoreria.index', compact(
@@ -104,7 +138,8 @@ class TesoreriaController extends Controller
             'totalGastos',
             'balanceGeneral',
             'activeTab',
-            'search'
+            'search',
+            'adjustments'
         ));
     }
 
@@ -116,7 +151,15 @@ class TesoreriaController extends Controller
         $tipo = $request->query('tipo', 'Ingreso');
         $type = $tipo === 'Gasto' ? 'expense' : 'income';
         $categorias = FinancialCategory::where('type', $type)->where('is_active', true)->whereNull('deleted_at')->get();
-        $accounts = FinancialAccount::where('is_active', true)->whereNull('deleted_at')->get();
+        
+        $user = auth()->user();
+        $accountsQuery = FinancialAccount::where('is_active', true)->whereNull('deleted_at');
+        if (!$user->hasRole('administrador') && $user->organizacion_id) {
+            $accountsQuery->whereHas('organizacion', function ($q) use ($user) {
+                $q->where('id', $user->organizacion_id);
+            });
+        }
+        $accounts = $accountsQuery->get();
 
         return view('tesoreria.create', compact('categorias', 'accounts', 'type', 'tipo'));
     }
@@ -150,9 +193,16 @@ class TesoreriaController extends Controller
         try {
             // 2. TRANSACCIONES ACID: Todo o Nada
             DB::transaction(function () use ($request, $userId) {
+                $user = auth()->user();
                 
                 // 3. CONTROL DE CONCURRENCIA: Bloqueo Pesimista (Pessimistic Locking)
-                $account = FinancialAccount::lockForUpdate()->findOrFail($request->account_id);
+                $accountQuery = FinancialAccount::lockForUpdate();
+                if (!$user->hasRole('administrador') && $user->organizacion_id) {
+                    $accountQuery->whereHas('organizacion', function ($q) use ($user) {
+                        $q->where('id', $user->organizacion_id);
+                    });
+                }
+                $account = $accountQuery->findOrFail($request->account_id);
 
                 // Evitar sobregiros en gastos
                 if ($request->type === 'expense') {
@@ -249,7 +299,20 @@ class TesoreriaController extends Controller
             'amount.min' => 'El monto mínimo a transferir es de Q0.01.',
         ]);
 
-        $fromAccountCheck = FinancialAccount::findOrFail($validated['from_account_id']);
+        $user = auth()->user();
+        
+        $fromAccountQuery = FinancialAccount::query();
+        $toAccountQuery = FinancialAccount::query();
+        if (!$user->hasRole('administrador') && $user->organizacion_id) {
+            $fromAccountQuery->whereHas('organizacion', function ($q) use ($user) {
+                $q->where('id', $user->organizacion_id);
+            });
+            $toAccountQuery->whereHas('organizacion', function ($q) use ($user) {
+                $q->where('id', $user->organizacion_id);
+            });
+        }
+        
+        $fromAccountCheck = $fromAccountQuery->findOrFail($validated['from_account_id']);
 
         if ($fromAccountCheck->balance < $validated['amount']) {
             return back()->with('error', 'La caja de origen no tiene fondos suficientes para esta operación.');
@@ -266,10 +329,20 @@ class TesoreriaController extends Controller
         }
 
         try {
-            DB::transaction(function () use ($validated, $userId) {
+            DB::transaction(function () use ($validated, $userId, $user) {
                 // 2. CONTROL DE CONCURRENCIA: Bloqueo Pesimista (Pessimistic Locking) de ambas cajas
-                $fromAccount = FinancialAccount::lockForUpdate()->findOrFail($validated['from_account_id']);
-                $toAccount = FinancialAccount::lockForUpdate()->findOrFail($validated['to_account_id']);
+                $fromAccountQuery = FinancialAccount::lockForUpdate();
+                $toAccountQuery = FinancialAccount::lockForUpdate();
+                if (!$user->hasRole('administrador') && $user->organizacion_id) {
+                    $fromAccountQuery->whereHas('organizacion', function ($q) use ($user) {
+                        $q->where('id', $user->organizacion_id);
+                    });
+                    $toAccountQuery->whereHas('organizacion', function ($q) use ($user) {
+                        $q->where('id', $user->organizacion_id);
+                    });
+                }
+                $fromAccount = $fromAccountQuery->findOrFail($validated['from_account_id']);
+                $toAccount = $toAccountQuery->findOrFail($validated['to_account_id']);
 
                 if ($fromAccount->balance < $validated['amount']) {
                     throw new \Exception('La caja de origen no tiene fondos suficientes para esta operación.');

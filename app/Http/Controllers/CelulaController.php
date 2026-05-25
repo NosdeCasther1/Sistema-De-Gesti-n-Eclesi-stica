@@ -65,7 +65,7 @@ class CelulaController extends Controller
      */
     public function show(string $id)
     {
-        $celula = \App\Models\Celula::with('lider', 'miembros')->withCount('miembros')->findOrFail($id);
+        $celula = \App\Models\Celula::with('lider', 'miembros.ministerios')->withCount('miembros')->findOrFail($id);
         
         return view('celulas.show', compact('celula'));
     }

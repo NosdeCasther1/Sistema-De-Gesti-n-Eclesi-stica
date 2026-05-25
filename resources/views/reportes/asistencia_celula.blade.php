@@ -5,20 +5,21 @@
     <style>
         @page { margin: 30px 40px 60px 40px; }
         body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #2b2b2b; margin: 0; padding: 0; font-size: 9px; line-height: 1.3; }
-        .header { text-align: center; margin-bottom: 25px; border-bottom: 2px solid #2563eb; padding-bottom: 15px; }
-        .church-name { font-size: 22px; font-weight: bold; color: #0f172a; margin: 0; text-transform: uppercase; letter-spacing: 0.5px; }
-        .report-title { font-size: 16px; font-weight: bold; color: #2563eb; margin: 4px 0; text-transform: uppercase; letter-spacing: 1px; }
+        .header { text-align: center; margin-bottom: 25px; border-bottom: 3px solid #c9a227; padding-bottom: 15px; }
+        .logo-img { max-height: 60px; margin-bottom: 10px; display: inline-block; }
+        .church-name { font-size: 22px; font-weight: bold; color: #6d0d0d; margin: 0; text-transform: uppercase; letter-spacing: 0.5px; }
+        .report-title { font-size: 16px; font-weight: bold; color: #6d0d0d; margin: 4px 0; text-transform: uppercase; letter-spacing: 1px; }
         .date-info { font-size: 11px; color: #64748b; }
         
         table { width: 100%; border-collapse: collapse; margin-top: 15px; margin-bottom: 40px; }
         th, td { border: 1px solid #cbd5e1; padding: 4px; text-align: center; vertical-align: middle; }
-        th { background-color: #0f172a; color: #ffffff; font-weight: bold; font-size: 9px; text-transform: uppercase; }
+        th { background-color: #6d0d0d; color: #ffffff; font-weight: bold; font-size: 9px; text-transform: uppercase; }
         .name-col { text-align: left; width: 180px; font-weight: bold; background-color: #ffffff; color: #1e293b; padding-left: 8px; }
         .day-col { width: 18px; }
-        .total-col { background-color: #f8fafc; font-weight: bold; width: 30px; color: #0f172a; }
+        .total-col { background-color: #fcfaf5; font-weight: bold; width: 30px; color: #0f172a; }
         
         .present { background-color: #dcfce7; color: #166534; font-weight: bold; }
-        .weekend { background-color: #f8fafc; }
+        .weekend { background-color: #fcfaf5; }
         
         .info-bar { margin-bottom: 15px; display: table; width: 100%; font-size: 11px; color: #334155; }
         .info-item { display: table-cell; width: 33%; }
@@ -29,7 +30,7 @@
 <body>
     <div class="header">
         @if(!empty($logoBase64))
-            <img src="{{ $logoBase64 }}" style="max-height: 60px; margin-bottom: 10px;">
+            <img src="{{ $logoBase64 }}" class="logo-img">
         @endif
         <h1 class="church-name">{{ $config->nombre_iglesia }}</h1>
         <div class="report-title">Control de Asistencia Mensual - Célula {{ $celula->nombre }}</div>
