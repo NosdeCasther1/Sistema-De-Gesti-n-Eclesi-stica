@@ -51,7 +51,17 @@ class FamiliaController extends Controller
             'celula_id' => 'nullable|exists:celulas,id'
         ]);
 
-        \App\Models\Familia::create($request->all());
+        $data = $request->all();
+
+        // Buscar el último código de familia registrado
+        $ultimaFamilia = \App\Models\Familia::orderBy('codigo_familia', 'desc')->first();
+        $siguienteNumero = $ultimaFamilia ? intval($ultimaFamilia->codigo_familia) + 1 : 1;
+
+        // Formatear a 3 dígitos (Ej: '001', '015', '120')
+        $codigo_familia = str_pad($siguienteNumero, 3, '0', STR_PAD_LEFT);
+        $data['codigo_familia'] = $codigo_familia;
+
+        \App\Models\Familia::create($data);
 
         return redirect()->route('familias.index')->with('success', 'Familia creada exitosamente.');
     }

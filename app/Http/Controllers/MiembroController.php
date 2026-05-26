@@ -280,6 +280,31 @@ class MiembroController extends Controller
             $data['foto'] = 'default_avatar.png';
         }
 
+        if ($request->filled('familia_id')) {
+            $familia = \App\Models\Familia::find($request->familia_id);
+            if ($familia) {
+                // Buscar el miembro con el código más alto DENTRO de esta familia
+                $ultimoMiembro = Miembro::where('familia_id', $familia->id)
+                    ->orderBy('codigo_miembro', 'desc')
+                    ->first();
+
+                if ($ultimoMiembro && $ultimoMiembro->codigo_miembro) {
+                    // Extraer los últimos 2 dígitos del código del miembro
+                    $ultimoCorrelativo = intval(substr($ultimoMiembro->codigo_miembro, -2));
+                    $nuevoCorrelativo = $ultimoCorrelativo + 1;
+                } else {
+                    // Es el primer miembro de esta familia
+                    $nuevoCorrelativo = 1;
+                }
+
+                // Concatenar: Código de Familia (3) + Correlativo de Miembro (2)
+                $codigo_miembro = $familia->codigo_familia . str_pad($nuevoCorrelativo, 2, '0', STR_PAD_LEFT);
+
+                // Asignar el código generado antes de guardar
+                $data['codigo_miembro'] = $codigo_miembro;
+            }
+        }
+
         $miembro = Miembro::create($data);
         $miembro->ministerios()->sync($request->ministerios ?? []);
 
