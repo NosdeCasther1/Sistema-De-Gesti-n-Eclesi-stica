@@ -1,3 +1,12 @@
+# Etapa 1: Compilar assets de Node/Vite
+FROM node:20 AS frontend-builder
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci
+COPY . .
+RUN npm run build
+
+# Etapa 2: Aplicación PHP con Apache
 FROM php:8.2-apache
 
 # Instalar dependencias del sistema y extensiones de PHP necesarias
@@ -24,6 +33,9 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 # Copiar el proyecto al contenedor
 COPY . /var/www/html
+
+# Copiar los assets compilados desde la etapa anterior
+COPY --from=frontend-builder /app/public/build /var/www/html/public/build
 
 # Establecer directorio de trabajo
 WORKDIR /var/www/html
