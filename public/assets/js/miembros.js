@@ -21,7 +21,6 @@ $(document).ready(function () {
             }
         });
     });
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
     // Inicializar el modal y el formulario de miembro
     var memberModal = new bootstrap.Modal(document.getElementById('memberModal'));

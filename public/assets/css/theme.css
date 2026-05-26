@@ -323,6 +323,10 @@ html, body {
     --bs-danger-rgb: 220, 38, 38;
     --modal-bg: #ffffff;
 
+    /* Alert Tokens */
+    --alert-success: rgba(5, 150, 105, 0.15);
+    --alert-success-text: #059669;
+
     /* Module Specific Tokens */
     --module-card-radius: 16px;
     --input-focus-shadow: rgba(37, 99, 235, 0.15);
@@ -355,6 +359,10 @@ html, body {
     --bs-danger: #f87171;  
     --bs-danger-rgb: 248, 113, 113;
     --modal-bg: #1e293b;
+
+    /* Alert Tokens Dark */
+    --alert-success: rgba(52, 211, 153, 0.15);
+    --alert-success-text: #34d399;
 
     /* Module Specific Tokens Dark */
     --input-bg-dark: #1e293b;
