@@ -132,6 +132,22 @@
             white-space: nowrap !important;
             text-align: center !important;
         }
+        /* Garantizar celdas proporcionales y no colapsadas en móviles */
+        .fc .fc-daygrid-day-frame {
+            min-height: 55px !important;
+        }
+        .fc .fc-daygrid-day-number {
+            font-size: 0.75rem !important;
+            padding: 4px 6px !important;
+        }
+        .fc .fc-col-header-cell-cushion {
+            font-size: 0.7rem !important;
+        }
+        .fc-event {
+            font-size: 0.7rem !important;
+            padding: 1px 2px !important;
+            margin-bottom: 1.5px !important;
+        }
     }
 
     .fc-theme-standard td, .fc-theme-standard th, .fc-theme-standard .fc-scrollgrid {
@@ -715,7 +731,7 @@
         </div>
     </div>
     <!-- ===== ENCABEZADO Y BOTONES DE VISTA ===== -->
-    <div class="flex justify-between items-center mb-4 flex-wrap gap-3 flex-shrink-0 no-print print-hidden">
+    <div class="flex justify-between items-center mb-4 flex-wrap gap-3 flex-shrink-0 no-print print-hidden mt-3 sm:mt-0">
         <!-- ===== CONTROL RÁPIDO DE GOOGLE CALENDAR ===== -->
         <div class="flex items-center">
             @if($isConnected)
@@ -934,12 +950,13 @@
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         var calendarEl = document.getElementById('calendar');
+        var isMobile = window.innerWidth < 768;
         var calendar = new FullCalendar.Calendar(calendarEl, {
             locale: 'es',
             firstDay: 0, // 0 = Domingo
             initialView: 'dayGridMonth',
-            contentHeight: 680,
-            aspectRatio: 1.8,
+            height: isMobile ? 'auto' : 680,
+            aspectRatio: isMobile ? 0.85 : 1.8,
             customButtons: {
                 miHoy: {
                     text: 'Hoy',
