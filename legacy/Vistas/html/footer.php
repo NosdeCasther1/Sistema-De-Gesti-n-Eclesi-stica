@@ -4,7 +4,7 @@
             &copy; <?= date('Y') ?> CRM Iglesia AD Rey de Reyes
         </span>
         <span class="text-muted" style="font-size: 0.85rem;">
-            Desarrollado con <i class="fas fa-heart text-danger"></i> por <strong>Edson Castillo</strong> <span class="badge bg-secondary ms-1">v1.2.0</span>
+            Desarrollado con <i class="fas fa-heart text-danger"></i> por <strong>Edson Castillo</strong> <span class="badge bg-secondary ms-1">v1.0.0</span>
         </span>
     </div>
 </footer>

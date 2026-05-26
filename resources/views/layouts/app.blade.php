@@ -231,7 +231,7 @@
                 <span class="text-slate-300 dark:text-slate-700">•</span>
                 
                 {{-- Versión --}}
-                <span title="Versión Actual">v1.2.0 Bento</span>
+                <span title="Versión Actual">v1.0.0 Bento</span>
             </div>
         </div>
         @endif

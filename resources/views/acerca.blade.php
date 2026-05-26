@@ -109,7 +109,7 @@
         {{-- Info Badge --}}
         <div class="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-4 text-center shrink-0 z-10 w-full md:w-auto">
             <span class="block text-[10px] font-bold uppercase tracking-wider text-indigo-200">Versión del Sistema</span>
-            <span class="text-2xl font-black font-mono">v1.2.0</span>
+            <span class="text-2xl font-black font-mono">v1.0.0</span>
             <span class="block text-[9px] text-indigo-300 font-bold uppercase mt-1 tracking-widest">Edición Bento</span>
         </div>
         {{-- Decorative Background Circles --}}
