@@ -239,26 +239,30 @@
     </div>
 
     {{-- Technical Specs (Bento Footer Card) --}}
-    <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-800/80 rounded-3xl p-6 shadow-sm">
+    <div x-data="{ techModalOpen: false, techTitle: '', techDesc: '', techIcon: '', techColor: '', openModal(title, desc, icon, color) { this.techTitle = title; this.techDesc = desc; this.techIcon = icon; this.techColor = color; this.techModalOpen = true; } }" class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-800/80 rounded-3xl p-6 shadow-sm">
         <h3 class="text-base font-black text-slate-800 dark:text-white uppercase tracking-tight mb-4">Especificaciones Técnicas</h3>
         
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
-            <div class="about-spec-card">
+            <div class="about-spec-card cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700/50 hover:-translate-y-1 transition-all"
+                 @click="openModal('Laravel 11.x', 'Laravel es el framework PHP utilizado para la lógica del servidor (backend). Nos proporciona una base sólida, enrutamiento seguro, ORM avanzado para bases de datos y herramientas integradas de autenticación, ideal para crear un sistema robusto y escalable.', 'fa-brands fa-laravel', 'text-rose-500')">
                 <i class="fa-brands fa-laravel text-rose-500 text-2xl mb-1"></i>
                 <span class="spec-label uppercase tracking-wider">Framework</span>
                 <span class="spec-value">Laravel 11.x</span>
             </div>
-            <div class="about-spec-card">
+            <div class="about-spec-card cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700/50 hover:-translate-y-1 transition-all"
+                 @click="openModal('Alpine.js / JS', 'Alpine.js nos brinda el comportamiento interactivo (como modales, menús y pestañas) directamente en nuestro código, manteniendo la interfaz de usuario rápida y fluida sin la complejidad de frameworks más pesados.', 'fa-brands fa-js', 'text-yellow-500')">
                 <i class="fa-brands fa-js text-yellow-500 text-2xl mb-1"></i>
                 <span class="spec-label uppercase tracking-wider">Interactividad</span>
                 <span class="spec-value">Alpine.js / JS</span>
             </div>
-            <div class="about-spec-card">
+            <div class="about-spec-card cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700/50 hover:-translate-y-1 transition-all"
+                 @click="openModal('Tailwind CSS', 'Tailwind CSS es el framework de utilidades utilizado para diseñar la interfaz. Nos permite crear vistas totalmente personalizadas, modernas y adaptables a cualquier dispositivo móvil con un control detallado sobre colores y tipografía.', 'fa-brands fa-css3-alt', 'text-blue-500')">
                 <i class="fa-brands fa-css3-alt text-blue-500 text-2xl mb-1"></i>
                 <span class="spec-label uppercase tracking-wider">Diseño</span>
                 <span class="spec-value">Tailwind CSS</span>
             </div>
-            <div class="about-spec-card">
+            <div class="about-spec-card cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700/50 hover:-translate-y-1 transition-all"
+                 @click="openModal('MySQL 8.0', 'MySQL actúa como nuestro sistema principal de gestión de bases de datos. Almacena de manera segura y eficiente toda la información de la feligresía, registros financieros y configuraciones, garantizando alta disponibilidad e integridad.', 'fa-solid fa-database', 'text-indigo-500')">
                 <i class="fa-solid fa-database text-indigo-500 text-2xl mb-1"></i>
                 <span class="spec-label uppercase tracking-wider">Base de Datos</span>
                 <span class="spec-value">MySQL 8.0</span>
@@ -267,6 +271,29 @@
 
         <div class="mt-6 pt-6 border-t border-slate-100 dark:border-slate-750 text-center text-xs text-slate-450 dark:text-slate-500 leading-relaxed max-w-2xl mx-auto font-semibold">
             Este software ha sido optimizado para asambleas presenciales y soporte remoto. Diseñado y adaptado con rigurosos estándares de seguridad ministerial para proteger la privacidad e integridad de toda la feligresía de la iglesia <strong>AD Rey de Reyes</strong>.
+        </div>
+
+        {{-- Modal de Información Técnica --}}
+        <div x-show="techModalOpen" class="fixed inset-0 z-[100] flex items-center justify-center overflow-y-auto overflow-x-hidden bg-slate-900/60 backdrop-blur-sm p-4 md:p-0" x-cloak style="display: none;">
+            <div x-show="techModalOpen" @click.away="techModalOpen = false" class="relative w-full max-w-md max-h-full rounded-2xl bg-white dark:bg-slate-900 shadow-2xl border border-slate-200 dark:border-slate-800"
+                 x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100"
+                 x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95">
+                <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-slate-800">
+                    <div class="flex items-center gap-3">
+                        <i :class="techIcon + ' ' + techColor + ' text-2xl'"></i>
+                        <h3 class="text-xl font-black text-slate-900 dark:text-white" x-text="techTitle"></h3>
+                    </div>
+                    <button @click="techModalOpen = false" type="button" class="text-slate-400 bg-transparent hover:bg-slate-200 hover:text-slate-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-slate-800 dark:hover:text-white transition-colors">
+                        <i class="fa-solid fa-xmark text-lg"></i>
+                    </button>
+                </div>
+                <div class="p-4 md:p-6 space-y-4">
+                    <p class="text-sm font-medium leading-relaxed text-slate-600 dark:text-slate-400" x-text="techDesc"></p>
+                </div>
+                <div class="flex items-center p-4 md:p-5 border-t border-slate-100 dark:border-slate-800 rounded-b bg-slate-50 dark:bg-slate-800/50">
+                    <button @click="techModalOpen = false" type="button" class="w-full text-white bg-indigo-600 hover:bg-indigo-700 focus:ring-4 focus:outline-none focus:ring-indigo-300 font-bold rounded-xl text-sm px-5 py-3 text-center dark:bg-indigo-600 dark:hover:bg-indigo-700 dark:focus:ring-indigo-800 shadow-md transition-all">Entendido</button>
+                </div>
+            </div>
         </div>
     </div>
 </div>
