@@ -43,7 +43,7 @@
                 </div>
 
                 {{-- BOTONES DE ACCIÓN (Con Affordance, evitamos bg-slate-50/50) --}}
-                <div class="grid grid-cols-2 border-t border-slate-100 dark:border-slate-800 bg-slate-100/20 dark:bg-slate-950/20 divide-x divide-slate-100 dark:divide-slate-800 mt-auto">
+                <div class="grid grid-cols-3 border-t border-slate-100 dark:border-slate-800 bg-slate-100/20 dark:bg-slate-950/20 divide-x divide-slate-100 dark:divide-slate-800 mt-auto">
                     <a href="{{ route('familias.show', $familia->id) }}"
                        class="py-3.5 text-center text-[10px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-indigo-600 dark:hover:text-white transition-all flex items-center justify-center gap-2">
                         <i class="fa-solid fa-eye text-sm text-slate-400 group-hover:text-indigo-500 transition-colors"></i> Detalles
@@ -52,6 +52,13 @@
                        class="py-3.5 text-center text-[10px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-indigo-600 dark:hover:text-white transition-all flex items-center justify-center gap-2">
                         <i class="fa-solid fa-pen-to-square text-sm text-slate-400"></i> Editar
                     </a>
+                    <form action="{{ route('familias.destroy', $familia->id) }}" method="POST" class="m-0 p-0 flex" onsubmit="return confirm('¿Estás seguro de que deseas eliminar esta familia?');">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="w-full py-3.5 text-center text-[10px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-400 hover:bg-rose-50 dark:hover:bg-rose-900/20 hover:text-rose-600 dark:hover:text-rose-400 transition-all flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-trash-can text-sm text-slate-400 group-hover:text-rose-500 transition-colors"></i> Eliminar
+                        </button>
+                    </form>
                 </div>
 
             </div>
