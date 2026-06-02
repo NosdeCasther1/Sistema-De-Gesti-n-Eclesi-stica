@@ -27,7 +27,17 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/miembros/{miembro}/certificado-bautismo', [MiembroController::class, 'certificadoBautismo'])->name('miembros.certificado_bautismo');
 Route::resource('familias', FamiliaController::class);
 Route::resource('miembros', MiembroController::class);
+
+// Certificados
+Route::resource('certificados/presentacion', App\Http\Controllers\CertificadoPresentacionController::class)->names('presentacion');
+Route::get('certificados/presentacion/{presentacion}/pdf', [App\Http\Controllers\CertificadoPresentacionController::class, 'pdf'])->name('presentacion.pdf');
+Route::resource('certificados/matrimonio', App\Http\Controllers\CertificadoMatrimonioController::class)->names('matrimonio');
+Route::get('certificados/matrimonio/{matrimonio}/pdf', [App\Http\Controllers\CertificadoMatrimonioController::class, 'pdf'])->name('matrimonio.pdf');
 Route::resource('inventario', \App\Http\Controllers\InventarioController::class);
+    Route::post('/miembros/{miembro}/records', [App\Http\Controllers\MiembroController::class, 'storeRecord'])->name('miembros.records.store');
+    Route::delete('/records/{record}', [App\Http\Controllers\MiembroController::class, 'destroyRecord'])->name('miembros.records.destroy');
+
+    Route::resource('familias', App\Http\Controllers\FamiliaController::class);
 Route::resource('celulas', \App\Http\Controllers\CelulaController::class);
 Route::post('/tesoreria/transfer', [\App\Http\Controllers\TesoreriaController::class, 'transfer'])->name('tesoreria.transfer')->middleware('role:tesorero|administrador');
 Route::resource('tesoreria', \App\Http\Controllers\TesoreriaController::class)->middleware('role:tesorero|administrador');
@@ -117,7 +127,14 @@ Route::post('/configuracion/permisos', [\App\Http\Controllers\ConfiguracionContr
     Route::patch('/elecciones/{eleccion}/estado', [EleccionController::class, 'cambiarEstado'])->name('elecciones.estado');
     Route::post('/elecciones/{eleccion}/sync-candidatos', [EleccionController::class, 'syncCandidatos'])->name('elecciones.sync-candidatos');
     Route::get('/elecciones/{eleccion}/kiosco', [EleccionController::class, 'kiosco'])->name('elecciones.kiosco');
-    Route::get('/elecciones/{eleccion}/reporte', [App\Http\Controllers\EleccionController::class, 'generarReporteFinal'])->name('elecciones.reporte');
+    Route::get('elecciones/{eleccion}/reporte', [\App\Http\Controllers\EleccionController::class, 'reporteEscrutinio'])->name('elecciones.reporte');
+
+    Route::get('organizaciones/{organizacion}/reporte-miembros', [\App\Http\Controllers\OrganizacionController::class, 'reporteMiembros'])->name('organizaciones.reporte_miembros');
+
+// Comunicaciones
+Route::get('comunicaciones/whatsapp', [\App\Http\Controllers\WhatsappController::class, 'index'])->name('comunicaciones.whatsapp.index');
+
+// Dashboard and related routes
     Route::get('/elecciones/{eleccion}/live', [App\Http\Controllers\EleccionController::class, 'liveScreen'])->name('elecciones.live');
     Route::get('/elecciones/{eleccion}/live-data', [App\Http\Controllers\EleccionController::class, 'liveData'])->name('elecciones.live.data');
     

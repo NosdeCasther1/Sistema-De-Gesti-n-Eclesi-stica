@@ -150,6 +150,15 @@
                         </select>
                     </div>
                     <div>
+                        <label class="block text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">Cónyuge (Si aplica)</label>
+                        <select name="conyuge_id" class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all shadow-sm cursor-pointer">
+                            <option value="">Seleccionar Cónyuge (Opcional)</option>
+                            @foreach($posiblesConyuges as $pc)
+                                <option value="{{ $pc->id }}" {{ old('conyuge_id', $miembro->conyuge_id) == $pc->id ? 'selected' : '' }}>{{ $pc->nombre_completo }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div>
                         <label class="block text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">Teléfono</label>
                         <input type="text" name="telefono" value="{{ old('telefono', $miembro->telefono) }}" placeholder="Ej: 55551234 (8 dígitos)"
                                maxlength="8" oninput="this.value = this.value.replace(/[^0-9]/g, '').substring(0, 8)"
@@ -284,11 +293,25 @@
                         <p class="text-[10px] text-amber-600 dark:text-amber-400 mt-2 font-semibold"><i class="fas fa-info-circle mr-1"></i>Solo los miembros <strong>Bautizados</strong> pueden votar en elecciones.</p>
                     </div>
 
-                    {{-- FECHAS DE INTEGRACIÓN Y BAUTISMO --}}
+                    {{-- FECHAS DE INTEGRACIÓN, CONVERSIÓN Y BAUTISMOS --}}
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                         <div>
                             <label class="block text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">
-                                <i class="fas fa-calendar-alt text-amber-500 mr-1"></i> Fecha de Integración a la Iglesia
+                                <i class="fas fa-heart text-rose-500 mr-1"></i> Lugar de Conversión
+                            </label>
+                            <input type="text" name="lugar_conversion" value="{{ old('lugar_conversion', $miembro->lugar_conversion) }}" placeholder="Ej: Iglesia Central, Campaña..."
+                                   class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all shadow-sm">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">
+                                <i class="fas fa-calendar-alt text-amber-500 mr-1"></i> Fecha de Conversión
+                            </label>
+                            <input type="date" name="fecha_conversion" value="{{ old('fecha_conversion', $miembro->fecha_conversion ? $miembro->fecha_conversion->format('Y-m-d') : '') }}"
+                                   class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all shadow-sm">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">
+                                <i class="fas fa-calendar-check text-emerald-500 mr-1"></i> Fecha de Integración
                             </label>
                             <input type="date" name="fecha_integracion" value="{{ old('fecha_integracion', $miembro->fecha_integracion ? $miembro->fecha_integracion->format('Y-m-d') : '') }}"
                                    class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all shadow-sm">
@@ -299,6 +322,24 @@
                             </label>
                             <input type="date" name="fecha_bautismo" value="{{ old('fecha_bautismo', $miembro->fecha_bautismo ? $miembro->fecha_bautismo->format('Y-m-d') : '') }}"
                                    class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all shadow-sm">
+                        </div>
+                    </div>
+
+                    {{-- BAUTISMOS --}}
+                    <div class="md:col-span-2 mb-6">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div class="flex items-center p-3 border rounded-xl hover:bg-slate-50 dark:border-slate-700 dark:hover:bg-slate-800 transition-colors">
+                                <input id="bautizado_agua" name="bautizado_agua" type="checkbox" value="1" {{ old('bautizado_agua', $miembro->bautizado_agua) ? 'checked' : '' }} class="h-5 w-5 rounded border-slate-300 text-blue-600 focus:ring-blue-500">
+                                <label for="bautizado_agua" class="ml-3 block text-sm font-bold text-slate-700 dark:text-slate-300">
+                                    <i class="fas fa-water text-blue-500 mr-1"></i> Bautizado en Aguas
+                                </label>
+                            </div>
+                            <div class="flex items-center p-3 border rounded-xl hover:bg-slate-50 dark:border-slate-700 dark:hover:bg-slate-800 transition-colors">
+                                <input id="bautismo_espiritu_santo" name="bautismo_espiritu_santo" type="checkbox" value="1" {{ old('bautismo_espiritu_santo', $miembro->bautismo_espiritu_santo) ? 'checked' : '' }} class="h-5 w-5 rounded border-slate-300 text-amber-500 focus:ring-amber-500">
+                                <label for="bautismo_espiritu_santo" class="ml-3 block text-sm font-bold text-slate-700 dark:text-slate-300">
+                                    <i class="fas fa-fire text-amber-500 mr-1"></i> Bautismo en el Espíritu Santo
+                                </label>
+                            </div>
                         </div>
                     </div>
                     <div class="mb-6">
@@ -316,12 +357,28 @@
                         <label class="block text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-3">Organizaciones / Sociedades a las que pertenece</label>
                         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                             @foreach($organizaciones as $org)
-                                <label class="flex items-center p-3 border border-slate-200 dark:border-slate-800/80 rounded-xl cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors">
-                                    <input type="checkbox" name="organizaciones[]" value="{{ $org->id }}" 
-                                           {{ in_array($org->id, old('organizaciones', $miembro->organizaciones->pluck('id')->toArray())) ? 'checked' : '' }}
-                                           class="rounded text-blue-600 focus:ring-blue-500 w-4 h-4 transition-colors">
-                                    <span class="ml-3 text-xs font-semibold text-slate-700 dark:text-slate-300">{{ $org->nombre }}</span>
-                                </label>
+                                @php
+                                    $isAssigned = false;
+                                    $puestoActual = 'Miembro';
+                                    if(is_array(old('organizaciones')) && in_array($org->id, old('organizaciones'))) {
+                                        $isAssigned = true;
+                                        $puestoActual = old('puestos.'.$org->id, 'Miembro');
+                                    } elseif (!is_array(old('organizaciones')) && $miembro->organizaciones->contains($org->id)) {
+                                        $isAssigned = true;
+                                        $puestoActual = $miembro->organizaciones->find($org->id)->pivot->puesto ?? 'Miembro';
+                                    }
+                                @endphp
+                                <div class="p-3 border border-slate-200 dark:border-slate-800/80 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors" x-data="{ checked: {{ $isAssigned ? 'true' : 'false' }} }">
+                                    <label class="flex items-center cursor-pointer mb-2">
+                                        <input type="checkbox" name="organizaciones[]" value="{{ $org->id }}" x-model="checked"
+                                               class="rounded text-blue-600 focus:ring-blue-500 w-4 h-4 transition-colors">
+                                        <span class="ml-3 text-xs font-semibold text-slate-700 dark:text-slate-300">{{ $org->nombre }}</span>
+                                    </label>
+                                    <div x-show="checked" x-transition x-cloak class="mt-2">
+                                        <input type="text" name="puestos[{{ $org->id }}]" value="{{ $puestoActual }}" placeholder="Cargo (Ej: Presidente)" 
+                                               class="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 px-3 py-2 text-slate-900 dark:text-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all shadow-sm">
+                                    </div>
+                                </div>
                             @endforeach
                         </div>
                     </div>

@@ -143,6 +143,28 @@
                     </a>
                 </li>
                 @endif
+                @if($isAdmin)
+                <li class="nav-item">
+                    @php $isActive = request()->is('certificados/presentacion*'); @endphp
+                    <a href="{{ route('presentacion.index') }}" class="{{ $baseClasses }} {{ $isActive ? $activeClasses : $inactiveClasses }}">
+                        <i class="fas fa-child-reaching text-lg {{ $isActive ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-400 dark:text-slate-500' }}"></i> <span>Cert. Presentación</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    @php $isActive = request()->is('certificados/matrimonio*'); @endphp
+                    <a href="{{ route('matrimonio.index') }}" class="{{ $baseClasses }} {{ $isActive ? $activeClasses : $inactiveClasses }}">
+                        <i class="fas fa-rings-wedding text-lg {{ $isActive ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-400 dark:text-slate-500' }}"></i> <span>Cert. Matrimonio</span>
+                    </a>
+                </li>
+                @endif
+                @if($isAdmin)
+                <li class="nav-item">
+                    @php $isActive = request()->is('comunicaciones/whatsapp*'); @endphp
+                    <a href="{{ route('comunicaciones.whatsapp.index') }}" class="{{ $baseClasses }} {{ $isActive ? $activeClasses : $inactiveClasses }}">
+                        <i class="fa-brands fa-whatsapp text-lg {{ $isActive ? 'text-emerald-500 dark:text-emerald-400' : 'text-slate-400 dark:text-slate-500' }}"></i> <span>WhatsApp Web</span>
+                    </a>
+                </li>
+                @endif
                 <li class="nav-item">
                     @php $isActive = request()->is('organizaciones*'); @endphp
                     <a href="{{ route('organizaciones.index') }}" class="{{ $baseClasses }} {{ $isActive ? $activeClasses : $inactiveClasses }}">

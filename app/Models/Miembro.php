@@ -10,15 +10,19 @@ class Miembro extends Model
         'familia_id', 'nombres', 'apellidos', 'dpi', 'fecha_nacimiento', 
         'sexo', 'estado_civil', 'telefono', 'email', 'direccion', 
         'ciudad', 'nivel_academico', 'profesion', 'lugar_trabajo_estudio',
-        'es_lider', 'estado', 'foto', 'fecha_integracion', 'fecha_bautismo', 'etapa_consolidacion'
+        'es_lider', 'estado', 'foto', 'fecha_integracion', 'fecha_bautismo', 'etapa_consolidacion',
+        'lugar_conversion', 'fecha_conversion', 'conyuge_id', 'bautizado_agua', 'bautismo_espiritu_santo'
     ];
 
     protected $casts = [
         'fecha_integracion' => 'date',
         'fecha_bautismo' => 'date',
         'fecha_nacimiento' => 'date',
+        'fecha_conversion' => 'date',
         'estado' => 'boolean',
-        'es_lider' => 'boolean'
+        'es_lider' => 'boolean',
+        'bautizado_agua' => 'boolean',
+        'bautismo_espiritu_santo' => 'boolean'
     ];
 
     public function ministerios()
@@ -36,6 +40,11 @@ class Miembro extends Model
         return $this->belongsTo(Familia::class);
     }
 
+    public function conyuge()
+    {
+        return $this->belongsTo(Miembro::class, 'conyuge_id');
+    }
+
     public function celulas()
     {
         return $this->belongsToMany(Celula::class, 'celula_miembro');
@@ -44,6 +53,16 @@ class Miembro extends Model
     public function celulasLideradas()
     {
         return $this->hasMany(Celula::class, 'lider_id');
+    }
+
+    public function organizacionPadron()
+    {
+        return $this->hasMany(MiembroOrganizacion::class, 'miembro_id');
+    }
+
+    public function records()
+    {
+        return $this->hasMany(Record::class);
     }
 
     public function organizaciones()

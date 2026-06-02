@@ -233,7 +233,8 @@ class MiembroController extends Controller
     {
         $organizaciones = Organizacion::orderBy('nombre')->get();
         $ministerios = Ministerio::orderBy('nombre')->get();
-        return view('miembros.create', compact('organizaciones', 'ministerios'));
+        $posiblesConyuges = Miembro::orderBy('nombres')->get();
+        return view('miembros.create', compact('organizaciones', 'ministerios', 'posiblesConyuges'));
     }
 
     /**
@@ -265,11 +266,16 @@ class MiembroController extends Controller
             'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'organizaciones' => 'nullable|array',
             'organizaciones.*' => 'exists:organizaciones,id',
+            'lugar_conversion' => 'nullable|string|max:255',
+            'fecha_conversion' => 'nullable|date',
+            'conyuge_id' => 'nullable|exists:miembros,id',
         ]);
 
         $data = $request->except(['foto', 'organizaciones', 'ministerios']);
         $data['estado'] = true; // Miembro activo por defecto
         $data['es_lider'] = $request->has('es_lider');
+        $data['bautizado_agua'] = $request->has('bautizado_agua');
+        $data['bautismo_espiritu_santo'] = $request->has('bautismo_espiritu_santo');
 
         if ($request->hasFile('foto')) {
             $file = $request->file('foto');
@@ -309,10 +315,11 @@ class MiembroController extends Controller
         $miembro->ministerios()->sync($request->ministerios ?? []);
 
         $organizaciones = $request->input('organizaciones', []);
+        $puestos = $request->input('puestos', []);
         $syncData = [];
         foreach ($organizaciones as $orgId) {
             $syncData[$orgId] = [
-                'puesto' => 'Miembro',
+                'puesto' => isset($puestos[$orgId]) ? $puestos[$orgId] : 'Miembro',
                 'fecha_asignacion' => now()->format('Y-m-d'),
                 'estado' => true
             ];
@@ -337,7 +344,8 @@ class MiembroController extends Controller
     {
         $organizaciones = Organizacion::orderBy('nombre')->get();
         $ministerios = Ministerio::orderBy('nombre')->get();
-        return view('miembros.edit', compact('miembro', 'organizaciones', 'ministerios'));
+        $posiblesConyuges = Miembro::where('id', '!=', $miembro->id)->orderBy('nombres')->get();
+        return view('miembros.edit', compact('miembro', 'organizaciones', 'ministerios', 'posiblesConyuges'));
     }
 
     /**
@@ -369,10 +377,15 @@ class MiembroController extends Controller
             'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'organizaciones' => 'nullable|array',
             'organizaciones.*' => 'exists:organizaciones,id',
+            'lugar_conversion' => 'nullable|string|max:255',
+            'fecha_conversion' => 'nullable|date',
+            'conyuge_id' => 'nullable|exists:miembros,id',
         ]);
 
         $data = $request->except(['foto', 'organizaciones', 'ministerios']);
         $data['es_lider'] = $request->has('es_lider');
+        $data['bautizado_agua'] = $request->has('bautizado_agua');
+        $data['bautismo_espiritu_santo'] = $request->has('bautismo_espiritu_santo');
 
         if ($request->hasFile('foto')) {
             // Eliminar foto anterior si existe y no es la default
@@ -390,20 +403,22 @@ class MiembroController extends Controller
         $miembro->ministerios()->sync($request->ministerios ?? []);
 
         $organizaciones = $request->input('organizaciones', []);
+        $puestos = $request->input('puestos', []);
         $syncData = [];
         $currentOrgs = $miembro->organizaciones->keyBy('id');
         
         foreach ($organizaciones as $orgId) {
+            $nuevoPuesto = isset($puestos[$orgId]) ? $puestos[$orgId] : 'Miembro';
             if ($currentOrgs->has($orgId)) {
                 $pivot = $currentOrgs->get($orgId)->pivot;
                 $syncData[$orgId] = [
-                    'puesto' => $pivot->puesto ?? 'Miembro',
+                    'puesto' => $nuevoPuesto,
                     'fecha_asignacion' => $pivot->fecha_asignacion ? ($pivot->fecha_asignacion instanceof \Carbon\Carbon ? $pivot->fecha_asignacion->format('Y-m-d') : $pivot->fecha_asignacion) : now()->format('Y-m-d'),
                     'estado' => $pivot->estado ?? true
                 ];
             } else {
                 $syncData[$orgId] = [
-                    'puesto' => 'Miembro',
+                    'puesto' => $nuevoPuesto,
                     'fecha_asignacion' => now()->format('Y-m-d'),
                     'estado' => true
                 ];
@@ -421,5 +436,27 @@ class MiembroController extends Controller
     {
         $miembro->delete();
         return redirect()->route('miembros.index');
+    }
+
+    public function storeRecord(Request $request, Miembro $miembro)
+    {
+        $request->validate([
+            'fecha' => 'required|date',
+            'tipo_falta' => 'required|in:Leve,Grave',
+            'descripcion' => 'required|string',
+            'accion_tomada' => 'nullable|string',
+        ]);
+
+        $miembro->records()->create($request->all());
+
+        return redirect()->route('miembros.show', $miembro)->with('success', 'Récord disciplinario agregado correctamente.');
+    }
+
+    public function destroyRecord(\App\Models\Record $record)
+    {
+        $miembro_id = $record->miembro_id;
+        $record->delete();
+
+        return redirect()->route('miembros.show', $miembro_id)->with('success', 'Récord eliminado correctamente.');
     }
 }

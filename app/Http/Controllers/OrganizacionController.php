@@ -129,4 +129,28 @@ class OrganizacionController extends Controller
             'message' => 'Padrón de la organización actualizado correctamente.'
         ]);
     }
+
+    /**
+     * Generar reporte en PDF de los miembros de la organización.
+     */
+    public function reporteMiembros(Organizacion $organizacion)
+    {
+        $miembros = $organizacion->miembros()->with('familia')->orderBy('apellidos')->orderBy('nombres')->get();
+        $config = \App\Models\Configuracion::first();
+        $iglesia = $config ? ($config->nombre_iglesia ?? 'AD Rey de Reyes') : 'AD Rey de Reyes';
+
+        $pathLogo = public_path('imagen/Logo_AD_Rey_de_Reyes_optimized.png');
+        if (!file_exists($pathLogo)) {
+            $pathLogo = public_path('imagen/Logo AD Rey de Reyes.png');
+        }
+        $logoBase64 = '';
+        if (file_exists($pathLogo)) {
+            $logoBase64 = 'data:image/png;base64,' . base64_encode(file_get_contents($pathLogo));
+        }
+
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('organizaciones.reporte_miembros', compact('organizacion', 'miembros', 'iglesia', 'logoBase64'))
+                  ->setPaper('letter', 'portrait');
+
+        return $pdf->stream('Reporte_Miembros_' . \Illuminate\Support\Str::slug($organizacion->nombre) . '.pdf');
+    }
 }

@@ -67,12 +67,16 @@ x-bind:class="procesando ? 'opacity-70 pointer-events-none' : ''">
                         </div>
                         <p class="text-xs text-slate-500 dark:text-slate-400 max-w-xl">{{ $organizacionSeleccionada->descripcion }}</p>
                     </div>
-                    <template x-if="esAdmin">
-                        {{-- Botón anclado a la derecha mediante el justify-between del contenedor padre --}}
-                        <button @click="mostrarModalPadron = true" class="shrink-0 w-full sm:w-auto px-5 py-2.5 bg-indigo-50 dark:bg-indigo-500/10 text-indigo-700 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-500/20 rounded-xl font-bold hover:bg-indigo-100 dark:hover:bg-indigo-500/20 transition-colors flex items-center justify-center text-xs shadow-sm">
-                            <i class="fa-solid fa-users mr-2"></i> Padrón Electoral
-                        </button>
-                    </template>
+                    <div class="flex items-center gap-2 w-full sm:w-auto">
+                        <a href="{{ route('organizaciones.reporte_miembros', $organizacionSeleccionada->id) }}" target="_blank" class="shrink-0 w-full sm:w-auto px-5 py-2.5 bg-rose-50 dark:bg-rose-500/10 text-rose-700 dark:text-rose-400 border border-rose-200 dark:border-rose-500/20 rounded-xl font-bold hover:bg-rose-100 dark:hover:bg-rose-500/20 transition-colors flex items-center justify-center text-xs shadow-sm">
+                            <i class="fa-solid fa-file-pdf mr-2"></i> Reporte Miembros
+                        </a>
+                        <template x-if="esAdmin">
+                            <button @click="mostrarModalPadron = true" class="shrink-0 w-full sm:w-auto px-5 py-2.5 bg-indigo-50 dark:bg-indigo-500/10 text-indigo-700 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-500/20 rounded-xl font-bold hover:bg-indigo-100 dark:hover:bg-indigo-500/20 transition-colors flex items-center justify-center text-xs shadow-sm">
+                                <i class="fa-solid fa-users mr-2"></i> Padrón Electoral
+                            </button>
+                        </template>
+                    </div>
                 </div>
 
                 {{-- BENTO GRID DE MIEMBROS CON CONTRASTE PROTEGIDO --}}

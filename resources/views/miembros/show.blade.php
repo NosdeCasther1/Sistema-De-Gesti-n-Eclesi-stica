@@ -195,6 +195,22 @@
                         <span class="text-sm font-bold text-slate-900 dark:text-white tracking-tight">{{ $miembro->estado_civil ?? 'N/A' }}</span>
                     </div>
 
+                    <!-- Cónyuge -->
+                    <div class="p-4 rounded-2xl bg-slate-50/60 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-800/60 shadow-inner flex flex-col justify-center">
+                        <span class="text-[11px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-1 flex items-center gap-1.5">
+                            <i class="fas fa-heart text-rose-500"></i> Cónyuge
+                        </span>
+                        <span class="text-sm font-bold text-slate-900 dark:text-white tracking-tight">
+                            @if($miembro->conyuge)
+                                <a href="{{ route('miembros.show', $miembro->conyuge->id) }}" class="text-blue-600 dark:text-blue-400 hover:underline">
+                                    {{ $miembro->conyuge->nombres }} {{ $miembro->conyuge->apellidos }}
+                                </a>
+                            @else
+                                N/A
+                            @endif
+                        </span>
+                    </div>
+
                     <!-- Teléfono -->
                     <div class="p-4 rounded-2xl bg-slate-50/60 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-800/60 shadow-inner flex flex-col justify-center">
                         <span class="text-[11px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-1 flex items-center gap-1.5">
@@ -219,6 +235,19 @@
                         <span class="text-sm font-bold text-slate-900 dark:text-white tracking-tight">{{ $miembro->familia->nombre ?? 'Sin familia asignada' }}</span>
                     </div>
 
+                    <!-- Lugar y Fecha de Conversión -->
+                    <div class="p-4 rounded-2xl bg-slate-50/60 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-800/60 shadow-inner flex flex-col justify-center md:col-span-2">
+                        <span class="text-[11px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-1 flex items-center gap-1.5">
+                            <i class="fas fa-heart text-rose-500"></i> Conversión
+                        </span>
+                        <span class="text-sm font-bold text-slate-900 dark:text-white tracking-tight">
+                            {{ $miembro->lugar_conversion ?? 'Lugar no especificado' }} 
+                            @if($miembro->fecha_conversion)
+                            - {{ $miembro->fecha_conversion->format('d/m/Y') }}
+                            @endif
+                        </span>
+                    </div>
+
                     <!-- Fecha de Integración -->
                     <div class="p-4 rounded-2xl bg-slate-50/60 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-800/60 shadow-inner flex flex-col justify-center">
                         <span class="text-[11px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-1 flex items-center gap-1.5">
@@ -227,12 +256,28 @@
                         <span class="text-sm font-bold text-slate-900 dark:text-white tracking-tight">{{ $miembro->fecha_integracion ? $miembro->fecha_integracion->format('d/m/Y') : 'N/A' }}</span>
                     </div>
 
-                    <!-- Fecha de Bautismo -->
+                    <!-- Bautismo en Aguas -->
                     <div class="p-4 rounded-2xl bg-slate-50/60 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-800/60 shadow-inner flex flex-col justify-center">
                         <span class="text-[11px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-1 flex items-center gap-1.5">
-                            <i class="fas fa-water text-blue-500"></i> Fecha de Bautismo
+                            <i class="fas fa-water text-blue-500"></i> Bautizado en Aguas
                         </span>
-                        <span class="text-sm font-bold text-slate-900 dark:text-white tracking-tight">{{ $miembro->fecha_bautismo ? $miembro->fecha_bautismo->format('d/m/Y') : 'N/A' }}</span>
+                        <span class="text-sm font-bold text-slate-900 dark:text-white tracking-tight">
+                            @if($miembro->bautizado_agua || $miembro->fecha_bautismo)
+                                Sí @if($miembro->fecha_bautismo) ({{ $miembro->fecha_bautismo->format('d/m/Y') }}) @endif
+                            @else
+                                No
+                            @endif
+                        </span>
+                    </div>
+
+                    <!-- Bautismo en el Espíritu Santo -->
+                    <div class="p-4 rounded-2xl bg-slate-50/60 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-800/60 shadow-inner flex flex-col justify-center">
+                        <span class="text-[11px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-1 flex items-center gap-1.5">
+                            <i class="fas fa-fire text-amber-500"></i> Bautismo Espíritu Santo
+                        </span>
+                        <span class="text-sm font-bold text-slate-900 dark:text-white tracking-tight">
+                            {{ $miembro->bautismo_espiritu_santo ? 'Sí' : 'No' }}
+                        </span>
                     </div>
 
                     <!-- Dirección Residencial -->
@@ -265,6 +310,98 @@
                             <i class="fas fa-building text-indigo-500"></i> Lugar de Trabajo / Estudio
                         </span>
                         <span class="text-sm font-bold text-slate-900 dark:text-white tracking-tight">{{ $miembro->lugar_trabajo_estudio ?? 'N/A' }}</span>
+                    </div>
+                </div>
+
+                <!-- Récords Disciplinarios -->
+                <div class="mt-8" x-data="{ openRecord: false }">
+                    <div class="flex justify-between items-center mb-4">
+                        <div class="flex items-center gap-3">
+                            <div class="report-icon-box icon-box-membresia group-hover:scale-110 transition-transform duration-500 bg-rose-50 dark:bg-rose-500/10 text-rose-500 border-rose-100 dark:border-rose-500/20">
+                                <i class="fas fa-file-signature"></i>
+                            </div>
+                            <div>
+                                <h5 class="text-lg font-bold text-slate-900 dark:text-white tracking-tight mb-1">Récords y Faltas</h5>
+                                <p class="text-xs text-slate-500 dark:text-slate-400 mb-0">Historial de faltas y acciones tomadas</p>
+                            </div>
+                        </div>
+                        @if(auth()->user() && auth()->user()->hasRole('administrador'))
+                            <button @click="openRecord = true" class="px-4 py-2 bg-rose-50 dark:bg-rose-500/10 text-rose-700 dark:text-rose-400 border border-rose-200 dark:border-rose-500/20 rounded-xl font-bold hover:bg-rose-100 dark:hover:bg-rose-500/20 transition-colors text-xs flex items-center gap-2">
+                                <i class="fas fa-plus"></i> Añadir Récord
+                            </button>
+                        @endif
+                    </div>
+
+                    @if($miembro->records->count() > 0)
+                        <div class="space-y-4">
+                            @foreach($miembro->records()->orderBy('fecha', 'desc')->get() as $record)
+                                <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-4 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                                    <div>
+                                        <div class="flex items-center gap-2 mb-1">
+                                            <span class="px-2 py-0.5 rounded text-[10px] font-black uppercase {{ $record->tipo_falta == 'Grave' ? 'bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-400' : 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400' }}">
+                                                {{ $record->tipo_falta }}
+                                            </span>
+                                            <span class="text-xs font-bold text-slate-500 dark:text-slate-400">
+                                                <i class="fas fa-calendar-alt"></i> {{ \Carbon\Carbon::parse($record->fecha)->format('d/m/Y') }}
+                                            </span>
+                                        </div>
+                                        <p class="text-sm text-slate-800 dark:text-white font-medium mb-1">{{ $record->descripcion }}</p>
+                                        @if($record->accion_tomada)
+                                            <p class="text-xs text-slate-500 dark:text-slate-400 mb-0"><strong>Acción Tomada:</strong> {{ $record->accion_tomada }}</p>
+                                        @endif
+                                    </div>
+                                    @if(auth()->user() && auth()->user()->hasRole('administrador'))
+                                        <form action="{{ route('miembros.records.destroy', $record) }}" method="POST" onsubmit="return confirm('¿Seguro que desea eliminar este récord?');">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="text-rose-500 hover:text-rose-700 dark:text-rose-400 dark:hover:text-rose-300 p-2">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </form>
+                                    @endif
+                                </div>
+                            @endforeach
+                        </div>
+                    @else
+                        <div class="bg-slate-50 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-800/60 rounded-2xl p-6 text-center">
+                            <p class="text-slate-500 dark:text-slate-400 text-sm font-medium mb-0">No hay récords registrados para este miembro.</p>
+                        </div>
+                    @endif
+
+                    <!-- Modal Añadir Record -->
+                    <div x-show="openRecord" style="display: none;" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+                        <div class="bg-white dark:bg-slate-900 rounded-3xl w-full max-w-lg p-6 shadow-2xl m-4 relative border border-slate-200 dark:border-slate-800" @click.outside="openRecord = false">
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="text-lg font-bold text-slate-900 dark:text-white">Añadir Nuevo Récord</h3>
+                                <button type="button" @click="openRecord = false" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-xl font-bold">&times;</button>
+                            </div>
+                            <form action="{{ route('miembros.records.store', $miembro) }}" method="POST" class="space-y-4">
+                                @csrf
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1">Fecha de la Falta *</label>
+                                    <input type="date" name="fecha" required value="{{ date('Y-m-d') }}" class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 px-3 py-2 text-sm text-slate-900 dark:text-white focus:ring-2 focus:ring-rose-500/20">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1">Tipo de Falta *</label>
+                                    <select name="tipo_falta" required class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 px-3 py-2 text-sm text-slate-900 dark:text-white focus:ring-2 focus:ring-rose-500/20">
+                                        <option value="Leve">Leve</option>
+                                        <option value="Grave">Grave</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1">Descripción de la Falta *</label>
+                                    <textarea name="descripcion" rows="3" required class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 px-3 py-2 text-sm text-slate-900 dark:text-white focus:ring-2 focus:ring-rose-500/20"></textarea>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1">Acción Tomada (Opcional)</label>
+                                    <textarea name="accion_tomada" rows="2" class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 px-3 py-2 text-sm text-slate-900 dark:text-white focus:ring-2 focus:ring-rose-500/20"></textarea>
+                                </div>
+                                <div class="pt-4 flex justify-end gap-2">
+                                    <button type="button" @click="openRecord = false" class="px-4 py-2 text-sm font-bold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors">Cancelar</button>
+                                    <button type="submit" class="px-4 py-2 bg-rose-600 hover:bg-rose-500 text-white text-sm font-bold rounded-xl transition-colors">Guardar Récord</button>
+                                </div>
+                            </form>
+                        </div>
                     </div>
                 </div>
 
