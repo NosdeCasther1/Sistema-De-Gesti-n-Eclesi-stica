@@ -138,6 +138,19 @@ class ReporteController extends Controller
         return $pdf->setPaper('letter', 'portrait')->stream('Lista-Bautizados.pdf');
     }
 
+    public function reportarInventario(Request $request)
+    {
+        ini_set('memory_limit', '256M');
+        $inventarios = \App\Models\Inventario::with('responsable')
+            ->orderBy('nombre')
+            ->get();
+
+        $config = $this->getConfig();
+        $logoBase64 = $this->getLogoBase64($config);
+        $pdf = Pdf::loadView('reportes.inventario_pdf', compact('inventarios', 'config', 'logoBase64'));
+        return $pdf->setPaper('letter', 'portrait')->stream('Reporte-Inventario.pdf');
+    }
+
     public function reportarIngresosFamilia(Request $request)
     {
         ini_set('memory_limit', '256M');

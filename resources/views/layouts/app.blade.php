@@ -177,6 +177,14 @@
                     </a>
                 </li>
                 @endif
+                @if($isAdmin || ($authUser && $authUser->can('ver_inventario')))
+                <li class="nav-item">
+                    @php $isActive = request()->is('inventario*'); @endphp
+                    <a href="{{ route('inventario.index') }}" class="{{ $baseClasses }} {{ $isActive ? $activeClasses : $inactiveClasses }}">
+                        <i class="fas fa-boxes text-lg {{ $isActive ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-400 dark:text-slate-500' }}"></i> <span>Inventario</span>
+                    </a>
+                </li>
+                @endif
                 @endif
 
                 @if($isAdmin || ($authUser && ($authUser->can('ver_reportes') || $authUser->can('ver_configuracion'))))

@@ -99,6 +99,19 @@
         transform: translateY(-2px);
     }
 
+    .btn-bento-inventario {
+        background: linear-gradient(135deg, #8b5cf6, #6d28d9) !important;
+        color: white !important;
+        box-shadow: 0 4px 14px rgba(139,92,246,0.25) !important;
+        border: none !important;
+        transition: all 0.3s ease !important;
+    }
+    .btn-bento-inventario:hover {
+        background: linear-gradient(135deg, #7c3aed, #5b21b6) !important;
+        box-shadow: 0 6px 20px rgba(139,92,246,0.35) !important;
+        transform: translateY(-2px);
+    }
+
     /* Icon Boxes Premium (Bulletproof Gradients & Dimensions) */
     .report-icon-box {
         width: 52px !important;
@@ -154,6 +167,7 @@
     .icon-box-bautizados { background: linear-gradient(135deg, #d97706, #f59e0b) !important; color: white !important; }
     .icon-box-familia { background: linear-gradient(135deg, #e11d48, #f43f5e) !important; color: white !important; }
     .icon-box-votaciones { background: linear-gradient(135deg, #6d0d0d, #c9a227) !important; color: white !important; }
+    .icon-box-inventario { background: linear-gradient(135deg, #8b5cf6, #a78bfa) !important; color: white !important; }
 </style>
 @endpush
 
@@ -260,6 +274,41 @@
                 <a href="{{ route('reportes.miembros') }}" target="_blank" class="btn-bento-membresia w-full py-3.5 px-5 rounded-xl font-bold text-xs flex items-center justify-center gap-2.5 cursor-pointer no-underline">
                     <i class="fas fa-cloud-arrow-down text-base"></i>
                     <span>Descargar Censo General</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- ==========================================
+             1.5 REPORTE DE INVENTARIO (VIOLETA / PÚRPURA)
+        ========================================== -->
+        <div class="bento-card bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800/80 rounded-2xl p-6 shadow-sm hover:shadow-xl flex flex-col justify-between relative overflow-hidden group">
+            <!-- Glow de fondo -->
+            <div class="absolute -right-10 -top-10 w-40 h-40 bg-violet-500/10 dark:bg-violet-500/5 rounded-full blur-3xl group-hover:bg-violet-500/20 transition-all duration-500"></div>
+
+            <div>
+                <!-- Header Card -->
+                <div class="flex items-center gap-4 mb-5">
+                    <div class="report-icon-box icon-box-inventario group-hover:scale-110 transition-transform duration-500">
+                        <i class="fas fa-boxes"></i>
+                    </div>
+                    <div>
+                        <h5 class="text-lg font-bold text-slate-900 dark:text-white tracking-tight mb-1">Inventario</h5>
+                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-violet-50 dark:bg-violet-500/10 text-violet-600 dark:text-violet-400 border border-violet-100 dark:border-violet-500/20">
+                            <i class="fas fa-file-pdf text-xs"></i> Activos
+                        </span>
+                    </div>
+                </div>
+                <!-- Descripción -->
+                <p class="text-xs text-slate-600 dark:text-slate-400 font-normal leading-relaxed mb-6">
+                    Genera un reporte completo de los artículos, equipos y activos de la iglesia, detallando su ubicación, estado actual y responsables asignados.
+                </p>
+            </div>
+
+            <!-- Acción -->
+            <div class="mt-auto pt-4 border-t border-slate-100 dark:border-slate-800/80">
+                <a href="{{ route('reportes.inventario') }}" target="_blank" class="btn-bento-inventario w-full py-3.5 px-5 rounded-xl font-bold text-xs flex items-center justify-center gap-2.5 cursor-pointer no-underline">
+                    <i class="fas fa-cloud-arrow-down text-base"></i>
+                    <span>Descargar Inventario</span>
                 </a>
             </div>
         </div>

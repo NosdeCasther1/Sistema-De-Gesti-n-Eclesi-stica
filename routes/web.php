@@ -27,6 +27,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/miembros/{miembro}/certificado-bautismo', [MiembroController::class, 'certificadoBautismo'])->name('miembros.certificado_bautismo');
 Route::resource('familias', FamiliaController::class);
 Route::resource('miembros', MiembroController::class);
+Route::resource('inventario', \App\Http\Controllers\InventarioController::class);
 Route::resource('celulas', \App\Http\Controllers\CelulaController::class);
 Route::post('/tesoreria/transfer', [\App\Http\Controllers\TesoreriaController::class, 'transfer'])->name('tesoreria.transfer')->middleware('role:tesorero|administrador');
 Route::resource('tesoreria', \App\Http\Controllers\TesoreriaController::class)->middleware('role:tesorero|administrador');
@@ -34,6 +35,7 @@ Route::get('/reportes', [\App\Http\Controllers\ReporteController::class, 'index'
 Route::get('/reportes/tesoreria', [\App\Http\Controllers\ReporteController::class, 'reportarTesoreria'])->name('reportes.tesoreria');
 Route::get('/reportes/tesoreria/pdf', [\App\Http\Controllers\ReporteTesoreriaController::class, 'generateCorteCaja'])->name('reportes.tesoreria.pdf');
 Route::get('/reportes/miembros', [\App\Http\Controllers\ReporteController::class, 'reportarMiembros'])->name('reportes.miembros');
+Route::get('/reportes/inventario', [\App\Http\Controllers\ReporteController::class, 'reportarInventario'])->name('reportes.inventario');
 Route::get('/reportes/bautizados', [\App\Http\Controllers\ReporteController::class, 'reportarBautizados'])->name('reportes.bautizados');
 Route::get('/reportes/ingresos-familia', [\App\Http\Controllers\ReporteController::class, 'reportarIngresosFamilia'])->name('reportes.ingresos_familia');
 Route::get('/reportes/asistencia/celula/{id}', [\App\Http\Controllers\ReporteController::class, 'reportarAsistenciaCelula'])->name('reportes.asistencia_celula');
