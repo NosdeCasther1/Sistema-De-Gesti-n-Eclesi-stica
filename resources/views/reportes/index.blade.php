@@ -112,6 +112,19 @@
         transform: translateY(-2px);
     }
 
+    .btn-bento-organizaciones {
+        background: linear-gradient(135deg, #db2777, #be185d) !important;
+        color: white !important;
+        box-shadow: 0 4px 14px rgba(219,39,119,0.25) !important;
+        border: none !important;
+        transition: all 0.3s ease !important;
+    }
+    .btn-bento-organizaciones:hover {
+        background: linear-gradient(135deg, #be185d, #9d174d) !important;
+        box-shadow: 0 6px 20px rgba(219,39,119,0.35) !important;
+        transform: translateY(-2px);
+    }
+
     /* Icon Boxes Premium (Bulletproof Gradients & Dimensions) */
     .report-icon-box {
         width: 52px !important;
@@ -168,12 +181,13 @@
     .icon-box-familia { background: linear-gradient(135deg, #e11d48, #f43f5e) !important; color: white !important; }
     .icon-box-votaciones { background: linear-gradient(135deg, #6d0d0d, #c9a227) !important; color: white !important; }
     .icon-box-inventario { background: linear-gradient(135deg, #8b5cf6, #a78bfa) !important; color: white !important; }
+    .icon-box-organizaciones { background: linear-gradient(135deg, #db2777, #f472b6) !important; color: white !important; }
 </style>
 @endpush
 
 @section('content')
 <!-- Contenedor Principal Alpine.js -->
-<div x-data="{ showTesoreriaModal: false }" class="container-fluid py-6 px-4 max-w-7xl mx-auto">
+<div x-data="{ showTesoreriaModal: false, showInventarioModal: false, showMembresiaModal: false, showOrganizacionesModal: false }" class="container-fluid py-6 px-4 max-w-7xl mx-auto">
 
     <!-- ==========================================
          SECCIÓN DE ESTADÍSTICAS RÁPIDAS (BENTO DASHBOARD - AL PRINCIPIO)
@@ -271,10 +285,10 @@
 
             <!-- Acción -->
             <div class="mt-auto pt-4 border-t border-slate-100 dark:border-slate-800/80">
-                <a href="{{ route('reportes.miembros') }}" target="_blank" class="btn-bento-membresia w-full py-3.5 px-5 rounded-xl font-bold text-xs flex items-center justify-center gap-2.5 cursor-pointer no-underline">
+                <button type="button" @click="showMembresiaModal = true" class="btn-bento-membresia w-full py-3.5 px-5 rounded-xl font-bold text-xs flex items-center justify-center gap-2.5 cursor-pointer">
                     <i class="fas fa-cloud-arrow-down text-base"></i>
                     <span>Descargar Censo General</span>
-                </a>
+                </button>
             </div>
         </div>
 
@@ -306,10 +320,10 @@
 
             <!-- Acción -->
             <div class="mt-auto pt-4 border-t border-slate-100 dark:border-slate-800/80">
-                <a href="{{ route('reportes.inventario') }}" target="_blank" class="btn-bento-inventario w-full py-3.5 px-5 rounded-xl font-bold text-xs flex items-center justify-center gap-2.5 cursor-pointer no-underline">
+                <button type="button" @click="showInventarioModal = true" class="btn-bento-inventario w-full py-3.5 px-5 rounded-xl font-bold text-xs flex items-center justify-center gap-2.5 cursor-pointer">
                     <i class="fas fa-cloud-arrow-down text-base"></i>
                     <span>Descargar Inventario</span>
-                </a>
+                </button>
             </div>
         </div>
 
@@ -349,37 +363,37 @@
         </div>
 
         <!-- ==========================================
-             3. REPORTE DE BAUTIZADOS (ÁMBAR / NARANJA)
+             3. REPORTE DE ORGANIZACIONES (ROSA / MAGENTA)
         ========================================== -->
         <div class="bento-card bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800/80 rounded-2xl p-6 shadow-sm hover:shadow-xl flex flex-col justify-between relative overflow-hidden group">
             <!-- Glow de fondo -->
-            <div class="absolute -right-10 -top-10 w-40 h-40 bg-amber-500/10 dark:bg-amber-500/5 rounded-full blur-3xl group-hover:bg-amber-500/20 transition-all duration-500"></div>
+            <div class="absolute -right-10 -top-10 w-40 h-40 bg-pink-500/10 dark:bg-pink-500/5 rounded-full blur-3xl group-hover:bg-pink-500/20 transition-all duration-500"></div>
 
             <div>
                 <!-- Header Card -->
                 <div class="flex items-center gap-4 mb-5">
-                    <div class="report-icon-box icon-box-bautizados group-hover:scale-110 transition-transform duration-500">
-                        <i class="fas fa-water"></i>
+                    <div class="report-icon-box icon-box-organizaciones group-hover:scale-110 transition-transform duration-500">
+                        <i class="fas fa-sitemap"></i>
                     </div>
                     <div>
-                        <h5 class="text-lg font-bold text-slate-900 dark:text-white tracking-tight mb-1">Miembros Bautizados</h5>
-                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-100 dark:border-amber-500/20">
-                            <i class="fas fa-award text-xs"></i> Consolidación
+                        <h5 class="text-lg font-bold text-slate-900 dark:text-white tracking-tight mb-1">Organizaciones</h5>
+                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-pink-50 dark:bg-pink-500/10 text-pink-600 dark:text-pink-400 border border-pink-100 dark:border-pink-500/20">
+                            <i class="fas fa-users-rectangle text-xs"></i> Estructura
                         </span>
                     </div>
                 </div>
                 <!-- Descripción -->
                 <p class="text-xs text-slate-600 dark:text-slate-400 font-normal leading-relaxed mb-6">
-                    Listado solemne y registro oficial de miembros que han dado el paso del bautismo en agua, detallando fechas de integración y áreas ministeriales.
+                    Genera el reporte oficial de las organizaciones activas en la iglesia, visualizando su estructura, directivas y listado completo de integrantes asignados.
                 </p>
             </div>
 
             <!-- Acción -->
             <div class="mt-auto pt-4 border-t border-slate-100 dark:border-slate-800/80">
-                <a href="{{ route('reportes.bautizados') }}" target="_blank" class="btn-bento-bautizados w-full py-3.5 px-5 rounded-xl font-bold text-xs flex items-center justify-center gap-2.5 cursor-pointer no-underline">
-                    <i class="fas fa-certificate text-base"></i>
-                    <span>Generar Padrón de Bautizados</span>
-                </a>
+                <button type="button" @click="showOrganizacionesModal = true" class="btn-bento-organizaciones w-full py-3.5 px-5 rounded-xl font-bold text-xs flex items-center justify-center gap-2.5 cursor-pointer">
+                    <i class="fas fa-file-pdf text-base"></i>
+                    <span>Descargar Estructura</span>
+                </button>
             </div>
         </div>
 
@@ -649,6 +663,253 @@
                         <div class="flex flex-col sm:flex-row justify-end items-center gap-3 pt-6 border-t border-slate-100 dark:border-slate-800/80 mt-2">
                             <button type="button" @click="showTesoreriaModal = false" class="w-full sm:w-auto px-6 py-3.5 rounded-2xl font-bold border border-slate-300 dark:border-slate-700 bg-white dark:bg-transparent text-slate-700 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 dark:hover:text-slate-200 shadow-sm transition-all cursor-pointer">Cancelar</button>
                             <button type="submit" class="btn-bento-finanzas w-full sm:w-auto px-8 py-3.5 rounded-2xl font-bold text-sm transition-all border-0 flex items-center justify-center gap-2 cursor-pointer">
+                                <i class="fas fa-print text-lg"></i> Generar PDF Oficial
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==========================================
+         MODAL: PARÁMETROS DEL REPORTE DE INVENTARIO
+    ========================================== -->
+    <div x-cloak x-show="showInventarioModal">
+        <div class="fixed inset-0 z-[9999] overflow-y-auto" aria-labelledby="modal-inventario-title" role="dialog" aria-modal="true">
+            <!-- Backdrop con desenfoque -->
+            <div @click="showInventarioModal = false" 
+                 x-show="showInventarioModal"
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0 backdrop-blur-none"
+                 x-transition:enter-end="opacity-100 backdrop-blur-md"
+                 x-transition:leave="transition ease-in duration-200"
+                 x-transition:leave-start="opacity-100 backdrop-blur-md"
+                 x-transition:leave-end="opacity-0 backdrop-blur-none"
+                 class="fixed inset-0 bg-slate-950/40 backdrop-blur-md"></div>
+            
+            <!-- Contenedor de Posicionamiento -->
+            <div class="flex min-h-full items-center justify-center p-4 text-center sm:p-0 relative z-10">
+                <!-- Panel Modal -->
+                <div x-show="showInventarioModal"
+                     x-transition:enter="transition ease-out duration-300"
+                     x-transition:enter-start="opacity-0 translate-y-8 scale-95"
+                     x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+                     x-transition:leave="transition ease-in duration-200"
+                     x-transition:leave-start="opacity-100 translate-y-0 scale-100"
+                     x-transition:leave-end="opacity-0 translate-y-8 scale-95"
+                     @click.outside="showInventarioModal = false"
+                     @keydown.escape.window="showInventarioModal = false"
+                     class="w-full max-w-lg bg-white dark:bg-slate-900 rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.3)] overflow-hidden border border-slate-100 dark:border-slate-800 my-8 flex flex-col text-left">
+                    
+                    <!-- Header Modal -->
+                    <div class="px-8 py-6 border-b border-slate-100 dark:border-slate-800/80 flex justify-between items-center bg-white dark:bg-slate-900">
+                        <div class="flex items-center gap-4">
+                            <div class="stat-icon-box bg-violet-50 dark:bg-violet-500/10 text-violet-600 dark:text-violet-400 border border-violet-100 dark:border-violet-500/20 shadow-sm flex-shrink-0">
+                                <i class="fas fa-boxes"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-bold text-slate-900 dark:text-white tracking-tight" id="modal-inventario-title">Filtros de Inventario</h3>
+                                <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5 font-normal">Configuración de filtros para el reporte</p>
+                            </div>
+                        </div>
+                        <button @click="showInventarioModal = false" type="button" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-all cursor-pointer border-0 bg-transparent">
+                            <i class="fas fa-times text-xl"></i>
+                        </button>
+                    </div>
+
+                    <!-- Formulario -->
+                    <form action="{{ route('reportes.inventario') }}" method="GET" target="_blank" @submit="setTimeout(() => showInventarioModal = false, 500)" class="p-8 mb-0 flex flex-col gap-6 bg-white dark:bg-slate-900">
+                        
+                        <!-- Estado Específico -->
+                        <div class="flex flex-col gap-2">
+                            <label class="text-slate-800 dark:text-slate-400 font-bold text-sm flex items-center gap-2">
+                                <i class="fas fa-star-half-stroke text-violet-500"></i> Filtrar por Estado
+                            </label>
+                            <select name="estado" class="w-full rounded-2xl border border-slate-300 dark:border-slate-700/50 bg-white dark:bg-slate-800 px-4 py-3.5 text-slate-900 dark:text-white text-sm font-medium focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 dark:focus:border-violet-500 transition-all shadow-sm">
+                                <option value="" class="text-slate-900 bg-white dark:text-white dark:bg-slate-800">Todos los Estados</option>
+                                <option value="Nuevo" class="text-slate-900 bg-white dark:text-white dark:bg-slate-800">Nuevo</option>
+                                <option value="Bueno" class="text-slate-900 bg-white dark:text-white dark:bg-slate-800">Bueno</option>
+                                <option value="Regular" class="text-slate-900 bg-white dark:text-white dark:bg-slate-800">Regular</option>
+                                <option value="Malo" class="text-slate-900 bg-white dark:text-white dark:bg-slate-800">Malo</option>
+                            </select>
+                        </div>
+
+                        <!-- Ubicación Específica -->
+                        <div class="flex flex-col gap-2">
+                            <label class="text-slate-800 dark:text-slate-400 font-bold text-sm flex items-center gap-2">
+                                <i class="fas fa-location-dot text-violet-500"></i> Filtrar por Ubicación
+                            </label>
+                            <select name="ubicacion" class="w-full rounded-2xl border border-slate-300 dark:border-slate-700/50 bg-white dark:bg-slate-800 px-4 py-3.5 text-slate-900 dark:text-white text-sm font-medium focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 dark:focus:border-violet-500 transition-all shadow-sm">
+                                <option value="" class="text-slate-900 bg-white dark:text-white dark:bg-slate-800">Todas las Ubicaciones</option>
+                                @foreach($ubicacionesInventario as $ubicacion)
+                                    <option value="{{ $ubicacion }}" class="text-slate-900 bg-white dark:text-white dark:bg-slate-800">{{ $ubicacion }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <!-- Responsable Específico -->
+                        <div class="flex flex-col gap-2">
+                            <label class="text-slate-800 dark:text-slate-400 font-bold text-sm flex items-center gap-2">
+                                <i class="fas fa-user-tie text-violet-500"></i> Filtrar por Responsable
+                            </label>
+                            <select name="responsable_id" class="w-full rounded-2xl border border-slate-300 dark:border-slate-700/50 bg-white dark:bg-slate-800 px-4 py-3.5 text-slate-900 dark:text-white text-sm font-medium focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 dark:focus:border-violet-500 transition-all shadow-sm">
+                                <option value="" class="text-slate-900 bg-white dark:text-white dark:bg-slate-800">Todos los Responsables</option>
+                                @foreach($responsablesInventario as $responsable)
+                                    <option value="{{ $responsable->id }}" class="text-slate-900 bg-white dark:text-white dark:bg-slate-800">{{ $responsable->nombre_completo }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <!-- Footer Modal -->
+                        <div class="flex flex-col sm:flex-row justify-end items-center gap-3 pt-6 border-t border-slate-100 dark:border-slate-800/80 mt-2">
+                            <button type="button" @click="showInventarioModal = false" class="w-full sm:w-auto px-6 py-3.5 rounded-2xl font-bold border border-slate-300 dark:border-slate-700 bg-white dark:bg-transparent text-slate-700 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 dark:hover:text-slate-200 shadow-sm transition-all cursor-pointer">Cancelar</button>
+                            <button type="submit" class="btn-bento-inventario w-full sm:w-auto px-8 py-3.5 rounded-2xl font-bold text-sm transition-all border-0 flex items-center justify-center gap-2 cursor-pointer">
+                                <i class="fas fa-print text-lg"></i> Generar PDF Oficial
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==========================================
+         MODAL: PARÁMETROS DEL REPORTE DE MEMBRESÍA
+    ========================================== -->
+    <div x-cloak x-show="showMembresiaModal">
+        <div class="fixed inset-0 z-[9999] overflow-y-auto" aria-labelledby="modal-membresia-title" role="dialog" aria-modal="true">
+            <div @click="showMembresiaModal = false" 
+                 x-show="showMembresiaModal"
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0 backdrop-blur-none"
+                 x-transition:enter-end="opacity-100 backdrop-blur-md"
+                 x-transition:leave="transition ease-in duration-200"
+                 x-transition:leave-start="opacity-100 backdrop-blur-md"
+                 x-transition:leave-end="opacity-0 backdrop-blur-none"
+                 class="fixed inset-0 bg-slate-950/40 backdrop-blur-md"></div>
+            
+            <div class="flex min-h-full items-center justify-center p-4 text-center sm:p-0 relative z-10">
+                <div x-show="showMembresiaModal"
+                     x-transition:enter="transition ease-out duration-300"
+                     x-transition:enter-start="opacity-0 translate-y-8 scale-95"
+                     x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+                     x-transition:leave="transition ease-in duration-200"
+                     x-transition:leave-start="opacity-100 translate-y-0 scale-100"
+                     x-transition:leave-end="opacity-0 translate-y-8 scale-95"
+                     @click.outside="showMembresiaModal = false"
+                     @keydown.escape.window="showMembresiaModal = false"
+                     class="w-full max-w-lg bg-white dark:bg-slate-900 rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.3)] overflow-hidden border border-slate-100 dark:border-slate-800 my-8 flex flex-col text-left">
+                    
+                    <div class="px-8 py-6 border-b border-slate-100 dark:border-slate-800/80 flex justify-between items-center bg-white dark:bg-slate-900">
+                        <div class="flex items-center gap-4">
+                            <div class="stat-icon-box bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-100 dark:border-blue-500/20 shadow-sm flex-shrink-0">
+                                <i class="fas fa-users-viewfinder"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-bold text-slate-900 dark:text-white tracking-tight" id="modal-membresia-title">Filtros de Membresía</h3>
+                                <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5 font-normal">Configuración del censo congregacional</p>
+                            </div>
+                        </div>
+                        <button @click="showMembresiaModal = false" type="button" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-all cursor-pointer border-0 bg-transparent">
+                            <i class="fas fa-times text-xl"></i>
+                        </button>
+                    </div>
+
+                    <form action="{{ route('reportes.membresia') }}" method="GET" target="_blank" @submit="setTimeout(() => showMembresiaModal = false, 500)" class="p-8 mb-0 flex flex-col gap-6 bg-white dark:bg-slate-900">
+                        
+                        <div class="flex flex-col gap-2">
+                            <label class="text-slate-800 dark:text-slate-400 font-bold text-sm flex items-center gap-2">
+                                <i class="fas fa-list text-blue-500"></i> Tipo de Censo
+                            </label>
+                            <select name="tipo" class="w-full rounded-2xl border border-slate-300 dark:border-slate-700/50 bg-white dark:bg-slate-800 px-4 py-3.5 text-slate-900 dark:text-white text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:focus:border-blue-500 transition-all shadow-sm">
+                                <option value="general" class="text-slate-900 bg-white dark:text-white dark:bg-slate-800">Censo General (Todos los miembros)</option>
+                                <option value="bautizados" class="text-slate-900 bg-white dark:text-white dark:bg-slate-800">Solo Miembros Bautizados</option>
+                                <option value="no_bautizados" class="text-slate-900 bg-white dark:text-white dark:bg-slate-800">Miembros No Bautizados</option>
+                            </select>
+                        </div>
+
+                        <div class="flex flex-col sm:flex-row justify-end items-center gap-3 pt-6 border-t border-slate-100 dark:border-slate-800/80 mt-2">
+                            <button type="button" @click="showMembresiaModal = false" class="w-full sm:w-auto px-6 py-3.5 rounded-2xl font-bold border border-slate-300 dark:border-slate-700 bg-white dark:bg-transparent text-slate-700 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 dark:hover:text-slate-200 shadow-sm transition-all cursor-pointer">Cancelar</button>
+                            <button type="submit" class="btn-bento-membresia w-full sm:w-auto px-8 py-3.5 rounded-2xl font-bold text-sm transition-all border-0 flex items-center justify-center gap-2 cursor-pointer">
+                                <i class="fas fa-print text-lg"></i> Generar PDF Oficial
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==========================================
+         MODAL: PARÁMETROS DEL REPORTE DE ORGANIZACIONES
+    ========================================== -->
+    <div x-cloak x-show="showOrganizacionesModal">
+        <div class="fixed inset-0 z-[9999] overflow-y-auto" aria-labelledby="modal-organizaciones-title" role="dialog" aria-modal="true">
+            <div @click="showOrganizacionesModal = false" 
+                 x-show="showOrganizacionesModal"
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0 backdrop-blur-none"
+                 x-transition:enter-end="opacity-100 backdrop-blur-md"
+                 x-transition:leave="transition ease-in duration-200"
+                 x-transition:leave-start="opacity-100 backdrop-blur-md"
+                 x-transition:leave-end="opacity-0 backdrop-blur-none"
+                 class="fixed inset-0 bg-slate-950/40 backdrop-blur-md"></div>
+            
+            <div class="flex min-h-full items-center justify-center p-4 text-center sm:p-0 relative z-10">
+                <div x-show="showOrganizacionesModal"
+                     x-transition:enter="transition ease-out duration-300"
+                     x-transition:enter-start="opacity-0 translate-y-8 scale-95"
+                     x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+                     x-transition:leave="transition ease-in duration-200"
+                     x-transition:leave-start="opacity-100 translate-y-0 scale-100"
+                     x-transition:leave-end="opacity-0 translate-y-8 scale-95"
+                     @click.outside="showOrganizacionesModal = false"
+                     @keydown.escape.window="showOrganizacionesModal = false"
+                     class="w-full max-w-lg bg-white dark:bg-slate-900 rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.3)] overflow-hidden border border-slate-100 dark:border-slate-800 my-8 flex flex-col text-left">
+                    
+                    <div class="px-8 py-6 border-b border-slate-100 dark:border-slate-800/80 flex justify-between items-center bg-white dark:bg-slate-900">
+                        <div class="flex items-center gap-4">
+                            <div class="stat-icon-box bg-pink-50 dark:bg-pink-500/10 text-pink-600 dark:text-pink-400 border border-pink-100 dark:border-pink-500/20 shadow-sm flex-shrink-0">
+                                <i class="fas fa-sitemap"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-bold text-slate-900 dark:text-white tracking-tight" id="modal-organizaciones-title">Reporte de Organizaciones</h3>
+                                <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5 font-normal">Estructura y directivas actuales</p>
+                            </div>
+                        </div>
+                        <button @click="showOrganizacionesModal = false" type="button" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-all cursor-pointer border-0 bg-transparent">
+                            <i class="fas fa-times text-xl"></i>
+                        </button>
+                    </div>
+
+                    <form action="{{ route('reportes.organizaciones') }}" method="GET" target="_blank" @submit="setTimeout(() => showOrganizacionesModal = false, 500)" class="p-8 mb-0 flex flex-col gap-6 bg-white dark:bg-slate-900">
+                        
+                        <div class="flex flex-col gap-2">
+                            <label class="text-slate-800 dark:text-slate-400 font-bold text-sm flex items-center gap-2">
+                                <i class="fas fa-layer-group text-pink-500"></i> Agrupación del Reporte
+                            </label>
+                            <select name="modo_reporte" class="w-full rounded-2xl border border-slate-300 dark:border-slate-700/50 bg-white dark:bg-slate-800 px-4 py-3.5 text-slate-900 dark:text-white text-sm font-medium focus:outline-none focus:ring-2 focus:ring-pink-500/20 focus:border-pink-500 dark:focus:border-pink-500 transition-all shadow-sm">
+                                <option value="organizacion" class="text-slate-900 bg-white dark:text-white dark:bg-slate-800">Agrupar por Organización (Estructura Interna)</option>
+                                <option value="puesto" class="text-slate-900 bg-white dark:text-white dark:bg-slate-800">Agrupar por Puesto/Cargo (Ej. Todos los Presidentes)</option>
+                            </select>
+                        </div>
+
+                        <div class="flex flex-col gap-2">
+                            <label class="text-slate-800 dark:text-slate-400 font-bold text-sm flex items-center gap-2">
+                                <i class="fas fa-filter text-pink-500"></i> Filtrar por Organización (Opcional)
+                            </label>
+                            <select name="organizacion_id" class="w-full rounded-2xl border border-slate-300 dark:border-slate-700/50 bg-white dark:bg-slate-800 px-4 py-3.5 text-slate-900 dark:text-white text-sm font-medium focus:outline-none focus:ring-2 focus:ring-pink-500/20 focus:border-pink-500 dark:focus:border-pink-500 transition-all shadow-sm">
+                                <option value="" class="text-slate-900 bg-white dark:text-white dark:bg-slate-800">Todas las Organizaciones</option>
+                                @foreach($organizacionesReporte as $org)
+                                    <option value="{{ $org->id }}" class="text-slate-900 bg-white dark:text-white dark:bg-slate-800">{{ $org->nombre }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div class="flex flex-col sm:flex-row justify-end items-center gap-3 pt-6 border-t border-slate-100 dark:border-slate-800/80 mt-2">
+                            <button type="button" @click="showOrganizacionesModal = false" class="w-full sm:w-auto px-6 py-3.5 rounded-2xl font-bold border border-slate-300 dark:border-slate-700 bg-white dark:bg-transparent text-slate-700 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 dark:hover:text-slate-200 shadow-sm transition-all cursor-pointer">Cancelar</button>
+                            <button type="submit" class="btn-bento-organizaciones w-full sm:w-auto px-8 py-3.5 rounded-2xl font-bold text-sm transition-all border-0 flex items-center justify-center gap-2 cursor-pointer">
                                 <i class="fas fa-print text-lg"></i> Generar PDF Oficial
                             </button>
                         </div>

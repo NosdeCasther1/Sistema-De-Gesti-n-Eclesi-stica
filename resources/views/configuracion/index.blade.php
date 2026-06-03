@@ -845,7 +845,7 @@
                     <i class="fa-solid fa-vault mr-2"></i> Cajas y Fondos
                 </button>
                 <button @click="subTab = 'organizaciones'" :class="subTab === 'organizaciones' ? 'bg-indigo-50 text-indigo-600 dark:bg-indigo-500/10 dark:text-indigo-400 border-indigo-200 dark:border-indigo-500/30' : 'text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800/50 border-transparent'" class="px-4 py-2 rounded-xl text-sm font-bold transition-all border whitespace-nowrap">
-                    <i class="fa-solid fa-sitemap mr-2"></i> Organizaciones/Elecciones
+                    <i class="fa-solid fa-sitemap mr-2"></i> Organizaciones
                 </button>
                 <button @click="subTab = 'ministerios'" :class="subTab === 'ministerios' ? 'bg-indigo-50 text-indigo-600 dark:bg-indigo-500/10 dark:text-indigo-400 border-indigo-200 dark:border-indigo-500/30' : 'text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800/50 border-transparent'" class="px-4 py-2 rounded-xl text-sm font-bold transition-all border whitespace-nowrap">
                     <i class="fa-solid fa-users-rays mr-2"></i> Ministerios

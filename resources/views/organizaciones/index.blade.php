@@ -1,9 +1,9 @@
 @extends('layouts.app')
 
-@section('title', 'Organizaciones y Votaciones')
-@section('header_icon')<i class="fas fa-users-rectangle"></i>@endsection
-@section('header_title', 'Organizaciones y Votaciones')
-@section('header_subtitle', 'Comités ministeriales, directivas activas e histórico electoral.')
+@section('title', 'Organizaciones')
+@section('header_icon')<i class="fas fa-sitemap"></i>@endsection
+@section('header_title', 'Organizaciones')
+@section('header_subtitle', 'Gestión de comités ministeriales, directivas y procesos de elección.')
 
 @section('content')
 {{-- CONTENEDOR MAESTRO REACTIVO DE ALPINE.JS --}}
@@ -37,8 +37,8 @@ x-bind:class="procesando ? 'opacity-70 pointer-events-none' : ''">
                         <i class="fa-solid fa-layer-group text-xl"></i>
                     </div>
                     <div class="flex-1">
-                        <h1 class="text-xl font-black text-[var(--text-main)] uppercase tracking-tight">Gestión Electoral</h1>
-                        <p class="text-xs text-muted mt-1 font-medium">Panel de control de asambleas y escrutinio técnico.</p>
+                        <h1 class="text-xl font-black text-[var(--text-main)] uppercase tracking-tight">Gestión de Organizaciones</h1>
+                        <p class="text-xs text-muted mt-1 font-medium">Panel de control de directivas, miembros activos y asambleas.</p>
                     </div>
                 </div>
                 

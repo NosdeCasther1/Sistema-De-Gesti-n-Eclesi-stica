@@ -117,124 +117,170 @@
                     </a>
                 </li>
                 
-                @if($isAdmin || ($authUser && ($authUser->can('ver_miembros') || $authUser->can('ver_familias') || $authUser->can('ver_celulas'))))
-                <div class="px-4 py-2 text-slate-500 font-bold tracking-wider uppercase text-xs dark:text-slate-400 mt-2 mb-1">Membresía</div>
-                @if($isAdmin || ($authUser && $authUser->can('ver_miembros')))
-                <li class="nav-item">
-                    @php $isActive = request()->is('miembros*'); @endphp
-                    <a href="{{ route('miembros.index') }}" class="{{ $baseClasses }} {{ $isActive ? $activeClasses : $inactiveClasses }}">
-                        <i class="fas fa-users text-lg {{ $isActive ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-400 dark:text-slate-500' }}"></i> <span>Miembros</span>
-                    </a>
-                </li>
-                @endif
-                @if($isAdmin || ($authUser && $authUser->can('ver_familias')))
-                <li class="nav-item">
-                    @php $isActive = request()->is('familias*'); @endphp
-                    <a href="{{ route('familias.index') }}" class="{{ $baseClasses }} {{ $isActive ? $activeClasses : $inactiveClasses }}">
-                        <i class="fas fa-home text-lg {{ $isActive ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-400 dark:text-slate-500' }}"></i> <span>Familias</span>
-                    </a>
-                </li>
-                @endif
-                @if($isAdmin || ($authUser && $authUser->can('ver_celulas')))
-                <li class="nav-item">
-                    @php $isActive = request()->is('celulas*'); @endphp
-                    <a href="{{ route('celulas.index') }}" class="{{ $baseClasses }} {{ $isActive ? $activeClasses : $inactiveClasses }}">
-                        <i class="fas fa-network-wired text-lg {{ $isActive ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-400 dark:text-slate-500' }}"></i> <span>Células</span>
-                    </a>
-                </li>
-                @endif
-                @if($isAdmin)
-                <li class="nav-item">
-                    @php $isActive = request()->is('certificados/presentacion*'); @endphp
-                    <a href="{{ route('presentacion.index') }}" class="{{ $baseClasses }} {{ $isActive ? $activeClasses : $inactiveClasses }}">
-                        <i class="fas fa-child-reaching text-lg {{ $isActive ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-400 dark:text-slate-500' }}"></i> <span>Cert. Presentación</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    @php $isActive = request()->is('certificados/matrimonio*'); @endphp
-                    <a href="{{ route('matrimonio.index') }}" class="{{ $baseClasses }} {{ $isActive ? $activeClasses : $inactiveClasses }}">
-                        <i class="fas fa-rings-wedding text-lg {{ $isActive ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-400 dark:text-slate-500' }}"></i> <span>Cert. Matrimonio</span>
-                    </a>
-                </li>
-                @endif
-                @if($isAdmin)
-                <li class="nav-item">
-                    @php $isActive = request()->is('comunicaciones/whatsapp*'); @endphp
-                    <a href="{{ route('comunicaciones.whatsapp.index') }}" class="{{ $baseClasses }} {{ $isActive ? $activeClasses : $inactiveClasses }}">
-                        <i class="fa-brands fa-whatsapp text-lg {{ $isActive ? 'text-emerald-500 dark:text-emerald-400' : 'text-slate-400 dark:text-slate-500' }}"></i> <span>WhatsApp Web</span>
-                    </a>
-                </li>
-                @endif
-                <li class="nav-item">
-                    @php $isActive = request()->is('organizaciones*'); @endphp
-                    <a href="{{ route('organizaciones.index') }}" class="{{ $baseClasses }} {{ $isActive ? $activeClasses : $inactiveClasses }}">
-                        <i class="fas fa-sitemap text-lg {{ $isActive ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-400 dark:text-slate-500' }}"></i> <span>Organizaciones/Elecciones</span>
-                    </a>
-                </li>
+                @if($isAdmin || ($authUser && ($authUser->can('ver_miembros') || $authUser->can('ver_familias') || $authUser->can('ver_celulas') || $authUser->can('ver_organizaciones'))))
+                @php $secActive = request()->is('miembros*') || request()->is('familias*') || request()->is('celulas*') || request()->is('organizaciones*'); @endphp
+                <div x-data="{ open: {{ $secActive ? 'true' : 'false' }} }" class="mt-2 mb-1">
+                    <button @click="open = !open" class="w-full flex items-center justify-between px-4 py-2 text-slate-500 font-bold tracking-wider uppercase text-xs dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 rounded-xl transition-colors group">
+                        <span>Congregación</span>
+                        <i class="fas fa-chevron-down text-[10px] transition-transform duration-200" :class="{'rotate-180': open}"></i>
+                    </button>
+                    <div x-show="open" x-transition style="display: {{ $secActive ? 'block' : 'none' }};" class="mt-1">
+                        @if($isAdmin || ($authUser && $authUser->can('ver_miembros')))
+                        <li class="nav-item">
+                            @php $isActive = request()->is('miembros*'); @endphp
+                            <a href="{{ route('miembros.index') }}" class="{{ $baseClasses }} {{ $isActive ? $activeClasses : $inactiveClasses }}">
+                                <i class="fas fa-users text-lg {{ $isActive ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-400 dark:text-slate-500' }}"></i> <span>Miembros</span>
+                            </a>
+                        </li>
+                        @endif
+                        @if($isAdmin || ($authUser && $authUser->can('ver_familias')))
+                        <li class="nav-item">
+                            @php $isActive = request()->is('familias*'); @endphp
+                            <a href="{{ route('familias.index') }}" class="{{ $baseClasses }} {{ $isActive ? $activeClasses : $inactiveClasses }}">
+                                <i class="fas fa-home text-lg {{ $isActive ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-400 dark:text-slate-500' }}"></i> <span>Familias</span>
+                            </a>
+                        </li>
+                        @endif
+                        @if($isAdmin || ($authUser && $authUser->can('ver_celulas')))
+                        <li class="nav-item">
+                            @php $isActive = request()->is('celulas*'); @endphp
+                            <a href="{{ route('celulas.index') }}" class="{{ $baseClasses }} {{ $isActive ? $activeClasses : $inactiveClasses }}">
+                                <i class="fas fa-network-wired text-lg {{ $isActive ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-400 dark:text-slate-500' }}"></i> <span>Células</span>
+                            </a>
+                        </li>
+                        @endif
+                        @if($isAdmin || ($authUser && $authUser->can('ver_organizaciones')))
+                        <li class="nav-item">
+                            @php $isActive = request()->is('organizaciones*'); @endphp
+                            <a href="{{ route('organizaciones.index') }}" class="{{ $baseClasses }} {{ $isActive ? $activeClasses : $inactiveClasses }}">
+                                <i class="fas fa-sitemap text-lg {{ $isActive ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-400 dark:text-slate-500' }}"></i> <span>Organizaciones</span>
+                            </a>
+                        </li>
+                        @endif
+                    </div>
+                </div>
                 @endif
 
-                @if($isAdmin || ($authUser && ($authUser->can('ver_eventos') || $authUser->can('ver_asistencia') || $authUser->can('ver_tesoreria'))))
-                <div class="px-4 py-2 text-slate-500 font-bold tracking-wider uppercase text-xs dark:text-slate-400 mt-3 mb-1">Ministerio</div>
-                @if($isAdmin || ($authUser && $authUser->can('ver_eventos')))
-                <li class="nav-item">
-                    @php $isActive = request()->is('eventos*'); @endphp
-                    <a href="{{ route('eventos.index') }}" class="{{ $baseClasses }} {{ $isActive ? $activeClasses : $inactiveClasses }}">
-                        <i class="fas fa-calendar-alt text-lg {{ $isActive ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-400 dark:text-slate-500' }}"></i> <span>Eventos</span>
-                    </a>
-                </li>
+                @if($isAdmin)
+                @php $secActive = request()->is('certificados/presentacion*') || request()->is('certificados/matrimonio*') || request()->is('comunicaciones/whatsapp*'); @endphp
+                <div x-data="{ open: {{ $secActive ? 'true' : 'false' }} }" class="mt-2 mb-1">
+                    <button @click="open = !open" class="w-full flex items-center justify-between px-4 py-2 text-slate-500 font-bold tracking-wider uppercase text-xs dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 rounded-xl transition-colors group">
+                        <span>Pastoral</span>
+                        <i class="fas fa-chevron-down text-[10px] transition-transform duration-200" :class="{'rotate-180': open}"></i>
+                    </button>
+                    <div x-show="open" x-transition style="display: {{ $secActive ? 'block' : 'none' }};" class="mt-1">
+                        <li class="nav-item">
+                            @php $isActive = request()->is('certificados/presentacion*'); @endphp
+                            <a href="{{ route('presentacion.index') }}" class="{{ $baseClasses }} {{ $isActive ? $activeClasses : $inactiveClasses }}">
+                                <i class="fas fa-child-reaching text-lg {{ $isActive ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-400 dark:text-slate-500' }}"></i> <span>Presentaciones</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            @php $isActive = request()->is('certificados/matrimonio*'); @endphp
+                            <a href="{{ route('matrimonio.index') }}" class="{{ $baseClasses }} {{ $isActive ? $activeClasses : $inactiveClasses }}">
+                                <i class="fas fa-rings-wedding text-lg {{ $isActive ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-400 dark:text-slate-500' }}"></i> <span>Matrimonios</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            @php $isActive = request()->is('comunicaciones/whatsapp*'); @endphp
+                            <a href="{{ route('comunicaciones.whatsapp.index') }}" class="{{ $baseClasses }} {{ $isActive ? $activeClasses : $inactiveClasses }}">
+                                <i class="fa-brands fa-whatsapp text-lg {{ $isActive ? 'text-emerald-500 dark:text-emerald-400' : 'text-slate-400 dark:text-slate-500' }}"></i> <span>Comunicaciones</span>
+                            </a>
+                        </li>
+                    </div>
+                </div>
                 @endif
-                @if($isAdmin || ($authUser && $authUser->can('ver_asistencia')))
-                <li class="nav-item">
-                    @php $isActive = request()->is('asistencia*'); @endphp
-                    <a href="{{ route('asistencia.scanner') }}" class="{{ $baseClasses }} {{ $isActive ? $activeClasses : $inactiveClasses }}">
-                        <i class="fas fa-qrcode text-lg {{ $isActive ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-400 dark:text-slate-500' }}"></i> <span>Asistencia QR</span>
-                    </a>
-                </li>
+
+                @if($isAdmin || ($authUser && ($authUser->can('ver_eventos') || $authUser->can('ver_asistencia'))))
+                @php $secActive = request()->is('eventos*') || request()->is('asistencia*') || request()->is('votar*'); @endphp
+                <div x-data="{ open: {{ $secActive ? 'true' : 'false' }} }" class="mt-2 mb-1">
+                    <button @click="open = !open" class="w-full flex items-center justify-between px-4 py-2 text-slate-500 font-bold tracking-wider uppercase text-xs dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 rounded-xl transition-colors group">
+                        <span>Operaciones</span>
+                        <i class="fas fa-chevron-down text-[10px] transition-transform duration-200" :class="{'rotate-180': open}"></i>
+                    </button>
+                    <div x-show="open" x-transition style="display: {{ $secActive ? 'block' : 'none' }};" class="mt-1">
+                        @if($isAdmin || ($authUser && $authUser->can('ver_eventos')))
+                        <li class="nav-item">
+                            @php $isActive = request()->is('eventos*'); @endphp
+                            <a href="{{ route('eventos.index') }}" class="{{ $baseClasses }} {{ $isActive ? $activeClasses : $inactiveClasses }}">
+                                <i class="fas fa-calendar-alt text-lg {{ $isActive ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-400 dark:text-slate-500' }}"></i> <span>Eventos</span>
+                            </a>
+                        </li>
+                        @endif
+                        @if($isAdmin || ($authUser && $authUser->can('ver_asistencia')))
+                        <li class="nav-item">
+                            @php $isActive = request()->is('asistencia*'); @endphp
+                            <a href="{{ route('asistencia.scanner') }}" class="{{ $baseClasses }} {{ $isActive ? $activeClasses : $inactiveClasses }}">
+                                <i class="fas fa-qrcode text-lg {{ $isActive ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-400 dark:text-slate-500' }}"></i> <span>Control de Asistencia</span>
+                            </a>
+                        </li>
+                        @endif
+                        @if($isAdmin)
+                        <li class="nav-item">
+                            @php $isActive = request()->is('votar*'); @endphp
+                            <a href="{{ route('votar.index') }}" class="{{ $baseClasses }} {{ $isActive ? $activeClasses : $inactiveClasses }}">
+                                <i class="fas fa-vote-yea text-lg {{ $isActive ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-400 dark:text-slate-500' }}"></i> <span>Portal del Votante</span>
+                            </a>
+                        </li>
+                        @endif
+                    </div>
+                </div>
                 @endif
-                @if($isAdmin || ($authUser && $authUser->can('ver_tesoreria')))
-                <li class="nav-item">
-                    @php $isActive = request()->is('tesoreria*'); @endphp
-                    <a href="{{ route('tesoreria.index') }}" class="{{ $baseClasses }} {{ $isActive ? $activeClasses : $inactiveClasses }}">
-                        <i class="fas fa-wallet text-lg {{ $isActive ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-400 dark:text-slate-500' }}"></i> <span>Tesorería</span>
-                    </a>
-                </li>
-                @endif
-                @if($isAdmin || ($authUser && $authUser->can('ver_inventario')))
-                <li class="nav-item">
-                    @php $isActive = request()->is('inventario*'); @endphp
-                    <a href="{{ route('inventario.index') }}" class="{{ $baseClasses }} {{ $isActive ? $activeClasses : $inactiveClasses }}">
-                        <i class="fas fa-boxes text-lg {{ $isActive ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-400 dark:text-slate-500' }}"></i> <span>Inventario</span>
-                    </a>
-                </li>
-                @endif
+
+                @if($isAdmin || ($authUser && ($authUser->can('ver_tesoreria') || $authUser->can('ver_inventario'))))
+                @php $secActive = request()->is('tesoreria*') || request()->is('inventario*'); @endphp
+                <div x-data="{ open: {{ $secActive ? 'true' : 'false' }} }" class="mt-2 mb-1">
+                    <button @click="open = !open" class="w-full flex items-center justify-between px-4 py-2 text-slate-500 font-bold tracking-wider uppercase text-xs dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 rounded-xl transition-colors group">
+                        <span>Finanzas</span>
+                        <i class="fas fa-chevron-down text-[10px] transition-transform duration-200" :class="{'rotate-180': open}"></i>
+                    </button>
+                    <div x-show="open" x-transition style="display: {{ $secActive ? 'block' : 'none' }};" class="mt-1">
+                        @if($isAdmin || ($authUser && $authUser->can('ver_tesoreria')))
+                        <li class="nav-item">
+                            @php $isActive = request()->is('tesoreria*'); @endphp
+                            <a href="{{ route('tesoreria.index') }}" class="{{ $baseClasses }} {{ $isActive ? $activeClasses : $inactiveClasses }}">
+                                <i class="fas fa-wallet text-lg {{ $isActive ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-400 dark:text-slate-500' }}"></i> <span>Tesorería</span>
+                            </a>
+                        </li>
+                        @endif
+                        @if($isAdmin || ($authUser && $authUser->can('ver_inventario')))
+                        <li class="nav-item">
+                            @php $isActive = request()->is('inventario*'); @endphp
+                            <a href="{{ route('inventario.index') }}" class="{{ $baseClasses }} {{ $isActive ? $activeClasses : $inactiveClasses }}">
+                                <i class="fas fa-boxes text-lg {{ $isActive ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-400 dark:text-slate-500' }}"></i> <span>Inventario</span>
+                            </a>
+                        </li>
+                        @endif
+                    </div>
+                </div>
                 @endif
 
                 @if($isAdmin || ($authUser && ($authUser->can('ver_reportes') || $authUser->can('ver_configuracion'))))
-                <div class="px-4 py-2 text-slate-500 font-bold tracking-wider uppercase text-xs dark:text-slate-400 mt-3 mb-1">Admin</div>
-                @if($isAdmin || ($authUser && $authUser->can('ver_reportes')))
-                <li class="nav-item">
-                    @php $isActive = request()->is('reportes*'); @endphp
-                    <a href="{{ route('reportes.index') }}" class="{{ $baseClasses }} {{ $isActive ? $activeClasses : $inactiveClasses }}">
-                        <i class="fas fa-file-invoice text-lg {{ $isActive ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-400 dark:text-slate-500' }}"></i> <span>Reportes</span>
-                    </a>
-                </li>
-                @endif
-                @if($isAdmin)
-                <li class="nav-item">
-                    @php $isActive = request()->is('configuracion*'); @endphp
-                    <a href="{{ route('configuracion.index') }}" class="{{ $baseClasses }} {{ $isActive ? $activeClasses : $inactiveClasses }}">
-                        <i class="fas fa-cog text-lg {{ $isActive ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-400 dark:text-slate-500' }}"></i> <span>Configuración</span>
-                    </a>
-                </li>
-                @endif
-                @if($isAdmin)
-                <li class="nav-item">
-                    @php $isActive = request()->is('votar*'); @endphp
-                    <a href="{{ route('votar.index') }}" class="{{ $baseClasses }} {{ $isActive ? $activeClasses : $inactiveClasses }}">
-                        <i class="fas fa-vote-yea text-lg {{ $isActive ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-400 dark:text-slate-500' }}"></i> <span>Portal del Votante</span>
-                    </a>
-                </li>
-                @endif
+                @php $secActive = request()->is('reportes*') || request()->is('configuracion*'); @endphp
+                <div x-data="{ open: {{ $secActive ? 'true' : 'false' }} }" class="mt-2 mb-1">
+                    <button @click="open = !open" class="w-full flex items-center justify-between px-4 py-2 text-slate-500 font-bold tracking-wider uppercase text-xs dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 rounded-xl transition-colors group">
+                        <span>Sistema</span>
+                        <i class="fas fa-chevron-down text-[10px] transition-transform duration-200" :class="{'rotate-180': open}"></i>
+                    </button>
+                    <div x-show="open" x-transition style="display: {{ $secActive ? 'block' : 'none' }};" class="mt-1">
+                        @if($isAdmin || ($authUser && $authUser->can('ver_reportes')))
+                        <li class="nav-item">
+                            @php $isActive = request()->is('reportes*'); @endphp
+                            <a href="{{ route('reportes.index') }}" class="{{ $baseClasses }} {{ $isActive ? $activeClasses : $inactiveClasses }}">
+                                <i class="fas fa-file-invoice text-lg {{ $isActive ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-400 dark:text-slate-500' }}"></i> <span>Reportes</span>
+                            </a>
+                        </li>
+                        @endif
+                        @if($isAdmin)
+                        <li class="nav-item">
+                            @php $isActive = request()->is('configuracion*'); @endphp
+                            <a href="{{ route('configuracion.index') }}" class="{{ $baseClasses }} {{ $isActive ? $activeClasses : $inactiveClasses }}">
+                                <i class="fas fa-cog text-lg {{ $isActive ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-400 dark:text-slate-500' }}"></i> <span>Configuración</span>
+                            </a>
+                        </li>
+                        @endif
+                    </div>
+                </div>
                 @endif
 
                 <li class="nav-item">

@@ -44,9 +44,9 @@ Route::resource('tesoreria', \App\Http\Controllers\TesoreriaController::class)->
 Route::get('/reportes', [\App\Http\Controllers\ReporteController::class, 'index'])->name('reportes.index');
 Route::get('/reportes/tesoreria', [\App\Http\Controllers\ReporteController::class, 'reportarTesoreria'])->name('reportes.tesoreria');
 Route::get('/reportes/tesoreria/pdf', [\App\Http\Controllers\ReporteTesoreriaController::class, 'generateCorteCaja'])->name('reportes.tesoreria.pdf');
-Route::get('/reportes/miembros', [\App\Http\Controllers\ReporteController::class, 'reportarMiembros'])->name('reportes.miembros');
+Route::get('/reportes/membresia', [\App\Http\Controllers\ReporteController::class, 'reportarMembresiaDinamico'])->name('reportes.membresia');
 Route::get('/reportes/inventario', [\App\Http\Controllers\ReporteController::class, 'reportarInventario'])->name('reportes.inventario');
-Route::get('/reportes/bautizados', [\App\Http\Controllers\ReporteController::class, 'reportarBautizados'])->name('reportes.bautizados');
+Route::get('/reportes/organizaciones', [\App\Http\Controllers\ReporteController::class, 'reportarOrganizaciones'])->name('reportes.organizaciones');
 Route::get('/reportes/ingresos-familia', [\App\Http\Controllers\ReporteController::class, 'reportarIngresosFamilia'])->name('reportes.ingresos_familia');
 Route::get('/reportes/asistencia/celula/{id}', [\App\Http\Controllers\ReporteController::class, 'reportarAsistenciaCelula'])->name('reportes.asistencia_celula');
 Route::get('/reportes/asistencia/evento/{id}', [\App\Http\Controllers\ReporteController::class, 'reportarAsistenciaEvento'])->name('reportes.asistencia_evento');

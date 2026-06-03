@@ -24,13 +24,23 @@ class ReporteController extends Controller
 
     private function getLogoBase64($config)
     {
+        $logoPath = null;
         if ($config && $config->logo) {
-            $path = storage_path('app/public/config/' . $config->logo);
-            if (file_exists($path)) {
-                $extension = pathinfo($path, PATHINFO_EXTENSION);
-                $data = file_get_contents($path);
-                return 'data:image/' . $extension . ';base64,' . base64_encode($data);
-            }
+            $logoPath = storage_path('app/public/config/' . $config->logo);
+        }
+        
+        if (!$logoPath || !file_exists($logoPath)) {
+            $logoPath = public_path('imagen/Logo_AD_Rey_de_Reyes_optimized.png');
+        }
+        
+        if (!file_exists($logoPath)) {
+            $logoPath = public_path('imagen/Logo AD Rey de Reyes.png');
+        }
+
+        if (file_exists($logoPath)) {
+            $extension = pathinfo($logoPath, PATHINFO_EXTENSION);
+            $data = file_get_contents($logoPath);
+            return 'data:image/' . $extension . ';base64,' . base64_encode($data);
         }
         return null;
     }
@@ -44,7 +54,12 @@ class ReporteController extends Controller
         $accounts = FinancialAccount::withSum('transactions as total_balance', 'amount')->get();
         $elecciones = Eleccion::with('organizacion')->orderBy('created_at', 'desc')->get();
 
-        return view('reportes.index', compact('totalMiembros', 'totalCelulas', 'mesActual', 'config', 'accounts', 'elecciones'));
+        // Data for Inventario Filters
+        $ubicacionesInventario = \App\Models\Inventario::whereNotNull('ubicacion')->distinct()->pluck('ubicacion');
+        $responsablesInventario = Miembro::whereIn('id', \App\Models\Inventario::whereNotNull('responsable_id')->distinct()->pluck('responsable_id'))->get();
+        $organizacionesReporte = \App\Models\Organizacion::orderBy('nombre')->get();
+
+        return view('reportes.index', compact('totalMiembros', 'totalCelulas', 'mesActual', 'config', 'accounts', 'elecciones', 'ubicacionesInventario', 'responsablesInventario', 'organizacionesReporte'));
     }
 
     public function reportarAsistenciaCelula(Request $request, $celula_id)
@@ -92,16 +107,54 @@ class ReporteController extends Controller
         return $pdf->setPaper('letter', 'portrait')->stream("Asistencia-Evento-{$evento->id}.pdf");
     }
 
-    public function reportarMiembros()
+    public function reportarMembresiaDinamico(Request $request)
     {
         ini_set('memory_limit', '256M');
-        $miembros = Miembro::with('ministerios')->orderBy('apellidos')->get();
+        $tipo = $request->query('tipo', 'general');
+
+        $search = $request->query('search');
+        $ministerio = $request->query('ministerio');
+        $etapa = $request->query('etapa');
+
+        $query = Miembro::with('ministerios')->orderBy('apellidos');
+
+        if ($tipo === 'bautizados') {
+            $query->where('etapa_consolidacion', 'Bautizado')->orWhere('bautizado_agua', true);
+            $vista = 'reportes.bautizados';
+            $titulo = 'Lista-Bautizados.pdf';
+        } elseif ($tipo === 'no_bautizados') {
+            $query->where('etapa_consolidacion', '!=', 'Bautizado')->where('bautizado_agua', false);
+            $vista = 'reportes.miembros';
+            $titulo = 'Censo-No-Bautizados.pdf';
+        } else {
+            $vista = 'reportes.miembros';
+            $titulo = 'Censo-Membresia.pdf';
+        }
+
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('nombres', 'LIKE', "%{$search}%")
+                  ->orWhere('apellidos', 'LIKE', "%{$search}%")
+                  ->orWhere('dpi', 'LIKE', "%{$search}%")
+                  ->orWhere('telefono', 'LIKE', "%{$search}%");
+            });
+        }
+        if ($ministerio) {
+            $query->whereHas('ministerios', function ($q) use ($ministerio) {
+                $q->where('ministerios.id', $ministerio);
+            });
+        }
+        if ($etapa) {
+            $query->where('etapa_consolidacion', $etapa);
+        }
+
+        $miembros = $query->get();
         
         $config = $this->getConfig();
         $logoBase64 = $this->getLogoBase64($config);
-        $pdf = Pdf::loadView('reportes.miembros', compact('miembros', 'config', 'logoBase64'));
+        $pdf = Pdf::loadView($vista, compact('miembros', 'config', 'logoBase64'));
         
-        return $pdf->setPaper('letter', 'landscape')->stream('Censo-Membresia.pdf');
+        return $pdf->setPaper('letter', 'portrait')->stream($titulo);
     }
     public function reportarTesoreria(Request $request)
     {
@@ -125,25 +178,81 @@ class ReporteController extends Controller
         return $pdf->setPaper('letter', 'portrait')->stream('Reporte-Tesoreria.pdf');
     }
 
-    public function reportarBautizados()
+    public function reportarOrganizaciones(Request $request)
     {
         ini_set('memory_limit', '256M');
-        $miembros = Miembro::with('ministerios')->where('etapa_consolidacion', 'Bautizado')
-            ->orderBy('apellidos')
-            ->get();
+        $organizacionId = $request->query('organizacion_id');
+        $modoReporte = $request->query('modo_reporte', 'organizacion');
         
         $config = $this->getConfig();
         $logoBase64 = $this->getLogoBase64($config);
-        $pdf = Pdf::loadView('reportes.bautizados', compact('miembros', 'config', 'logoBase64'));
-        return $pdf->setPaper('letter', 'portrait')->stream('Lista-Bautizados.pdf');
+
+        if ($modoReporte === 'puesto') {
+            $query = \Illuminate\Support\Facades\DB::table('miembro_organizacion')
+                ->join('miembros', 'miembro_organizacion.miembro_id', '=', 'miembros.id')
+                ->join('organizaciones', 'miembro_organizacion.organizacion_id', '=', 'organizaciones.id')
+                ->select(
+                    'miembro_organizacion.puesto', 
+                    'miembro_organizacion.fecha_asignacion', 
+                    'miembro_organizacion.estado', 
+                    'miembros.nombres', 
+                    'miembros.apellidos', 
+                    'miembros.dpi',
+                    'miembros.telefono',
+                    'miembros.id as miembro_id',
+                    'organizaciones.nombre as organizacion_nombre'
+                );
+
+            if ($organizacionId) {
+                $query->where('organizaciones.id', $organizacionId);
+            }
+
+            $asignacionesAgrupadas = $query
+                ->orderBy('miembro_organizacion.puesto')
+                ->orderBy('organizaciones.nombre')
+                ->orderBy('miembros.nombres')
+                ->get()
+                ->groupBy(function($item) {
+                    return $item->puesto ?: 'Miembro Regular';
+                });
+
+            $pdf = Pdf::loadView('reportes.organizaciones_puestos_pdf', compact('asignacionesAgrupadas', 'config', 'logoBase64'));
+            return $pdf->setPaper('letter', 'portrait')->stream('Reporte-Cargos-Organizaciones.pdf');
+        }
+
+        $query = \App\Models\Organizacion::with(['miembros' => function($q) {
+            $q->orderBy('nombres');
+        }])->orderBy('nombre');
+
+        if ($organizacionId) {
+            $query->where('id', $organizacionId);
+        }
+
+        $organizaciones = $query->get();
+        
+        $pdf = Pdf::loadView('reportes.organizaciones_pdf', compact('organizaciones', 'config', 'logoBase64'));
+        
+        return $pdf->setPaper('letter', 'portrait')->stream('Reporte-Organizaciones.pdf');
     }
 
     public function reportarInventario(Request $request)
     {
         ini_set('memory_limit', '256M');
-        $inventarios = \App\Models\Inventario::with('responsable')
-            ->orderBy('nombre')
-            ->get();
+        $query = \App\Models\Inventario::with('responsable')->orderBy('nombre');
+
+        if ($request->filled('estado')) {
+            $query->where('estado', $request->estado);
+        }
+
+        if ($request->filled('ubicacion')) {
+            $query->where('ubicacion', $request->ubicacion);
+        }
+
+        if ($request->filled('responsable_id')) {
+            $query->where('responsable_id', $request->responsable_id);
+        }
+
+        $inventarios = $query->get();
 
         $config = $this->getConfig();
         $logoBase64 = $this->getLogoBase64($config);
