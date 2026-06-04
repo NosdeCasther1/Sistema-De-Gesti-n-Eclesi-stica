@@ -527,25 +527,47 @@
             window.addEventListener('touchstart', updateActivity);
 
             // Forzar cierre de sesión
-            function forceLogout() {
+            function forceLogout(alreadyExpired = false) {
                 localStorage.removeItem('session_last_activity');
                 localStorage.removeItem('session_user_id');
-                const logoutForm = document.getElementById('logout-form');
-                if (logoutForm) {
-                    logoutForm.submit();
-                } else {
-                    // Si por alguna razón no encuentra el formulario, redirección por POST manual
-                    const form = document.createElement('form');
-                    form.method = 'POST';
-                    form.action = '{{ route("logout") }}';
-                    const csrf = document.createElement('input');
-                    csrf.type = 'hidden';
-                    csrf.name = '_token';
-                    csrf.value = '{{ csrf_token() }}';
-                    form.appendChild(csrf);
-                    document.body.appendChild(form);
-                    form.submit();
+                
+                if (alreadyExpired) {
+                    window.location.href = '{{ route("login") }}?expired=1';
+                    return;
                 }
+
+                // Si no sabemos si ya expiró en servidor, consultamos rápido
+                fetch('{{ route("check.session") }}', {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => {
+                    if (response.status === 401 || response.status === 419) {
+                        window.location.href = '{{ route("login") }}?expired=1';
+                    } else {
+                        const logoutForm = document.getElementById('logout-form');
+                        if (logoutForm) {
+                            logoutForm.submit();
+                        } else {
+                            const form = document.createElement('form');
+                            form.method = 'POST';
+                            form.action = '{{ route("logout") }}';
+                            const csrf = document.createElement('input');
+                            csrf.type = 'hidden';
+                            csrf.name = '_token';
+                            csrf.value = '{{ csrf_token() }}';
+                            form.appendChild(csrf);
+                            document.body.appendChild(form);
+                            form.submit();
+                        }
+                    }
+                })
+                .catch(() => {
+                    window.location.href = '{{ route("login") }}?expired=1';
+                });
             }
 
             // Verificar expiración localmente e invocar ping al servidor si hay dudas
@@ -558,7 +580,7 @@
 
                 // 1. Verificación local por inactividad prolongada
                 if (now - lastStoredActivity > sessionLifetime) {
-                    forceLogout();
+                    forceLogout(true);
                     return;
                 }
 
@@ -573,7 +595,7 @@
                 })
                 .then(response => {
                     if (response.status === 401 || response.status === 419) {
-                        forceLogout();
+                        forceLogout(true);
                     }
                     isChecking = false;
                 })

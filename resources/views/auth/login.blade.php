@@ -59,8 +59,26 @@
                     <form action="{{ route('login') }}" method="POST" class="space-y-6">
                         @csrf
                         
+                        @if (request()->has('expired') || session('expired'))
+                            <div class="bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20 rounded-xl p-4 mb-4 text-center">
+                                <p class="text-xs font-bold text-amber-600 dark:text-amber-400">Tu sesión ha expirado por inactividad. Por favor, inicia sesión de nuevo.</p>
+                            </div>
+                        @endif
+
+                        @if (session('error'))
+                            <div class="bg-rose-50 dark:bg-rose-500/10 border border-rose-200 dark:border-rose-500/20 rounded-xl p-4 mb-4 text-center">
+                                <p class="text-xs font-bold text-rose-600 dark:text-rose-400">{{ session('error') }}</p>
+                            </div>
+                        @endif
+
+                        @if (session('success'))
+                            <div class="bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 rounded-xl p-4 mb-4 text-center">
+                                <p class="text-xs font-bold text-emerald-600 dark:text-emerald-400">{{ session('success') }}</p>
+                            </div>
+                        @endif
+
                         @if ($errors->any())
-                            <div class="bg-rose-50 dark:bg-rose-500/10 border border-rose-200 dark:border-rose-500/20 rounded-xl p-4">
+                            <div class="bg-rose-50 dark:bg-rose-500/10 border border-rose-200 dark:border-rose-500/20 rounded-xl p-4 mb-4 text-center">
                                 <p class="text-xs font-bold text-rose-600 dark:text-rose-400">{{ $errors->first() }}</p>
                             </div>
                         @endif
@@ -138,6 +156,29 @@
                 }
             }
         });
+
+        // Recargar la página si estuvo inactiva o en segundo plano por más de 15 minutos
+        // Esto previene que el token CSRF expire y cause un error "419 Page Expired" al enviar el formulario.
+        (function() {
+            let lastFocusTime = Date.now();
+            const maxInactiveTime = 15 * 60 * 1000; // 15 minutos en milisegundos
+
+            function checkReload() {
+                const now = Date.now();
+                if (now - lastFocusTime > maxInactiveTime) {
+                    window.location.reload();
+                } else {
+                    lastFocusTime = now;
+                }
+            }
+
+            window.addEventListener('focus', checkReload);
+            document.addEventListener('visibilitychange', function() {
+                if (document.visibilityState === 'visible') {
+                    checkReload();
+                }
+            });
+        })();
     </script>
 </body>
 </html>
