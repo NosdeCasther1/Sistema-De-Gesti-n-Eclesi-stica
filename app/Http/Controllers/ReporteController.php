@@ -59,7 +59,15 @@ class ReporteController extends Controller
         $responsablesInventario = Miembro::whereIn('id', \App\Models\Inventario::whereNotNull('responsable_id')->distinct()->pluck('responsable_id'))->get();
         $organizacionesReporte = \App\Models\Organizacion::orderBy('nombre')->get();
 
-        return view('reportes.index', compact('totalMiembros', 'totalCelulas', 'mesActual', 'config', 'accounts', 'elecciones', 'ubicacionesInventario', 'responsablesInventario', 'organizacionesReporte'));
+        // Data for Membresía Filters
+        $ministerios = \App\Models\Ministerio::orderBy('nombre')->get();
+        $etapas = ['Nuevo', 'En Discipulado', 'Asignado a Célula', 'Bautizado'];
+        $cargosPersonales = Miembro::whereNotNull('cargo_liderazgo')->where('cargo_liderazgo', '!=', '')->distinct()->pluck('cargo_liderazgo')->toArray();
+        $cargosOrganizacion = \Illuminate\Support\Facades\DB::table('miembro_organizacion')->whereNotNull('puesto')->where('puesto', '!=', '')->distinct()->pluck('puesto')->toArray();
+        $cargos = array_unique(array_merge($cargosPersonales, $cargosOrganizacion));
+        sort($cargos);
+
+        return view('reportes.index', compact('totalMiembros', 'totalCelulas', 'mesActual', 'config', 'accounts', 'elecciones', 'ubicacionesInventario', 'responsablesInventario', 'organizacionesReporte', 'ministerios', 'etapas', 'cargos'));
     }
 
     public function reportarAsistenciaCelula(Request $request, $celula_id)

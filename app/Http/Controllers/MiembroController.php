@@ -247,7 +247,13 @@ class MiembroController extends Controller
         $organizaciones = Organizacion::orderBy('nombre')->get();
         $ministerios = Ministerio::orderBy('nombre')->get();
         $posiblesConyuges = Miembro::orderBy('nombres')->get();
-        return view('miembros.create', compact('organizaciones', 'ministerios', 'posiblesConyuges'));
+
+        $cargosPersonales = Miembro::whereNotNull('cargo_liderazgo')->where('cargo_liderazgo', '!=', '')->distinct()->pluck('cargo_liderazgo')->toArray();
+        $cargosOrganizacion = \Illuminate\Support\Facades\DB::table('miembro_organizacion')->whereNotNull('puesto')->where('puesto', '!=', '')->distinct()->pluck('puesto')->toArray();
+        $cargos = array_unique(array_merge($cargosPersonales, $cargosOrganizacion));
+        sort($cargos);
+
+        return view('miembros.create', compact('organizaciones', 'ministerios', 'posiblesConyuges', 'cargos'));
     }
 
     /**
@@ -359,7 +365,13 @@ class MiembroController extends Controller
         $organizaciones = Organizacion::orderBy('nombre')->get();
         $ministerios = Ministerio::orderBy('nombre')->get();
         $posiblesConyuges = Miembro::where('id', '!=', $miembro->id)->orderBy('nombres')->get();
-        return view('miembros.edit', compact('miembro', 'organizaciones', 'ministerios', 'posiblesConyuges'));
+
+        $cargosPersonales = Miembro::whereNotNull('cargo_liderazgo')->where('cargo_liderazgo', '!=', '')->distinct()->pluck('cargo_liderazgo')->toArray();
+        $cargosOrganizacion = \Illuminate\Support\Facades\DB::table('miembro_organizacion')->whereNotNull('puesto')->where('puesto', '!=', '')->distinct()->pluck('puesto')->toArray();
+        $cargos = array_unique(array_merge($cargosPersonales, $cargosOrganizacion));
+        sort($cargos);
+
+        return view('miembros.edit', compact('miembro', 'organizaciones', 'ministerios', 'posiblesConyuges', 'cargos'));
     }
 
     /**

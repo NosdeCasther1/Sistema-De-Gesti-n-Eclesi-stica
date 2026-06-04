@@ -364,8 +364,39 @@
                 </div>
                 @endif
 
-                <button class="theme-toggle" onclick="toggleTheme()" title="Cambiar Tema">
-                    <i class="fas fa-moon" id="themeIcon"></i>
+                {{-- Campanita de Notificaciones --}}
+                <div class="relative" x-data="{ open: false, count: 3 }">
+                    <button @click="open = !open" class="relative p-2 text-slate-500 hover:text-indigo-600 dark:text-slate-400 dark:hover:text-indigo-400 transition-colors rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 focus:outline-none">
+                        <i class="fas fa-bell text-lg"></i>
+                        <span x-show="count > 0" class="absolute top-0.5 right-0.5 inline-flex items-center justify-center w-4 h-4 text-[9px] font-bold text-white bg-rose-500 border-2 border-white dark:border-slate-900 rounded-full">3</span>
+                    </button>
+                    <div x-show="open" @click.outside="open = false" x-transition style="display:none;" class="absolute right-0 mt-2 w-72 bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700 overflow-hidden z-50">
+                        <div class="px-4 py-3 border-b border-slate-100 dark:border-slate-700/50 flex justify-between items-center bg-slate-50 dark:bg-slate-800/80">
+                            <span class="font-bold text-sm text-slate-800 dark:text-white">Notificaciones</span>
+                            <span class="text-[10px] uppercase font-bold text-indigo-500 cursor-pointer hover:text-indigo-700 transition-colors" @click="count = 0">Marcar leídas</span>
+                        </div>
+                        <ul class="max-h-64 overflow-y-auto custom-scrollbar">
+                            <li class="px-4 py-3 border-b border-slate-100 dark:border-slate-700/50 hover:bg-slate-50 dark:hover:bg-slate-700/30 transition-colors cursor-pointer opacity-50">
+                                <p class="text-xs text-slate-600 dark:text-slate-300 font-medium mb-1">Corte de caja mensual aprobado por la administración.</p>
+                                <span class="text-[10px] text-slate-400">Hace 2 horas</span>
+                            </li>
+                            <li class="px-4 py-3 border-b border-slate-100 dark:border-slate-700/50 hover:bg-slate-50 dark:hover:bg-slate-700/30 transition-colors cursor-pointer">
+                                <p class="text-xs text-slate-600 dark:text-slate-300 font-medium mb-1"><span class="font-bold text-indigo-500">Nuevo</span> 5 miembros añadidos a la célula "Eben-Ezer".</p>
+                                <span class="text-[10px] text-slate-400">Hace 5 horas</span>
+                            </li>
+                            <li class="px-4 py-3 hover:bg-slate-50 dark:hover:bg-slate-700/30 transition-colors cursor-pointer">
+                                <p class="text-xs text-slate-600 dark:text-slate-300 font-medium mb-1"><span class="font-bold text-indigo-500">Recordatorio</span> Reunión de líderes mañana a las 18:00 hrs.</p>
+                                <span class="text-[10px] text-slate-400">Hace 1 día</span>
+                            </li>
+                        </ul>
+                        <div class="px-4 py-2 text-center border-t border-slate-100 dark:border-slate-700/50 bg-slate-50 dark:bg-slate-800/80">
+                            <a href="#" class="text-xs font-bold text-indigo-500 hover:text-indigo-600">Ver todas las notificaciones</a>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="theme-toggle p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" onclick="toggleTheme()" title="Cambiar Tema">
+                    <i class="fas fa-moon text-lg text-slate-500 dark:text-slate-400" id="themeIcon"></i>
                 </button>
 
                 {{-- Menú de Usuario Logueado --}}

@@ -818,15 +818,55 @@
 
                     <form action="{{ route('reportes.membresia') }}" method="GET" target="_blank" @submit="setTimeout(() => showMembresiaModal = false, 500)" class="p-8 mb-0 flex flex-col gap-6 bg-white dark:bg-slate-900">
                         
-                        <div class="flex flex-col gap-2">
-                            <label class="text-slate-800 dark:text-slate-400 font-bold text-sm flex items-center gap-2">
-                                <i class="fas fa-list text-blue-500"></i> Tipo de Censo
-                            </label>
-                            <select name="tipo" class="w-full rounded-2xl border border-slate-300 dark:border-slate-700/50 bg-white dark:bg-slate-800 px-4 py-3.5 text-slate-900 dark:text-white text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:focus:border-blue-500 transition-all shadow-sm">
-                                <option value="general" class="text-slate-900 bg-white dark:text-white dark:bg-slate-800">Censo General (Todos los miembros)</option>
-                                <option value="bautizados" class="text-slate-900 bg-white dark:text-white dark:bg-slate-800">Solo Miembros Bautizados</option>
-                                <option value="no_bautizados" class="text-slate-900 bg-white dark:text-white dark:bg-slate-800">Miembros No Bautizados</option>
-                            </select>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div class="flex flex-col gap-2">
+                                <label class="text-slate-800 dark:text-slate-400 font-bold text-sm flex items-center gap-2">
+                                    <i class="fas fa-list text-blue-500"></i> Tipo de Censo
+                                </label>
+                                <select name="tipo" class="w-full rounded-2xl border border-slate-300 dark:border-slate-700/50 bg-white dark:bg-slate-800 px-4 py-3.5 text-slate-900 dark:text-white text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:focus:border-blue-500 transition-all shadow-sm">
+                                    <option value="general" class="text-slate-900 bg-white dark:text-white dark:bg-slate-800">Censo General (Todos)</option>
+                                    <option value="bautizados" class="text-slate-900 bg-white dark:text-white dark:bg-slate-800">Solo Bautizados</option>
+                                    <option value="no_bautizados" class="text-slate-900 bg-white dark:text-white dark:bg-slate-800">No Bautizados</option>
+                                </select>
+                            </div>
+                            
+                            <div class="flex flex-col gap-2">
+                                <label class="text-slate-800 dark:text-slate-400 font-bold text-sm flex items-center gap-2">
+                                    <i class="fas fa-church text-blue-500"></i> Ministerio
+                                </label>
+                                <select name="ministerio" class="w-full rounded-2xl border border-slate-300 dark:border-slate-700/50 bg-white dark:bg-slate-800 px-4 py-3.5 text-slate-900 dark:text-white text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:focus:border-blue-500 transition-all shadow-sm">
+                                    <option value="" class="text-slate-900 bg-white dark:text-white dark:bg-slate-800">Todos los Ministerios</option>
+                                    @foreach($ministerios as $m)
+                                        <option value="{{ $m->id }}" class="text-slate-900 bg-white dark:text-white dark:bg-slate-800">{{ $m->nombre }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div class="flex flex-col gap-2">
+                                <label class="text-slate-800 dark:text-slate-400 font-bold text-sm flex items-center gap-2">
+                                    <i class="fas fa-star text-blue-500"></i> Etapa
+                                </label>
+                                <select name="etapa" class="w-full rounded-2xl border border-slate-300 dark:border-slate-700/50 bg-white dark:bg-slate-800 px-4 py-3.5 text-slate-900 dark:text-white text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:focus:border-blue-500 transition-all shadow-sm">
+                                    <option value="" class="text-slate-900 bg-white dark:text-white dark:bg-slate-800">Todas las Etapas</option>
+                                    @foreach($etapas as $e)
+                                        <option value="{{ $e }}" class="text-slate-900 bg-white dark:text-white dark:bg-slate-800">{{ $e }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <div class="flex flex-col gap-2">
+                                <label class="text-slate-800 dark:text-slate-400 font-bold text-sm flex items-center gap-2">
+                                    <i class="fas fa-user-tie text-blue-500"></i> Cargo/Liderazgo
+                                </label>
+                                <select name="cargo" class="w-full rounded-2xl border border-slate-300 dark:border-slate-700/50 bg-white dark:bg-slate-800 px-4 py-3.5 text-slate-900 dark:text-white text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:focus:border-blue-500 transition-all shadow-sm">
+                                    <option value="" class="text-slate-900 bg-white dark:text-white dark:bg-slate-800">Todos los Cargos</option>
+                                    @foreach($cargos as $c)
+                                        <option value="{{ $c }}" class="text-slate-900 bg-white dark:text-white dark:bg-slate-800">{{ $c }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
                         </div>
 
                         <div class="flex flex-col sm:flex-row justify-end items-center gap-3 pt-6 border-t border-slate-100 dark:border-slate-800/80 mt-2">

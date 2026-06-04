@@ -419,8 +419,12 @@
                         </div>
                         <div x-show="isLider" x-transition x-cloak class="mt-4">
                             <label class="block text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">Especifique el cargo o área de liderazgo</label>
-                            <input type="text" name="cargo_liderazgo" value="{{ old('cargo_liderazgo', $miembro->cargo_liderazgo ?? '') }}" placeholder="Ej: Maestra de Escuela Dominical de Prejóvenes, Líder de Jóvenes..."
-                                   class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-indigo-50/30 dark:bg-indigo-900/10 px-4 py-3.5 text-slate-900 dark:text-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all shadow-sm">
+                            <select name="cargo_liderazgo" class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-indigo-50/30 dark:bg-indigo-900/10 px-4 py-3.5 text-slate-900 dark:text-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all shadow-sm cursor-pointer appearance-none">
+                                <option value="">Seleccione un cargo existente</option>
+                                @foreach($cargos as $c)
+                                    <option value="{{ $c }}" {{ old('cargo_liderazgo', $miembro->cargo_liderazgo ?? '') == $c ? 'selected' : '' }}>{{ $c }}</option>
+                                @endforeach
+                            </select>
                         </div>
                     </div>
                 </div>
