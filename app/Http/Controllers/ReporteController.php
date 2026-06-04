@@ -115,6 +115,7 @@ class ReporteController extends Controller
         $search = $request->query('search');
         $ministerio = $request->query('ministerio');
         $etapa = $request->query('etapa');
+        $cargo = $request->query('cargo');
 
         $query = Miembro::with('ministerios')->orderBy('apellidos');
 
@@ -146,6 +147,14 @@ class ReporteController extends Controller
         }
         if ($etapa) {
             $query->where('etapa_consolidacion', $etapa);
+        }
+        if ($cargo) {
+            $query->where(function ($q) use ($cargo) {
+                $q->where('cargo_liderazgo', 'LIKE', "%{$cargo}%")
+                  ->orWhereHas('organizaciones', function ($qOrg) use ($cargo) {
+                      $qOrg->where('miembro_organizacion.puesto', 'LIKE', "%{$cargo}%");
+                  });
+            });
         }
 
         $miembros = $query->get();

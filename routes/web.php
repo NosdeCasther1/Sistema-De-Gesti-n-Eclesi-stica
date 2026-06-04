@@ -18,6 +18,10 @@ Route::middleware('guest')->group(function () {
 });
 
 Route::middleware(['auth'])->group(function () {
+    Route::get('/check-session', function () {
+        return response()->json(['status' => 'active']);
+    })->name('check.session');
+
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/Inicio', [DashboardController::class, 'index']); // For legacy compatibility
 

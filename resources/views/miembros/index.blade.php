@@ -85,15 +85,27 @@ main {
 
     <form action="{{ route('miembros.index') }}" method="GET" id="searchForm" class="relative z-10 m-0">
         <div class="grid grid-cols-1 md:grid-cols-12 gap-5 items-end">
-            <div class="md:col-span-6 relative">
+            <div class="md:col-span-3 relative">
                 <label class="block text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">Búsqueda Rápida</label>
                 <div class="relative flex items-center w-full">
                     <span class="absolute left-4 text-slate-400 dark:text-slate-500"><i class="fas fa-search"></i></span>
                     <input type="text" name="search" id="searchInput" class="w-full pl-11 pr-11 py-3.5 rounded-2xl border border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 text-slate-900 dark:text-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all shadow-sm"
-                           placeholder="Nombre, DPI, Teléfono..." value="{{ $search }}" autocomplete="off">
-                    <button type="button" class="absolute right-3 text-slate-400 hover:text-rose-500 clear-search transition-colors" id="clearSearch" title="Limpiar filtros" style="display: {{ ($search || $ministerio || $etapa) ? 'flex' : 'none' }}; align-items: center; justify-content: center;">
+                           placeholder="Nombre, DPI..." value="{{ $search }}" autocomplete="off">
+                    <button type="button" class="absolute right-3 text-slate-400 hover:text-rose-500 clear-search transition-colors" id="clearSearch" title="Limpiar filtros" style="display: {{ ($search || $ministerio || $etapa || request('cargo')) ? 'flex' : 'none' }}; align-items: center; justify-content: center;">
                         <i class="fas fa-times-circle text-lg"></i>
                     </button>
+                </div>
+            </div>
+            <div class="md:col-span-3">
+                <label class="block text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">Cargo / Liderazgo</label>
+                <div class="relative flex items-center w-full">
+                    <span class="absolute left-4 text-slate-400 dark:text-slate-500"><i class="fas fa-user-tie"></i></span>
+                    <select name="cargo" id="cargoInput" class="w-full pl-11 pr-10 py-3.5 rounded-2xl border border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 text-slate-900 dark:text-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all shadow-sm cursor-pointer appearance-none">
+                        <option value="">Todos</option>
+                        @foreach($cargos as $c)
+                            <option value="{{ $c }}" {{ request('cargo') == $c ? 'selected' : '' }}>{{ $c }}</option>
+                        @endforeach
+                    </select>
                 </div>
             </div>
             <div class="md:col-span-3">
@@ -108,7 +120,7 @@ main {
             <div class="md:col-span-3">
                 <label class="block text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">Consolidación</label>
                 <select name="etapa" class="w-full pl-4 pr-10 py-3.5 rounded-2xl border border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 text-slate-900 dark:text-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all shadow-sm cursor-pointer appearance-none" id="etapaSelect">
-                    <option value="">Todas las Etapas</option>
+                    <option value="">Todas</option>
                     @foreach($etapas as $e)
                         <option value="{{ $e }}" {{ $etapa == $e ? 'selected' : '' }}>{{ $e }}</option>
                     @endforeach
@@ -140,9 +152,10 @@ document.addEventListener('DOMContentLoaded', function() {
     const toggleClearBtn = () => {
         if (!clearBtn) return;
         const hasText = searchInput && searchInput.value.trim().length > 0;
+        const hasCargo = document.getElementById('cargoInput')?.value.trim().length > 0;
         const hasMin = document.getElementById('ministerioSelect')?.value !== '';
         const hasEtapa = document.getElementById('etapaSelect')?.value !== '';
-        if (hasText || hasMin || hasEtapa) {
+        if (hasText || hasCargo || hasMin || hasEtapa) {
             clearBtn.style.display = 'inline-flex';
         } else {
             clearBtn.style.display = 'none';
@@ -159,6 +172,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 resultsBox.innerHTML = html;
                 resultsBox.style.opacity = '1';
                 window.history.replaceState({}, '', url);
+                
+                // Update Reporte PDF link with current parameters
+                const reporteLink = document.querySelector('a[href*="reportes/membresia"]');
+                if (reporteLink) {
+                    const baseUrl = reporteLink.href.split('?')[0];
+                    reporteLink.href = `${baseUrl}?tipo=general&${params}`;
+                }
             })
             .catch(() => { resultsBox.style.opacity = '1'; });
     };
@@ -168,10 +188,13 @@ document.addEventListener('DOMContentLoaded', function() {
         clearTimeout(debounce); 
         debounce = setTimeout(doSearch, 320); 
     });
+    document.getElementById('cargoInput')?.addEventListener('change', () => { toggleClearBtn(); doSearch(); });
     document.getElementById('ministerioSelect')?.addEventListener('change', () => { toggleClearBtn(); doSearch(); });
     document.getElementById('etapaSelect')?.addEventListener('change', () => { toggleClearBtn(); doSearch(); });
     clearBtn?.addEventListener('click', () => {
         if (searchInput) searchInput.value = '';
+        const cargoInput = document.getElementById('cargoInput');
+        if (cargoInput) cargoInput.value = '';
         searchForm.querySelectorAll('select').forEach(s => s.value = '');
         toggleClearBtn();
         doSearch();

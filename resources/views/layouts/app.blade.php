@@ -402,7 +402,7 @@
                         @endif
                         <li><div class="border-t border-slate-200 dark:border-slate-700/50 my-1"></div></li>
                         <li>
-                            <form method="POST" action="{{ route('logout') }}" x-data>
+                            <form id="logout-form" method="POST" action="{{ route('logout') }}" x-data>
                                 @csrf
                                 <button type="submit" class="w-full flex items-center gap-3 px-4 py-2 text-sm text-rose-500 hover:bg-rose-500/10 hover:text-rose-400 transition-colors text-left font-medium">
                                     <i class="fa-solid fa-arrow-right-from-bracket"></i> Cerrar Sesión
@@ -492,6 +492,110 @@
             document.getElementById('sidebar').classList.toggle('show');
             document.getElementById('sidebarBackdrop')?.classList.toggle('show');
         }
+    </script>
+    
+    <script>
+        // Monitoreo de inactividad y expiración de sesión
+        (function() {
+            const sessionLifetime = {{ config('session.lifetime', 120) }} * 60 * 1000; // Milisegundos
+            const userId = '{{ Auth::id() }}';
+            let lastActivity = parseInt(localStorage.getItem('session_last_activity'), 10) || Date.now();
+            let currentUserId = localStorage.getItem('session_user_id');
+
+            // Inicializar si el usuario cambia o no existe
+            if (currentUserId !== userId) {
+                localStorage.setItem('session_user_id', userId);
+                localStorage.setItem('session_last_activity', Date.now());
+                lastActivity = Date.now();
+            }
+
+            // Registrar actividad
+            function updateActivity() {
+                const now = Date.now();
+                // Evitar escribir en localStorage en cada píxel de movimiento (throttle 5 seg)
+                if (now - lastActivity > 5000) {
+                    lastActivity = now;
+                    localStorage.setItem('session_last_activity', now);
+                }
+            }
+
+            // Escuchar eventos de interacción del usuario
+            window.addEventListener('mousemove', updateActivity);
+            window.addEventListener('keydown', updateActivity);
+            window.addEventListener('click', updateActivity);
+            window.addEventListener('scroll', updateActivity);
+            window.addEventListener('touchstart', updateActivity);
+
+            // Forzar cierre de sesión
+            function forceLogout() {
+                localStorage.removeItem('session_last_activity');
+                localStorage.removeItem('session_user_id');
+                const logoutForm = document.getElementById('logout-form');
+                if (logoutForm) {
+                    logoutForm.submit();
+                } else {
+                    // Si por alguna razón no encuentra el formulario, redirección por POST manual
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = '{{ route("logout") }}';
+                    const csrf = document.createElement('input');
+                    csrf.type = 'hidden';
+                    csrf.name = '_token';
+                    csrf.value = '{{ csrf_token() }}';
+                    form.appendChild(csrf);
+                    document.body.appendChild(form);
+                    form.submit();
+                }
+            }
+
+            // Verificar expiración localmente e invocar ping al servidor si hay dudas
+            let isChecking = false;
+            function checkSession() {
+                if (isChecking) return;
+                
+                const now = Date.now();
+                const lastStoredActivity = parseInt(localStorage.getItem('session_last_activity'), 10) || now;
+
+                // 1. Verificación local por inactividad prolongada
+                if (now - lastStoredActivity > sessionLifetime) {
+                    forceLogout();
+                    return;
+                }
+
+                // 2. Verificación con el servidor
+                isChecking = true;
+                fetch('{{ route("check.session") }}', {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => {
+                    if (response.status === 401 || response.status === 419) {
+                        forceLogout();
+                    }
+                    isChecking = false;
+                })
+                .catch(() => {
+                    isChecking = false;
+                });
+            }
+
+            // Ejecutar revisión periódica cada 30 segundos
+            setInterval(checkSession, 30000);
+
+            // Revisar inmediatamente al enfocar o regresar a la pestaña del navegador
+            document.addEventListener('visibilitychange', () => {
+                if (document.visibilityState === 'visible') {
+                    checkSession();
+                }
+            });
+            window.addEventListener('focus', checkSession);
+
+            // Ejecutar primera revisión al cargar la página
+            setTimeout(checkSession, 1000);
+        })();
     </script>
     @stack('scripts')
 </body>

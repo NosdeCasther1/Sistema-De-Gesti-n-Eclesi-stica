@@ -212,6 +212,14 @@ class MiembroController extends Controller
             ->when($etapa, function ($query, $etapa) {
                 return $query->where('etapa_consolidacion', $etapa);
             })
+            ->when(request('cargo'), function ($query, $cargo) {
+                return $query->where(function ($q) use ($cargo) {
+                    $q->where('cargo_liderazgo', 'LIKE', "%{$cargo}%")
+                      ->orWhereHas('organizaciones', function ($qOrg) use ($cargo) {
+                          $qOrg->where('miembro_organizacion.puesto', 'LIKE', "%{$cargo}%");
+                      });
+                });
+            })
             ->paginate(15)
             ->appends($request->all());
         
@@ -223,7 +231,12 @@ class MiembroController extends Controller
         $ministerios = Ministerio::orderBy('nombre')->get();
         $etapas = ['Nuevo', 'En Discipulado', 'Asignado a Célula', 'Bautizado'];
 
-        return view('miembros.index', compact('miembros', 'search', 'ministerio', 'etapa', 'ministerios', 'etapas'));
+        $cargosPersonales = Miembro::whereNotNull('cargo_liderazgo')->where('cargo_liderazgo', '!=', '')->distinct()->pluck('cargo_liderazgo')->toArray();
+        $cargosOrganizacion = \Illuminate\Support\Facades\DB::table('miembro_organizacion')->whereNotNull('puesto')->where('puesto', '!=', '')->distinct()->pluck('puesto')->toArray();
+        $cargos = array_unique(array_merge($cargosPersonales, $cargosOrganizacion));
+        sort($cargos);
+
+        return view('miembros.index', compact('miembros', 'search', 'ministerio', 'etapa', 'ministerios', 'etapas', 'cargos'));
     }
 
     /**
@@ -257,6 +270,7 @@ class MiembroController extends Controller
             'email' => 'nullable|email|max:100',
             'telefono' => 'nullable|numeric|digits:8',
             'es_lider' => 'nullable|boolean',
+            'cargo_liderazgo' => 'nullable|string|max:255',
             'ministerios' => 'nullable|array',
             'ministerios.*' => 'exists:ministerios,id',
             'etapa_consolidacion' => 'required|string',
@@ -368,6 +382,7 @@ class MiembroController extends Controller
             'email' => 'nullable|email|max:100',
             'telefono' => 'nullable|numeric|digits:8',
             'es_lider' => 'nullable|boolean',
+            'cargo_liderazgo' => 'nullable|string|max:255',
             'ministerios' => 'nullable|array',
             'ministerios.*' => 'exists:ministerios,id',
             'etapa_consolidacion' => 'required|string',

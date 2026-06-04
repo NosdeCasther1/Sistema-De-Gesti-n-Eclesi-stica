@@ -10,7 +10,7 @@ class Miembro extends Model
         'familia_id', 'nombres', 'apellidos', 'dpi', 'fecha_nacimiento', 
         'sexo', 'estado_civil', 'telefono', 'email', 'direccion', 
         'ciudad', 'nivel_academico', 'profesion', 'lugar_trabajo_estudio',
-        'es_lider', 'estado', 'foto', 'fecha_integracion', 'fecha_bautismo', 'etapa_consolidacion',
+        'es_lider', 'cargo_liderazgo', 'estado', 'foto', 'fecha_integracion', 'fecha_bautismo', 'etapa_consolidacion',
         'lugar_conversion', 'fecha_conversion', 'conyuge_id', 'bautizado_agua', 'bautismo_espiritu_santo'
     ];
 

@@ -363,16 +363,24 @@
                                         $isAssigned = true;
                                         $puestoActual = old('puestos.'.$org->id, 'Miembro');
                                     }
+                                    $isDirectivoInit = ($puestoActual && strtolower($puestoActual) !== 'miembro') ? 'true' : 'false';
                                 @endphp
-                                <div class="p-3 border border-slate-200 dark:border-slate-800/80 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors" x-data="{ checked: {{ $isAssigned ? 'true' : 'false' }} }">
+                                <div class="p-3 border border-slate-200 dark:border-slate-800/80 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors" x-data="{ checked: {{ $isAssigned ? 'true' : 'false' }}, isDirectivo: {{ $isDirectivoInit }} }">
                                     <label class="flex items-center cursor-pointer mb-2">
                                         <input type="checkbox" name="organizaciones[]" value="{{ $org->id }}" x-model="checked"
                                                class="rounded text-blue-600 focus:ring-blue-500 w-4 h-4 transition-colors">
                                         <span class="ml-3 text-xs font-semibold text-slate-700 dark:text-slate-300">{{ $org->nombre }}</span>
                                     </label>
-                                    <div x-show="checked" x-transition x-cloak class="mt-2">
-                                        <input type="text" name="puestos[{{ $org->id }}]" value="{{ $puestoActual }}" placeholder="Cargo (Ej: Presidente)" 
-                                               class="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 px-3 py-2 text-slate-900 dark:text-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all shadow-sm">
+                                    <div x-show="checked" x-transition x-cloak class="mt-2 flex flex-col gap-2">
+                                        <select x-model="isDirectivo" class="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 px-3 py-2 text-slate-900 dark:text-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all shadow-sm">
+                                            <option :value="false">Solo Miembro</option>
+                                            <option :value="true">Es Directivo</option>
+                                        </select>
+                                        
+                                        <input type="text" x-show="isDirectivo" x-bind:disabled="!isDirectivo" name="puestos[{{ $org->id }}]" value="{{ $puestoActual === 'Miembro' ? '' : $puestoActual }}" placeholder="Especifique cargo (Ej: Presidente)" 
+                                               class="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-amber-50/50 dark:bg-amber-900/10 px-3 py-2 text-slate-900 dark:text-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all shadow-sm">
+                                               
+                                        <input type="hidden" x-bind:disabled="isDirectivo" name="puestos[{{ $org->id }}]" value="Miembro">
                                     </div>
                                 </div>
                             @endforeach
@@ -382,25 +390,37 @@
                     {{-- MINISTERIOS EN LOS QUE SIRVE --}}
                     <div class="md:col-span-2 mb-6">
                         <label class="block text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-3">Ministerios en los que sirve</label>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-                            @foreach($ministerios as $min)
-                                <label class="flex items-center p-3 border rounded-xl hover:bg-slate-50 dark:border-slate-700 dark:hover:bg-slate-800 cursor-pointer transition-colors">
-                                    <input type="checkbox" name="ministerios[]" value="{{ $min->id }}" 
-                                    {{ (is_array(old('ministerios')) ? in_array($min->id, old('ministerios')) : (isset($miembro) && $miembro->ministerios->contains($min->id))) ? 'checked' : '' }}
-                                    class="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500">
-                                    <span class="ml-2 text-sm text-slate-700 dark:text-slate-300">{{ $min->nombre }}</span>
-                                </label>
-                            @endforeach
-                        </div>
+                        @if($ministerios->isNotEmpty())
+                            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                                @foreach($ministerios as $min)
+                                    <label class="flex items-center p-3 border rounded-xl hover:bg-slate-50 dark:border-slate-700 dark:hover:bg-slate-800 cursor-pointer transition-colors">
+                                        <input type="checkbox" name="ministerios[]" value="{{ $min->id }}" 
+                                        {{ (is_array(old('ministerios')) ? in_array($min->id, old('ministerios')) : (isset($miembro) && $miembro->ministerios->contains($min->id))) ? 'checked' : '' }}
+                                        class="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500">
+                                        <span class="ml-2 text-sm text-slate-700 dark:text-slate-300">{{ $min->nombre }}</span>
+                                    </label>
+                                @endforeach
+                            </div>
+                        @else
+                            <div class="col-span-full py-4 text-center border-2 border-dashed rounded-xl bg-slate-50/50 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700">
+                                <i class="fa-solid fa-layer-group text-slate-300 dark:text-slate-600 text-3xl mb-2"></i>
+                                <p class="text-xs text-slate-500 font-medium">Aún no hay ministerios registrados en el sistema.</p>
+                            </div>
+                        @endif
                     </div>
 
                     {{-- LIDERAZGO ACTIVO --}}
-                    <div class="md:col-span-2 mb-6">
+                    <div class="md:col-span-2 mb-6" x-data="{ isLider: {{ old('es_lider', $miembro->es_lider ?? false) ? 'true' : 'false' }} }">
                         <div class="flex items-center">
-                            <input id="es_lider" name="es_lider" type="checkbox" value="1" {{ (old('es_lider', $miembro->es_lider ?? false)) ? 'checked' : '' }} class="h-5 w-5 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500">
-                            <label for="es_lider" class="ml-3 block text-sm font-bold text-slate-700 dark:text-slate-300">
+                            <input id="es_lider" name="es_lider" type="checkbox" value="1" x-model="isLider" class="h-5 w-5 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500">
+                            <label for="es_lider" class="ml-3 block text-sm font-bold text-slate-700 dark:text-slate-300 cursor-pointer">
                                 Este miembro ejerce un cargo de Liderazgo activo.
                             </label>
+                        </div>
+                        <div x-show="isLider" x-transition x-cloak class="mt-4">
+                            <label class="block text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">Especifique el cargo o área de liderazgo</label>
+                            <input type="text" name="cargo_liderazgo" value="{{ old('cargo_liderazgo', $miembro->cargo_liderazgo ?? '') }}" placeholder="Ej: Maestra de Escuela Dominical de Prejóvenes, Líder de Jóvenes..."
+                                   class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-indigo-50/30 dark:bg-indigo-900/10 px-4 py-3.5 text-slate-900 dark:text-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all shadow-sm">
                         </div>
                     </div>
                 </div>
