@@ -977,12 +977,30 @@
     function generarReporteAsistencia(tipo) {
         if (tipo === 'celula') {
             const celulaId = document.getElementById('select-reporte-celula').value;
-            if (!celulaId) { alert('Por favor selecciona una célula'); return; }
+            if (!celulaId) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Selección Requerida',
+                    text: 'Por favor selecciona una célula para generar el reporte.',
+                    confirmButtonText: 'Entendido',
+                    confirmButtonColor: '#4f46e5'
+                });
+                return;
+            }
             const url = "{{ route('reportes.asistencia_celula', ':id') }}".replace(':id', celulaId);
             window.open(url, '_blank');
         } else {
             const eventoId = document.getElementById('select-reporte-evento').value;
-            if (!eventoId) { alert('Por favor selecciona un evento'); return; }
+            if (!eventoId) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Selección Requerida',
+                    text: 'Por favor selecciona un evento para generar el reporte.',
+                    confirmButtonText: 'Entendido',
+                    confirmButtonColor: '#4f46e5'
+                });
+                return;
+            }
             const url = "{{ route('reportes.asistencia_evento', ':id') }}".replace(':id', eventoId);
             window.open(url, '_blank');
         }
@@ -990,7 +1008,16 @@
 
     function generarReporteVotacion(tipo) {
         const eleccionId = document.getElementById('select-reporte-eleccion').value;
-        if (!eleccionId) { alert('Por favor selecciona un proceso electoral'); return; }
+        if (!eleccionId) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Selección Requerida',
+                text: 'Por favor selecciona un proceso electoral para generar el reporte.',
+                confirmButtonText: 'Entendido',
+                confirmButtonColor: '#4f46e5'
+            });
+            return;
+        }
         
         let url = '';
         if (tipo === 'escrutinio') {

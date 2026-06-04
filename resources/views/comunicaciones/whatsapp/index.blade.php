@@ -167,7 +167,13 @@ document.addEventListener('alpine:init', () => {
 
         abrirWhatsapp(telefono, nombres, apellidos) {
             if (!telefono) {
-                alert("Este miembro no tiene un número de teléfono válido.");
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Número Inválido',
+                    text: 'Este miembro no tiene un número de teléfono válido.',
+                    confirmButtonText: 'Entendido',
+                    confirmButtonColor: '#10b981'
+                });
                 return;
             }
 
