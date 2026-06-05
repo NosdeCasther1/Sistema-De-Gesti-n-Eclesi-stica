@@ -83,10 +83,16 @@
         box-shadow: var(--shadow-md) !important;
         z-index: 9999 !important;
     }
-    .select2-container--default .select2-results__option--highlighted[aria-selected] {
-        background-color: var(--bs-primary) !important;
+    .select2-container--default .select2-results__option--highlighted[aria-selected],
+    .select2-container--default .select2-results__option--highlighted {
+        background-color: #2563eb !important;
         color: #ffffff !important;
         border-radius: 8px !important;
+    }
+    [data-theme='dark'] .select2-container--default .select2-results__option--highlighted[aria-selected],
+    [data-theme='dark'] .select2-container--default .select2-results__option--highlighted {
+        background-color: #3b82f6 !important;
+        color: #ffffff !important;
     }
     .select2-container--default .select2-results__option {
         font-size: 0.75rem !important;
@@ -94,9 +100,22 @@
         color: var(--text-secondary) !important;
     }
     .select2-container--default .select2-results__option[aria-selected="true"] {
-        background-color: rgba(var(--bs-primary-rgb), 0.1) !important;
-        color: var(--bs-primary) !important;
+        background-color: rgba(37, 99, 235, 0.12) !important;
+        color: #2563eb !important;
         border-radius: 8px !important;
+    }
+    [data-theme='dark'] .select2-container--default .select2-results__option[aria-selected="true"] {
+        background-color: rgba(59, 130, 246, 0.15) !important;
+        color: #60a5fa !important;
+        border-radius: 8px !important;
+    }
+    .select2-container--default .select2-results__option[aria-selected="true"].select2-results__option--highlighted {
+        background-color: #2563eb !important;
+        color: #ffffff !important;
+    }
+    [data-theme='dark'] .select2-container--default .select2-results__option[aria-selected="true"].select2-results__option--highlighted {
+        background-color: #3b82f6 !important;
+        color: #ffffff !important;
     }
     .select2-search__field {
         background-color: var(--bg-body) !important;
