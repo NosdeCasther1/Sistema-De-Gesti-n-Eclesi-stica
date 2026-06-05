@@ -6,29 +6,36 @@
                 
                 <div class="p-5">
                     {{-- CABECERA: ICONO + NOMBRE + BADGE INTEGRANTES --}}
-                    <div class="flex items-start gap-4">
-                        {{-- Icono sutil y estandarizado --}}
-                        <div class="h-12 w-12 rounded-xl border border-indigo-100 dark:border-indigo-500/20 bg-indigo-50 dark:bg-indigo-500/10 flex items-center justify-center shrink-0 shadow-inner group-hover:scale-105 transition-transform">
-                            <i class="fa-solid fa-people-roof text-xl text-indigo-600 dark:text-indigo-400"></i>
-                        </div>
-                        
-                        <div class="flex-1 overflow-hidden pt-1">
-                            <h3 class="text-lg font-black text-slate-900 dark:text-white truncate leading-tight group-hover:text-indigo-500 transition-colors" title="Familia {{ $familia->nombre }}">
-                                Familia {{ $familia->nombre }}
-                            </h3>
+                    <div class="flex items-start justify-between gap-4">
+                        <div class="flex items-start gap-4 flex-grow overflow-hidden">
+                            {{-- Icono sutil y estandarizado --}}
+                            <div class="h-12 w-12 rounded-xl border border-indigo-100 dark:border-indigo-500/20 bg-indigo-50 dark:bg-indigo-500/10 flex items-center justify-center shrink-0 shadow-inner group-hover:scale-105 transition-transform">
+                                <i class="fa-solid fa-people-roof text-xl text-indigo-600 dark:text-indigo-400"></i>
+                            </div>
                             
-                            <div class="mt-2 flex items-center gap-2">
-                                <span class="inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 text-[10px] font-bold uppercase tracking-wider">
-                                    <i class="fa-solid fa-users text-slate-400"></i>
-                                    {{ $familia->miembros_count ?? 0 }} {{ ($familia->miembros_count ?? 0) == 1 ? 'Integrante' : 'Integrantes' }}
-                                </span>
+                            <div class="flex-1 overflow-hidden pt-1">
+                                <h3 class="text-lg font-black text-slate-900 dark:text-white truncate leading-tight group-hover:text-indigo-500 transition-colors" title="Familia {{ $familia->nombre }}">
+                                    Familia {{ $familia->nombre }}
+                                </h3>
                                 
-                                {{-- Badge de Estado (Opcional, si manejas familias activas/inactivas) --}}
-                                <span class="inline-flex items-center px-1.5 py-1 rounded-md bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 text-emerald-700 dark:text-emerald-400 text-[9px] font-black uppercase tracking-wider">
-                                    Activa
-                                </span>
+                                <div class="mt-2 flex items-center gap-2">
+                                    <span class="inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 text-[10px] font-bold uppercase tracking-wider">
+                                        <i class="fa-solid fa-users text-slate-400"></i>
+                                        {{ $familia->miembros_count ?? 0 }} {{ ($familia->miembros_count ?? 0) == 1 ? 'Integrante' : 'Integrantes' }}
+                                    </span>
+                                    
+                                    {{-- Badge de Estado (Opcional, si manejas familias activas/inactivas) --}}
+                                    <span class="inline-flex items-center px-1.5 py-1 rounded-md bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 text-emerald-700 dark:text-emerald-400 text-[9px] font-black uppercase tracking-wider">
+                                        Activa
+                                    </span>
+                                </div>
                             </div>
                         </div>
+
+                        {{-- ID de Registro Flotante Derecha --}}
+                        <span class="text-[9px] font-mono font-bold text-slate-500 dark:text-slate-400 bg-slate-100/40 dark:bg-slate-950/60 px-2 py-1 rounded border border-slate-200 dark:border-slate-800/60 shrink-0">
+                            ID: #{{ str_pad($familia->id, 5, '0', STR_PAD_LEFT) }}
+                        </span>
                     </div>
 
                     {{-- DATOS DE DIRECCIÓN (Corregido: Sin falso input, evitamos bg-slate-50) --}}

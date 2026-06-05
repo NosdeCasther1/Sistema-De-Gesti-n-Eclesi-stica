@@ -269,7 +269,9 @@ class MiembroController extends Controller
             'sexo' => 'nullable|in:M,F',
             'estado_civil' => 'nullable|string|max:50',
             'direccion' => 'nullable|string|max:255',
-            'ciudad' => 'nullable|string|max:100',
+            'zona' => 'nullable|string|max:50',
+            'municipio' => 'nullable|string|max:100',
+            'departamento' => 'nullable|string|max:100',
             'nivel_academico' => 'nullable|string|max:100',
             'profesion' => 'nullable|string|max:100',
             'lugar_trabajo_estudio' => 'nullable|string|max:255',
@@ -309,6 +311,13 @@ class MiembroController extends Controller
         if ($request->filled('familia_id')) {
             $familia = \App\Models\Familia::find($request->familia_id);
             if ($familia) {
+                // Actualizar dirección de la familia si está vacía
+                if (empty($familia->direccion) && !empty($data['direccion'])) {
+                    $familia->direccion = $data['direccion'];
+                    $familia->save();
+                }
+
+                // Buscar el miembro con el código más alto DENTRO de esta familia
                 // Buscar el miembro con el código más alto DENTRO de esta familia
                 $ultimoMiembro = Miembro::where('familia_id', $familia->id)
                     ->orderBy('codigo_miembro', 'desc')
@@ -387,7 +396,9 @@ class MiembroController extends Controller
             'sexo' => 'nullable|in:M,F',
             'estado_civil' => 'nullable|string|max:50',
             'direccion' => 'nullable|string|max:255',
-            'ciudad' => 'nullable|string|max:100',
+            'zona' => 'nullable|string|max:50',
+            'municipio' => 'nullable|string|max:100',
+            'departamento' => 'nullable|string|max:100',
             'nivel_academico' => 'nullable|string|max:100',
             'profesion' => 'nullable|string|max:100',
             'lugar_trabajo_estudio' => 'nullable|string|max:255',
@@ -424,6 +435,14 @@ class MiembroController extends Controller
             $filename = time() . '.' . $file->getClientOriginalExtension();
             $file->storeAs('miembros', $filename, 'public');
             $data['foto'] = $filename;
+        }
+
+        if ($request->filled('familia_id')) {
+            $familia = \App\Models\Familia::find($request->familia_id);
+            if ($familia && empty($familia->direccion) && !empty($data['direccion'])) {
+                $familia->direccion = $data['direccion'];
+                $familia->save();
+            }
         }
 
         $miembro->update($data);

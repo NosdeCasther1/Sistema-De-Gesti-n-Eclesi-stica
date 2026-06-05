@@ -138,7 +138,7 @@
                         <span class="text-[11px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-1.5 flex items-center gap-1.5">
                             <i class="fas fa-map-marker-alt text-rose-500"></i> Dirección de Domicilio
                         </span>
-                        <span class="text-sm font-bold text-slate-950 dark:text-slate-200 leading-relaxed">{{ $familia->direccion ?? 'Sin dirección registrada' }}</span>
+                        <span class="text-sm font-bold text-slate-950 dark:text-slate-200 leading-relaxed">{{ collect([$familia->direccion, $familia->zona, $familia->municipio, $familia->departamento])->filter()->join(', ') ?: 'Sin dirección registrada' }}</span>
                     </div>
 
                     <!-- Teléfono -->

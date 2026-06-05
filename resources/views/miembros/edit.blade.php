@@ -49,6 +49,66 @@
         display: inline-block !important;
         font-size: 1.25rem !important;
     }
+    /* Select2 custom styling for premium light/dark mode using CSS variables */
+    .select2-container--default .select2-selection--single {
+        background-color: rgba(var(--bg-card-rgb), 0.5) !important;
+        border: 1px solid var(--border-color) !important;
+        height: 46px !important;
+        border-radius: 12px !important;
+        display: flex !important;
+        align-items: center !important;
+        padding-left: 1rem !important;
+        padding-right: 2.5rem !important;
+    }
+    .select2-container--default .select2-selection--single .select2-selection__rendered {
+        color: var(--text-main) !important;
+        font-size: 0.75rem !important;
+        font-weight: 500 !important;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+        line-height: normal !important;
+    }
+    .select2-container--default .select2-selection--single .select2-selection__arrow {
+        height: 46px !important;
+        right: 12px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+    .select2-dropdown {
+        background-color: var(--bg-card) !important;
+        border: 1px solid var(--border-color) !important;
+        border-radius: 12px !important;
+        padding: 8px !important;
+        box-shadow: var(--shadow-md) !important;
+        z-index: 9999 !important;
+    }
+    .select2-container--default .select2-results__option--highlighted[aria-selected] {
+        background-color: var(--bs-primary) !important;
+        color: #ffffff !important;
+        border-radius: 8px !important;
+    }
+    .select2-container--default .select2-results__option {
+        font-size: 0.75rem !important;
+        padding: 8px 12px !important;
+        color: var(--text-secondary) !important;
+    }
+    .select2-container--default .select2-results__option[aria-selected="true"] {
+        background-color: rgba(var(--bs-primary-rgb), 0.1) !important;
+        color: var(--bs-primary) !important;
+        border-radius: 8px !important;
+    }
+    .select2-search__field {
+        background-color: var(--bg-body) !important;
+        border: 1px solid var(--border-color) !important;
+        color: var(--text-main) !important;
+        border-radius: 8px !important;
+        font-size: 0.75rem !important;
+        padding: 6px 10px !important;
+    }
+    .select2-container--default .select2-selection--single .select2-selection__placeholder {
+        color: var(--text-muted) !important;
+    }
 </style>
 @endpush
 
@@ -150,15 +210,6 @@
                         </select>
                     </div>
                     <div>
-                        <label class="block text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">Cónyuge (Si aplica)</label>
-                        <select name="conyuge_id" class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all shadow-sm cursor-pointer">
-                            <option value="">Seleccionar Cónyuge (Opcional)</option>
-                            @foreach($posiblesConyuges as $pc)
-                                <option value="{{ $pc->id }}" {{ old('conyuge_id', $miembro->conyuge_id) == $pc->id ? 'selected' : '' }}>{{ $pc->nombre_completo }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div>
                         <label class="block text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">Teléfono</label>
                         <input type="text" name="telefono" value="{{ old('telefono', $miembro->telefono) }}" placeholder="Ej: 55551234 (8 dígitos)"
                                maxlength="8" oninput="this.value = this.value.replace(/[^0-9]/g, '').substring(0, 8)"
@@ -169,15 +220,62 @@
                         <input type="email" name="email" value="{{ old('email', $miembro->email) }}" placeholder="correo@ejemplo.com"
                                class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 px-4 py-3.5 text-slate-900 dark:text-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all shadow-sm">
                     </div>
-                    <div>
-                        <label class="block text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">Dirección Residencial</label>
-                        <input type="text" name="direccion" value="{{ old('direccion', $miembro->direccion) }}" placeholder="Ej: 4ta Calle 5-20 Zona 1"
-                               class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 px-4 py-3.5 text-slate-900 dark:text-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all shadow-sm">
-                    </div>
-                    <div>
-                        <label class="block text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">Ciudad / Municipio</label>
-                        <input type="text" name="ciudad" value="{{ old('ciudad', $miembro->ciudad) }}" placeholder="Ej: Guatemala"
-                               class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 px-4 py-3.5 text-slate-900 dark:text-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all shadow-sm">
+
+                    <div class="md:col-span-2 mt-4 pt-5 border-t border-slate-100 dark:border-slate-800" x-data="{}">
+                        <div class="flex items-center gap-3 mb-6 pb-4 border-b border-slate-100 dark:border-slate-800">
+                            <div class="stat-icon-box bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-100 dark:border-amber-500/20 shadow-sm flex-shrink-0">
+                                <i class="fas fa-people-roof"></i>
+                            </div>
+                            <div>
+                                <h5 class="text-base font-bold text-slate-900 dark:text-white tracking-tight mb-0.5">Núcleo Familiar y Domicilio</h5>
+                                <p class="text-xs text-slate-500 dark:text-slate-400 mb-0 font-normal">Relación familiar, cónyuge y dirección residencial</p>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+                            <div>
+                                <label class="block text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">Familia (Núcleo Familiar)</label>
+                                <select name="familia_id" id="familia_select" x-on:change="let opt = $event.target.options[$event.target.selectedIndex]; document.querySelector('input[name=direccion]').value = opt.dataset.direccion || ''; document.querySelector('input[name=zona]').value = opt.dataset.zona || ''; document.querySelector('input[name=municipio]').value = opt.dataset.municipio || ''; document.querySelector('input[name=departamento]').value = opt.dataset.departamento || '';" class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all shadow-sm cursor-pointer">
+                                    <option value="" data-direccion="" data-zona="" data-municipio="" data-departamento="">Seleccionar Familia (Opcional)</option>
+                                    @foreach(\App\Models\Familia::orderBy('nombre')->get() as $f)
+                                        <option value="{{ $f->id }}" data-direccion="{{ $f->direccion }}" data-zona="{{ $f->zona }}" data-municipio="{{ $f->municipio }}" data-departamento="{{ $f->departamento }}" {{ old('familia_id', $miembro->familia_id) == $f->id ? 'selected' : '' }}>
+                                            {{ $f->nombre }} {{ $f->direccion ? '- Dir: ' . $f->direccion : '' }} {{ $f->municipio ? '- ' . $f->municipio : '' }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                <p class="text-[10px] text-slate-400 mt-1.5 ml-1">Al seleccionar, la dirección se autocompletará.</p>
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">Cónyuge (Si aplica)</label>
+                                <select name="conyuge_id" id="conyuge_select" class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all shadow-sm cursor-pointer">
+                                    <option value="">Seleccionar Cónyuge (Opcional)</option>
+                                    @foreach($posiblesConyuges as $pc)
+                                        <option value="{{ $pc->id }}" {{ old('conyuge_id', $miembro->conyuge_id) == $pc->id ? 'selected' : '' }}>
+                                            {{ $pc->nombre_completo }} {{ $pc->dpi ? '(DPI: ' . $pc->dpi . ')' : '' }} {{ $pc->telefono ? '- Tel: ' . $pc->telefono : '' }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="md:col-span-2">
+                                <label class="block text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">Dirección Exacta (Calle, Avenida, Lote, Manzana)</label>
+                                <input type="text" name="direccion" value="{{ old('direccion', $miembro->direccion) }}" placeholder="Ej: 4ta Calle 5-20"
+                                       class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 px-4 py-3.5 text-slate-900 dark:text-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all shadow-sm">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">Zona</label>
+                                <input type="text" name="zona" value="{{ old('zona', $miembro->zona) }}" placeholder="Ej: Zona 1"
+                                       class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 px-4 py-3.5 text-slate-900 dark:text-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all shadow-sm">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">Municipio</label>
+                                <input type="text" name="municipio" value="{{ old('municipio', $miembro->municipio) }}" placeholder="Ej: Mixco"
+                                       class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 px-4 py-3.5 text-slate-900 dark:text-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all shadow-sm">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">Departamento</label>
+                                <input type="text" name="departamento" value="{{ old('departamento', $miembro->departamento) }}" placeholder="Ej: Guatemala"
+                                       class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 px-4 py-3.5 text-slate-900 dark:text-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all shadow-sm">
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -342,15 +440,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="mb-6">
-                        <label class="block text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">Familia (Núcleo Familiar)</label>
-                        <select name="familia_id" class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all shadow-sm cursor-pointer">
-                            <option value="">Seleccionar Familia (Opcional)</option>
-                            @foreach(\App\Models\Familia::orderBy('nombre')->get() as $f)
-                                <option value="{{ $f->id }}" {{ old('familia_id', $miembro->familia_id) == $f->id ? 'selected' : '' }}>{{ $f->nombre }}</option>
-                            @endforeach
-                        </select>
-                    </div>
+
 
                     {{-- ORGANIZACIONES / SOCIEDADES A LAS QUE PERTENECE --}}
                     <div class="md:col-span-2 mb-6">
@@ -517,3 +607,23 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+    $(document).ready(function() {
+        $('#familia_select').select2({
+            placeholder: "Seleccionar Familia (Opcional)",
+            allowClear: true,
+            width: '100%'
+        }).on('select2:select select2:unselect', function (e) {
+            this.dispatchEvent(new Event('change', { bubbles: true }));
+        });
+
+        $('#conyuge_select').select2({
+            placeholder: "Seleccionar Cónyuge (Opcional)",
+            allowClear: true,
+            width: '100%'
+        });
+    });
+</script>
+@endpush

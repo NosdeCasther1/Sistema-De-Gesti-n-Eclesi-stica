@@ -232,7 +232,15 @@
                         <span class="text-[11px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-1 flex items-center gap-1.5">
                             <i class="fas fa-people-roof text-rose-500"></i> Familia Asignada
                         </span>
-                        <span class="text-sm font-bold text-slate-900 dark:text-white tracking-tight">{{ $miembro->familia->nombre ?? 'Sin familia asignada' }}</span>
+                        <span class="text-sm font-bold text-slate-900 dark:text-white tracking-tight">
+                            @if($miembro->familia)
+                                <a href="{{ route('familias.show', $miembro->familia->id) }}" class="text-indigo-600 dark:text-indigo-400 hover:underline">
+                                    {{ $miembro->familia->nombre }} (ID: #{{ str_pad($miembro->familia->id, 5, '0', STR_PAD_LEFT) }})
+                                </a>
+                            @else
+                                Sin familia asignada
+                            @endif
+                        </span>
                     </div>
 
                     <!-- Lugar y Fecha de Conversión -->
@@ -285,7 +293,7 @@
                         <span class="text-[11px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-1 flex items-center gap-1.5">
                             <i class="fas fa-map-location-dot text-rose-500"></i> Dirección Residencial
                         </span>
-                        <span class="text-sm font-bold text-slate-900 dark:text-white tracking-tight">{{ $miembro->direccion ?? 'N/A' }}, {{ $miembro->ciudad ?? 'N/A' }}</span>
+                        <span class="text-sm font-bold text-slate-900 dark:text-white tracking-tight">{{ collect([$miembro->direccion, $miembro->zona, $miembro->municipio, $miembro->departamento])->filter()->join(', ') ?: 'N/A' }}</span>
                     </div>
 
                     <!-- Nivel Académico -->

@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Familia extends Model
 {
-    protected $fillable = ['nombre', 'direccion', 'telefono_principal', 'notas', 'celula_id'];
+    protected $fillable = ['nombre', 'direccion', 'zona', 'municipio', 'departamento', 'telefono_principal', 'notas', 'celula_id'];
 
     public function miembros()
     {

@@ -86,7 +86,16 @@
                         </div>
                         <div class="flex items-center text-slate-700 dark:text-slate-300">
                             <i class="fa-solid fa-house-chimney text-slate-400 dark:text-slate-600 text-xs w-5"></i>
-                            <span class="text-xs font-bold truncate">Familia: {{ $miembro->familia->nombre ?? 'Sin Asignar' }}</span>
+                            <span class="text-xs font-bold truncate">
+                                Familia: 
+                                @if($miembro->familia)
+                                    <a href="{{ route('familias.show', $miembro->familia->id) }}" class="text-indigo-600 dark:text-indigo-400 hover:underline">
+                                        {{ $miembro->familia->nombre }} (ID: #{{ str_pad($miembro->familia->id, 5, '0', STR_PAD_LEFT) }})
+                                    </a>
+                                @else
+                                    Sin Asignar
+                                @endif
+                            </span>
                         </div>
                     </div>
 

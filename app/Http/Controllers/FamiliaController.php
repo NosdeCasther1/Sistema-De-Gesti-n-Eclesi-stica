@@ -46,6 +46,9 @@ class FamiliaController extends Controller
         $request->validate([
             'nombre' => 'required|string|max:100|unique:familias,nombre',
             'direccion' => 'nullable|string|max:255',
+            'zona' => 'nullable|string|max:50',
+            'municipio' => 'nullable|string|max:100',
+            'departamento' => 'nullable|string|max:100',
             'telefono_principal' => 'nullable|numeric|digits:8',
             'notas' => 'nullable|string',
             'celula_id' => 'nullable|exists:celulas,id'
@@ -93,6 +96,9 @@ class FamiliaController extends Controller
         $request->validate([
             'nombre' => 'required|string|max:100|unique:familias,nombre,' . $id,
             'direccion' => 'nullable|string|max:255',
+            'zona' => 'nullable|string|max:50',
+            'municipio' => 'nullable|string|max:100',
+            'departamento' => 'nullable|string|max:100',
             'telefono_principal' => 'nullable|numeric|digits:8',
             'notas' => 'nullable|string',
             'celula_id' => 'nullable|exists:celulas,id'
