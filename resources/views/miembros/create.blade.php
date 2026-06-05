@@ -83,18 +83,10 @@
         box-shadow: var(--shadow-md) !important;
         z-index: 9999 !important;
     }
-    .select2-container--default .select2-results__option--highlighted[aria-selected],
-    .select2-container--default .select2-results__option--highlighted {
+    .select2-container--default .select2-results__option--highlighted[aria-selected] {
         background-color: #2563eb !important;
         color: #ffffff !important;
         border-radius: 8px !important;
-    }
-    .dark .select2-container--default .select2-results__option--highlighted[aria-selected],
-    .dark .select2-container--default .select2-results__option--highlighted,
-    [data-theme='dark'] .select2-container--default .select2-results__option--highlighted[aria-selected],
-    [data-theme='dark'] .select2-container--default .select2-results__option--highlighted {
-        background-color: #3b82f6 !important;
-        color: #ffffff !important;
     }
     .select2-container--default .select2-results__option {
         font-size: 0.75rem !important;
@@ -102,24 +94,10 @@
         color: var(--text-secondary) !important;
     }
     .select2-container--default .select2-results__option[aria-selected="true"] {
-        background-color: #eff6ff !important;
-        color: #2563eb !important;
+        background-color: #1e40af !important;   /* blue-800 – sólido, visible en ambos temas */
+        color: #ffffff !important;
+        font-weight: 700 !important;
         border-radius: 8px !important;
-    }
-    .dark .select2-container--default .select2-results__option[aria-selected="true"],
-    [data-theme='dark'] .select2-container--default .select2-results__option[aria-selected="true"] {
-        background-color: #1e3a8a !important;
-        color: #ffffff !important;
-        border-radius: 8px !important;
-    }
-    .select2-container--default .select2-results__option[aria-selected="true"].select2-results__option--highlighted {
-        background-color: #2563eb !important;
-        color: #ffffff !important;
-    }
-    .dark .select2-container--default .select2-results__option[aria-selected="true"].select2-results__option--highlighted,
-    [data-theme='dark'] .select2-container--default .select2-results__option[aria-selected="true"].select2-results__option--highlighted {
-        background-color: #3b82f6 !important;
-        color: #ffffff !important;
     }
     .select2-search__field {
         background-color: var(--bg-body) !important;

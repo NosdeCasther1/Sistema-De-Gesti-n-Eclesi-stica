@@ -102,20 +102,20 @@
                 </div>
 
                 {{-- BOTONES DE ACCIÓN INFERIOR (Robustecidos) --}}
-                <div class="grid grid-cols-4 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/20 divide-x divide-slate-100 dark:divide-slate-800">
+                <div class="flex flex-row w-full border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/20 divide-x divide-slate-100 dark:divide-slate-800">
                     <a href="{{ route('miembros.carnet', $miembro->id) }}" target="_blank"
-                       class="py-3 text-center text-[10px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-indigo-600 dark:hover:text-white transition-all flex items-center justify-center gap-1.5">
+                       class="flex-1 py-3 text-center text-[10px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-indigo-600 dark:hover:text-white transition-all flex items-center justify-center gap-1.5">
                         <i class="fa-solid fa-address-card text-xs text-slate-400 group-hover:text-indigo-500"></i> Carnet
                     </a>
                     <a href="{{ route('miembros.show', $miembro->id) }}"
-                       class="py-3 text-center text-[10px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-indigo-600 dark:hover:text-white transition-all flex items-center justify-center gap-1.5">
+                       class="flex-1 py-3 text-center text-[10px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-indigo-600 dark:hover:text-white transition-all flex items-center justify-center gap-1.5">
                         <i class="fa-solid fa-user-gear text-xs text-slate-400"></i> Perfil
                     </a>
                     <a href="{{ route('miembros.edit', $miembro->id) }}"
-                       class="py-3 text-center text-[10px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-indigo-600 dark:hover:text-white transition-all flex items-center justify-center gap-1.5">
+                       class="flex-1 py-3 text-center text-[10px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-indigo-600 dark:hover:text-white transition-all flex items-center justify-center gap-1.5">
                         <i class="fa-solid fa-pen-to-square text-xs text-slate-400"></i> Editar
                     </a>
-                    <form action="{{ route('miembros.destroy', $miembro->id) }}" method="POST" class="m-0 p-0 flex" onsubmit="return confirm('¿Estás seguro de que deseas eliminar este miembro?');">
+                    <form action="{{ route('miembros.destroy', $miembro->id) }}" method="POST" class="flex-1 m-0 p-0 flex" onsubmit="return confirm('¿Estás seguro de que deseas eliminar este miembro?');">
                         @csrf
                         @method('DELETE')
                         <button type="submit" class="w-full py-3 text-center text-[10px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-400 hover:bg-rose-50 dark:hover:bg-rose-900/20 hover:text-rose-600 dark:hover:text-rose-400 transition-all flex items-center justify-center gap-1.5">
