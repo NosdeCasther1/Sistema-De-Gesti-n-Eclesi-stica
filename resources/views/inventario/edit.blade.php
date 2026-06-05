@@ -21,21 +21,21 @@
                 <!-- Nombre -->
                 <div class="md:col-span-2">
                     <label class="block text-sm font-bold text-gray-700 dark:text-slate-300 mb-2">Nombre del Artículo <span class="text-red-500">*</span></label>
-                    <input type="text" name="nombre" value="{{ old('nombre', $inventario->nombre) }}" class="form-control w-full bg-gray-50 dark:bg-slate-800 border-gray-200 dark:border-slate-700 rounded-xl px-4 py-3 focus:ring-4 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all shadow-sm @error('nombre') border-red-500 @enderror" required>
+                    <input type="text" name="nombre" value="{{ old('nombre', $inventario->nombre) }}" class="w-full bg-gray-50 dark:bg-slate-800 border-gray-200 dark:border-slate-700 rounded-xl px-4 py-3 focus:ring-4 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all shadow-sm @error('nombre') border-red-500 @enderror" required>
                     @error('nombre') <span class="text-red-500 text-xs font-bold mt-1 block">{{ $message }}</span> @enderror
                 </div>
 
                 <!-- Cantidad -->
                 <div>
                     <label class="block text-sm font-bold text-gray-700 dark:text-slate-300 mb-2">Cantidad <span class="text-red-500">*</span></label>
-                    <input type="number" name="cantidad" value="{{ old('cantidad', $inventario->cantidad) }}" min="1" class="form-control w-full bg-gray-50 dark:bg-slate-800 border-gray-200 dark:border-slate-700 rounded-xl px-4 py-3 focus:ring-4 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all shadow-sm @error('cantidad') border-red-500 @enderror" required>
+                    <input type="number" name="cantidad" value="{{ old('cantidad', $inventario->cantidad) }}" min="1" class="w-full bg-gray-50 dark:bg-slate-800 border-gray-200 dark:border-slate-700 rounded-xl px-4 py-3 focus:ring-4 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all shadow-sm @error('cantidad') border-red-500 @enderror" required>
                     @error('cantidad') <span class="text-red-500 text-xs font-bold mt-1 block">{{ $message }}</span> @enderror
                 </div>
 
                 <!-- Estado -->
                 <div>
                     <label class="block text-sm font-bold text-gray-700 dark:text-slate-300 mb-2">Estado <span class="text-red-500">*</span></label>
-                    <select name="estado" class="form-control w-full bg-gray-50 dark:bg-slate-800 border-gray-200 dark:border-slate-700 rounded-xl px-4 py-3 focus:ring-4 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all shadow-sm @error('estado') border-red-500 @enderror" required>
+                    <select name="estado" class="w-full bg-gray-50 dark:bg-slate-800 border-gray-200 dark:border-slate-700 rounded-xl px-4 py-3 focus:ring-4 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all shadow-sm @error('estado') border-red-500 @enderror" required>
                         <option value="Nuevo" {{ old('estado', $inventario->estado) == 'Nuevo' ? 'selected' : '' }}>Nuevo</option>
                         <option value="Bueno" {{ old('estado', $inventario->estado) == 'Bueno' ? 'selected' : '' }}>Bueno</option>
                         <option value="Regular" {{ old('estado', $inventario->estado) == 'Regular' ? 'selected' : '' }}>Regular</option>
@@ -47,21 +47,21 @@
                 <!-- Ubicación -->
                 <div>
                     <label class="block text-sm font-bold text-gray-700 dark:text-slate-300 mb-2">Ubicación</label>
-                    <input type="text" name="ubicacion" value="{{ old('ubicacion', $inventario->ubicacion) }}" class="form-control w-full bg-gray-50 dark:bg-slate-800 border-gray-200 dark:border-slate-700 rounded-xl px-4 py-3 focus:ring-4 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all shadow-sm @error('ubicacion') border-red-500 @enderror">
+                    <input type="text" name="ubicacion" value="{{ old('ubicacion', $inventario->ubicacion) }}" class="w-full bg-gray-50 dark:bg-slate-800 border-gray-200 dark:border-slate-700 rounded-xl px-4 py-3 focus:ring-4 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all shadow-sm @error('ubicacion') border-red-500 @enderror">
                     @error('ubicacion') <span class="text-red-500 text-xs font-bold mt-1 block">{{ $message }}</span> @enderror
                 </div>
 
                 <!-- Fecha Adquisición -->
                 <div>
                     <label class="block text-sm font-bold text-gray-700 dark:text-slate-300 mb-2">Fecha de Adquisición</label>
-                    <input type="date" name="fecha_adquisicion" value="{{ old('fecha_adquisicion', $inventario->fecha_adquisicion) }}" class="form-control w-full bg-gray-50 dark:bg-slate-800 border-gray-200 dark:border-slate-700 rounded-xl px-4 py-3 focus:ring-4 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all shadow-sm @error('fecha_adquisicion') border-red-500 @enderror">
+                    <input type="date" name="fecha_adquisicion" value="{{ old('fecha_adquisicion', $inventario->fecha_adquisicion) }}" class="w-full bg-gray-50 dark:bg-slate-800 border-gray-200 dark:border-slate-700 rounded-xl px-4 py-3 focus:ring-4 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all shadow-sm @error('fecha_adquisicion') border-red-500 @enderror">
                     @error('fecha_adquisicion') <span class="text-red-500 text-xs font-bold mt-1 block">{{ $message }}</span> @enderror
                 </div>
 
                 <!-- Responsable -->
                 <div class="md:col-span-2">
                     <label class="block text-sm font-bold text-gray-700 dark:text-slate-300 mb-2">Responsable (Opcional)</label>
-                    <select name="responsable_id" class="form-control select2 w-full bg-gray-50 dark:bg-slate-800 border-gray-200 dark:border-slate-700 rounded-xl px-4 py-3 @error('responsable_id') border-red-500 @enderror">
+                    <select name="responsable_id" class="select2 w-full bg-gray-50 dark:bg-slate-800 border-gray-200 dark:border-slate-700 rounded-xl px-4 py-3 @error('responsable_id') border-red-500 @enderror">
                         <option value="">Seleccione un responsable...</option>
                         @foreach($miembros as $miembro)
                             <option value="{{ $miembro->id }}" {{ old('responsable_id', $inventario->responsable_id) == $miembro->id ? 'selected' : '' }}>
@@ -75,7 +75,7 @@
                 <!-- Descripción -->
                 <div class="md:col-span-2">
                     <label class="block text-sm font-bold text-gray-700 dark:text-slate-300 mb-2">Descripción o Detalles</label>
-                    <textarea name="descripcion" rows="3" class="form-control w-full bg-gray-50 dark:bg-slate-800 border-gray-200 dark:border-slate-700 rounded-xl px-4 py-3 focus:ring-4 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all shadow-sm @error('descripcion') border-red-500 @enderror">{{ old('descripcion', $inventario->descripcion) }}</textarea>
+                    <textarea name="descripcion" rows="3" class="w-full bg-gray-50 dark:bg-slate-800 border-gray-200 dark:border-slate-700 rounded-xl px-4 py-3 focus:ring-4 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all shadow-sm @error('descripcion') border-red-500 @enderror">{{ old('descripcion', $inventario->descripcion) }}</textarea>
                     @error('descripcion') <span class="text-red-500 text-xs font-bold mt-1 block">{{ $message }}</span> @enderror
                 </div>
             </div>

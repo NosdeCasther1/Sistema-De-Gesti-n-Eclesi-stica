@@ -10,10 +10,10 @@
         <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
             <i class="fas fa-search text-gray-400 group-focus-within:text-indigo-500 transition-colors"></i>
         </div>
-        <input type="text" name="search" value="{{ $search }}" class="form-control w-full pl-11 pr-4 py-3 bg-white dark:bg-slate-900 border-gray-200 dark:border-slate-700 rounded-2xl focus:ring-4 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all shadow-sm" placeholder="Buscar por nombre, ubicación, responsable...">
+        <input type="text" name="search" value="{{ $search }}" class="w-full pl-11 pr-4 py-3 bg-white dark:bg-slate-900 border-gray-200 dark:border-slate-700 rounded-2xl focus:ring-4 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all shadow-sm" placeholder="Buscar por nombre, ubicación, responsable...">
     </form>
     
-    <a href="{{ route('inventario.create') }}" class="btn btn-primary bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl px-6 py-3 font-semibold shadow-md hover:shadow-lg transition-all w-full md:w-auto flex items-center justify-center gap-2">
+    <a href="{{ route('inventario.create') }}" class="bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl px-6 py-3 font-semibold shadow-md hover:shadow-lg transition-all w-full md:w-auto flex items-center justify-center gap-2">
         <i class="fas fa-plus"></i> Nuevo Artículo
     </a>
 </div>

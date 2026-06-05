@@ -187,7 +187,7 @@
 
 @section('content')
 <!-- Contenedor Principal Alpine.js -->
-<div x-data="{ showTesoreriaModal: false, showInventarioModal: false, showMembresiaModal: false, showOrganizacionesModal: false }" class="container-fluid py-6 px-4 max-w-7xl mx-auto">
+<div x-data="{ showTesoreriaModal: false, showInventarioModal: false, showMembresiaModal: false, showOrganizacionesModal: false }" class="py-6 px-4 max-w-7xl mx-auto">
 
     <!-- ==========================================
          SECCIÓN DE ESTADÍSTICAS RÁPIDAS (BENTO DASHBOARD - AL PRINCIPIO)

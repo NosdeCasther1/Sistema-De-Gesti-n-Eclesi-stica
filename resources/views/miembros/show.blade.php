@@ -62,7 +62,7 @@
 @endsection
 
 @section('content')
-<div class="container-fluid py-8 px-4 max-w-7xl mx-auto">
+<div class="py-8 px-4 max-w-7xl mx-auto">
     <!-- Barra de Navegación / Regreso -->
     <div class="flex items-center justify-between mb-8 flex-wrap gap-4 border-b border-slate-200 dark:border-slate-800/80 pb-6">
         <div>

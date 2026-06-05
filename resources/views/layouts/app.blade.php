@@ -91,7 +91,7 @@
                         </div>
                     @endif
                 </div>
-                <button class="btn btn-link text-slate-500 dark:text-slate-400 lg:hidden p-1 ml-auto" onclick="toggleSidebar()" title="Cerrar menú">
+                <button class="text-slate-500 dark:text-slate-400 lg:hidden p-1 ml-auto bg-transparent border-0 cursor-pointer" onclick="toggleSidebar()" title="Cerrar menú">
                     <i class="fas fa-times text-2xl"></i>
                 </button>
             </div>
@@ -367,29 +367,39 @@
                 @endif
 
                 {{-- Campanita de Notificaciones --}}
-                <div class="relative" x-data="{ open: false, count: 3, showNoNotificationsModal: false }">
+                <div class="relative" x-data="{ open: false, count: {{ isset($globalNotifications) ? $globalNotifications->count() : 0 }}, showNoNotificationsModal: false }">
                     <button @click="open = !open" class="relative p-2 text-slate-500 hover:text-indigo-600 dark:text-slate-400 dark:hover:text-indigo-400 transition-colors rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 focus:outline-none">
                         <i class="fas fa-bell text-lg"></i>
-                        <span x-show="count > 0" class="absolute top-0.5 right-0.5 inline-flex items-center justify-center w-4 h-4 text-[9px] font-bold text-white bg-rose-500 border-2 border-white dark:border-slate-900 rounded-full">3</span>
+                        <span x-show="count > 0" x-text="count" class="absolute top-0.5 right-0.5 inline-flex items-center justify-center w-4 h-4 text-[9px] font-bold text-white bg-rose-500 border-2 border-white dark:border-slate-900 rounded-full"></span>
                     </button>
-                    <div x-show="open" @click.outside="open = false" x-transition style="display:none;" class="absolute right-0 mt-2 w-72 bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700 overflow-hidden z-50">
+                    <div x-show="open" @click.outside="open = false" x-transition style="display:none;" class="absolute right-0 mt-2 w-80 bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700 overflow-hidden z-50">
                         <div class="px-4 py-3 border-b border-slate-100 dark:border-slate-700/50 flex justify-between items-center bg-slate-50 dark:bg-slate-800/80">
                             <span class="font-bold text-sm text-slate-800 dark:text-white">Notificaciones</span>
                             <span class="text-[10px] uppercase font-bold text-indigo-500 cursor-pointer hover:text-indigo-700 transition-colors" @click="count = 0">Marcar leídas</span>
                         </div>
-                        <ul class="max-h-64 overflow-y-auto custom-scrollbar">
-                            <li class="px-4 py-3 border-b border-slate-100 dark:border-slate-700/50 hover:bg-slate-50 dark:hover:bg-slate-700/30 transition-colors cursor-pointer opacity-50">
-                                <p class="text-xs text-slate-600 dark:text-slate-300 font-medium mb-1">Corte de caja mensual aprobado por la administración.</p>
-                                <span class="text-[10px] text-slate-400">Hace 2 horas</span>
-                            </li>
-                            <li class="px-4 py-3 border-b border-slate-100 dark:border-slate-700/50 hover:bg-slate-50 dark:hover:bg-slate-700/30 transition-colors cursor-pointer">
-                                <p class="text-xs text-slate-600 dark:text-slate-300 font-medium mb-1"><span class="font-bold text-indigo-500">Nuevo</span> 5 miembros añadidos a la célula "Eben-Ezer".</p>
-                                <span class="text-[10px] text-slate-400">Hace 5 horas</span>
-                            </li>
-                            <li class="px-4 py-3 hover:bg-slate-50 dark:hover:bg-slate-700/30 transition-colors cursor-pointer">
-                                <p class="text-xs text-slate-600 dark:text-slate-300 font-medium mb-1"><span class="font-bold text-indigo-500">Recordatorio</span> Reunión de líderes mañana a las 18:00 hrs.</p>
-                                <span class="text-[10px] text-slate-400">Hace 1 día</span>
-                            </li>
+                        <ul class="max-h-80 overflow-y-auto custom-scrollbar">
+                            @if(isset($globalNotifications) && $globalNotifications->count() > 0)
+                                @foreach($globalNotifications as $notif)
+                                    <li>
+                                        <a href="{{ $notif['url'] }}" class="flex gap-3 px-4 py-3 border-b border-slate-100 dark:border-slate-700/50 hover:bg-slate-50 dark:hover:bg-slate-700/30 transition-colors cursor-pointer group">
+                                            <div class="w-8 h-8 rounded-full flex items-center justify-center shrink-0 {{ $notif['color'] }}">
+                                                <i class="{{ $notif['icono'] }} text-xs"></i>
+                                            </div>
+                                            <div>
+                                                <p class="text-xs text-slate-600 dark:text-slate-300 font-medium mb-0.5 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors"><span class="font-bold text-slate-800 dark:text-white">{{ $notif['titulo'] }}</span><br>{{ $notif['mensaje'] }}</p>
+                                                <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">{{ $notif['fecha_humana'] }}</span>
+                                            </div>
+                                        </a>
+                                    </li>
+                                @endforeach
+                            @else
+                                <li class="px-4 py-6 text-center">
+                                    <div class="w-10 h-10 mx-auto rounded-full bg-slate-100 dark:bg-slate-700/50 flex items-center justify-center mb-2">
+                                        <i class="fas fa-check text-slate-400 text-sm"></i>
+                                    </div>
+                                    <p class="text-xs text-slate-500 dark:text-slate-400">No hay notificaciones nuevas</p>
+                                </li>
+                            @endif
                         </ul>
                         <div class="px-4 py-2 text-center border-t border-slate-100 dark:border-slate-700/50 bg-slate-50 dark:bg-slate-800/80">
                             <a href="javascript:void(0)" @click="showNoNotificationsModal = true; open = false" class="text-xs font-bold text-indigo-500 hover:text-indigo-600">Ver todas las notificaciones</a>
@@ -425,17 +435,18 @@
                                 <!-- Icon / Header -->
                                 <div class="flex items-center gap-4 mb-4">
                                     <div class="w-12 h-12 rounded-xl bg-indigo-500/10 text-indigo-500 flex items-center justify-center shrink-0">
-                                        <i class="fas fa-bell-slash text-xl"></i>
+                                        <i class="fas fa-tools text-xl"></i>
                                     </div>
                                     <div>
                                         <h3 class="text-base font-bold text-slate-900 dark:text-white">Centro de Notificaciones</h3>
-                                        <p class="text-xs text-slate-500 dark:text-slate-400">Historial de alertas</p>
+                                        <p class="text-xs text-slate-500 dark:text-slate-400">Historial completo</p>
                                     </div>
                                 </div>
 
                                 <!-- Body -->
-                                <div class="py-3 text-slate-600 dark:text-slate-300 text-sm leading-relaxed">
-                                    No hay notificaciones anteriores para mostrar en este momento.
+                                <div class="py-4 text-slate-600 dark:text-slate-300 text-sm leading-relaxed text-center border-t border-slate-100 dark:border-slate-800">
+                                    <p class="font-bold text-slate-800 dark:text-white mb-2">Módulo en Desarrollo</p>
+                                    <p class="text-xs">Próximamente podrás visualizar y administrar el historial completo de todas tus notificaciones desde este panel.</p>
                                 </div>
 
                                 <!-- Footer / Buttons -->

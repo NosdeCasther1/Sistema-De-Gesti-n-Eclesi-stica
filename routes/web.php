@@ -23,7 +23,7 @@ Route::middleware(['auth'])->group(function () {
     })->name('check.session');
 
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
-    Route::get('/Inicio', [DashboardController::class, 'index']); // For legacy compatibility
+    Route::get('/Inicio', [DashboardController::class, 'index']); // Alias de URL (compatibilidad con marcadores antiguos)
 
     Route::get('/miembros/{miembro}/carnet', [MiembroController::class, 'generarCarnet'])->name('miembros.carnet');
     Route::get('/miembros/{miembro}/carta-recomendacion', [MiembroController::class, 'cartaRecomendacion'])->name('miembros.carta_recomendacion');

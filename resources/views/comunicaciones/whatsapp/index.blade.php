@@ -9,7 +9,7 @@
 @endsection
 
 @section('content')
-<div class="container-fluid py-8 px-4 max-w-7xl mx-auto" x-data="whatsappModule()">
+<div class="py-8 px-4 max-w-7xl mx-auto" x-data="whatsappModule()">
     
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
         

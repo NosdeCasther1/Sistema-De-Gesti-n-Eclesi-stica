@@ -87,7 +87,7 @@
     </div>
 
     <div class="footer">
-        Generado por ProyectoIglesia {{ $config->nombre_iglesia }} el {{ now()->format('d/m/Y H:i') }}
+        Generado por {{ $config->nombre_iglesia }} el {{ now()->format('d/m/Y H:i') }}
     </div>
 </body>
 </html>

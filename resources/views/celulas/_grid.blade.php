@@ -69,7 +69,7 @@
 @if($celulas->hasPages())
 <div class="mt-8 flex justify-center">
     <div class="tailwind-pagination">
-        {{ $celulas->appends(request()->query())->links('vendor.pagination.tailwind') }}
+        {{ $celulas->appends(request()->query())->links() }}
     </div>
 </div>
 @endif

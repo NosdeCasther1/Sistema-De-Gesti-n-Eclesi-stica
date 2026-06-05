@@ -55,10 +55,10 @@ class Miembro extends Model
         return $this->hasMany(Celula::class, 'lider_id');
     }
 
-    public function organizacionPadron()
-    {
-        return $this->hasMany(MiembroOrganizacion::class, 'miembro_id');
-    }
+    // public function organizacionPadron()
+    // {
+    //     return $this->hasMany(MiembroOrganizacion::class, 'miembro_id');
+    // }
 
     public function records()
     {

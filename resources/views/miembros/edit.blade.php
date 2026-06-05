@@ -49,38 +49,6 @@
         display: inline-block !important;
         font-size: 1.25rem !important;
     }
-    .member-select-filter {
-        width: 100%;
-        border-radius: 12px;
-        border: 1px solid var(--border-color);
-        background-color: rgba(var(--bg-card-rgb), 0.5);
-        color: var(--text-main);
-        font-size: 0.75rem;
-        font-weight: 600;
-        margin-bottom: 0.5rem;
-        padding: 0.75rem 1rem 0.75rem 2.5rem;
-        transition: all 0.2s ease;
-    }
-    .member-select-filter:focus {
-        border-color: #3b82f6;
-        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
-        outline: none;
-    }
-    .member-select-filter::placeholder {
-        color: var(--text-muted);
-    }
-    .member-select-filter-wrap {
-        position: relative;
-    }
-    .member-select-filter-wrap i {
-        color: var(--text-muted);
-        font-size: 0.75rem;
-        left: 1rem;
-        pointer-events: none;
-        position: absolute;
-        top: 50%;
-        transform: translateY(-50%);
-    }
     /* Select2 custom styling for premium light/dark mode using CSS variables */
     .select2-container--default .select2-selection--single {
         background-color: rgba(var(--bg-card-rgb), 0.5) !important;
@@ -115,43 +83,37 @@
         box-shadow: var(--shadow-md) !important;
         z-index: 9999 !important;
     }
-    .select2-container--default .select2-results__option--highlighted[aria-selected],
-    .select2-container--default .select2-results__option--highlighted {
-        background-color: #2563eb !important;
-        color: #ffffff !important;
+    .select2-container .select2-results__option--highlighted:not([aria-selected="true"]):not([aria-selected=true]):not(.select2-results__option--selected) {
+        background-color: #f1f5f9 !important; /* slate-100 */
+        color: #1e293b !important; /* slate-800 */
         border-radius: 8px !important;
     }
-    .dark .select2-container--default .select2-results__option--highlighted[aria-selected],
-    .dark .select2-container--default .select2-results__option--highlighted,
-    [data-theme='dark'] .select2-container--default .select2-results__option--highlighted[aria-selected],
-    [data-theme='dark'] .select2-container--default .select2-results__option--highlighted {
-        background-color: #3b82f6 !important;
+    .dark .select2-container .select2-results__option--highlighted:not([aria-selected="true"]):not([aria-selected=true]):not(.select2-results__option--selected),
+    [data-theme='dark'] .select2-container .select2-results__option--highlighted:not([aria-selected="true"]):not([aria-selected=true]):not(.select2-results__option--selected) {
+        background-color: #334155 !important; /* slate-700 */
         color: #ffffff !important;
+    }
+    .select2-container .select2-results__option--highlighted[aria-selected="true"],
+    .select2-container .select2-results__option--highlighted[aria-selected=true],
+    .select2-container .select2-results__option--highlighted.select2-results__option--selected {
+        background-color: #2563eb !important; /* blue-600 */
+        color: #ffffff !important;
+        border-radius: 8px !important;
     }
     .select2-container--default .select2-results__option {
         font-size: 0.75rem !important;
-        padding: 8px 12px !important;
+        padding: 10px 14px !important;
+        margin-bottom: 2px !important;
         color: var(--text-secondary) !important;
+        transition: all 0.2s ease !important;
     }
-    .select2-container--default .select2-results__option[aria-selected="true"] {
-        background-color: #eff6ff !important;
-        color: #2563eb !important;
+    .select2-container .select2-results__option[aria-selected="true"],
+    .select2-container .select2-results__option[aria-selected=true],
+    .select2-container .select2-results__option--selected {
+        background-color: #1e40af !important;
+        color: #ffffff !important;
+        font-weight: 700 !important;
         border-radius: 8px !important;
-    }
-    .dark .select2-container--default .select2-results__option[aria-selected="true"],
-    [data-theme='dark'] .select2-container--default .select2-results__option[aria-selected="true"] {
-        background-color: #1e3a8a !important;
-        color: #ffffff !important;
-        border-radius: 8px !important;
-    }
-    .select2-container--default .select2-results__option[aria-selected="true"].select2-results__option--highlighted {
-        background-color: #2563eb !important;
-        color: #ffffff !important;
-    }
-    .dark .select2-container--default .select2-results__option[aria-selected="true"].select2-results__option--highlighted,
-    [data-theme='dark'] .select2-container--default .select2-results__option[aria-selected="true"].select2-results__option--highlighted {
-        background-color: #3b82f6 !important;
-        color: #ffffff !important;
     }
     .select2-search__field {
         background-color: var(--bg-body) !important;
@@ -159,7 +121,14 @@
         color: var(--text-main) !important;
         border-radius: 8px !important;
         font-size: 0.75rem !important;
-        padding: 6px 10px !important;
+        padding: 8px 12px !important;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+        transition: all 0.2s ease !important;
+    }
+    .select2-search__field:focus {
+        border-color: #3b82f6 !important;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2) !important;
+        outline: none !important;
     }
     .select2-container--default .select2-selection--single .select2-selection__placeholder {
         color: var(--text-muted) !important;
@@ -174,7 +143,7 @@
 @endsection
 
 @section('content')
-<div class="container-fluid py-8 px-4 max-w-5xl mx-auto">
+<div class="py-8 px-4 max-w-5xl mx-auto">
     <!-- Barra de Navegación / Regreso -->
     <div class="flex items-center justify-between mb-8 flex-wrap gap-4 border-b border-slate-200 dark:border-slate-800/80 pb-6">
         <div>
@@ -289,10 +258,7 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
                             <div>
                                 <label class="block text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">Familia (Núcleo Familiar)</label>
-                                <div class="member-select-filter-wrap">
-                                    <i class="fas fa-search"></i>
-                                    <input type="search" id="familia_search_input" class="member-select-filter" placeholder="Buscar familia por nombre, direccion o municipio...">
-                                </div>
+
                                 <select name="familia_id" id="familia_select" x-on:change="let opt = $event.target.options[$event.target.selectedIndex]; document.querySelector('input[name=direccion]').value = opt.dataset.direccion || ''; document.querySelector('input[name=zona]').value = opt.dataset.zona || ''; document.querySelector('input[name=municipio]').value = opt.dataset.municipio || ''; document.querySelector('input[name=departamento]').value = opt.dataset.departamento || '';" class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all shadow-sm cursor-pointer">
                                     <option value="" data-direccion="" data-zona="" data-municipio="" data-departamento="">Seleccionar Familia (Opcional)</option>
                                     @foreach(\App\Models\Familia::orderBy('nombre')->get() as $f)
@@ -305,10 +271,7 @@
                             </div>
                             <div>
                                 <label class="block text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">Cónyuge (Si aplica)</label>
-                                <div class="member-select-filter-wrap">
-                                    <i class="fas fa-search"></i>
-                                    <input type="search" id="conyuge_search_input" class="member-select-filter" placeholder="Buscar conyuge por nombre, DPI o telefono...">
-                                </div>
+
                                 <select name="conyuge_id" id="conyuge_select" class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all shadow-sm cursor-pointer">
                                     <option value="">Seleccionar Cónyuge (Opcional)</option>
                                     @foreach($posiblesConyuges as $pc)
@@ -674,77 +637,19 @@
 @push('scripts')
 <script>
     $(document).ready(function() {
-        function initNativeSelectFilter(inputSelector, selectSelector) {
-            const input = document.querySelector(inputSelector);
-            const select = document.querySelector(selectSelector);
-
-            if (!input || !select) {
-                return;
-            }
-
-            input.addEventListener('input', function() {
-                const term = this.value.trim().toLowerCase();
-
-                Array.from(select.options).forEach(function(option, index) {
-                    const isPlaceholder = index === 0 || option.value === '';
-                    const matches = option.text.toLowerCase().includes(term);
-                    const shouldShow = isPlaceholder || !term || matches;
-
-                    option.hidden = !shouldShow;
-                    option.disabled = !shouldShow;
-                });
-
-                if (select.selectedOptions.length && select.selectedOptions[0].disabled) {
-                    select.value = '';
-                    select.dispatchEvent(new Event('change', { bubbles: true }));
-                }
-
-                if (window.jQuery && jQuery(select).data('select2')) {
-                    jQuery(select).trigger('change.select2');
-                }
-            });
-        }
-
-        function initSearchableSelect(selector, placeholder) {
-            const $select = $(selector);
-
-            if (!$select.length || !$.fn.select2) {
-                return;
-            }
-
-            if ($select.data('select2')) {
-                $select.select2('destroy');
-            }
-
-            $select.select2({
-                placeholder: placeholder,
-                allowClear: true,
-                width: '100%',
-                dropdownParent: $('body'),
-                minimumResultsForSearch: 0,
-                language: {
-                    noResults: function() {
-                        return 'No se encontraron resultados';
-                    },
-                    searching: function() {
-                        return 'Buscando...';
-                    },
-                    inputTooShort: function() {
-                        return 'Escribe para buscar';
-                    }
-                }
-            });
-        }
-
-        initNativeSelectFilter('#familia_search_input', '#familia_select');
-        initNativeSelectFilter('#conyuge_search_input', '#conyuge_select');
-
-        initSearchableSelect('#familia_select', 'Buscar familia por nombre, direccion o municipio...');
-        $('#familia_select').on('select2:select select2:clear select2:unselect', function() {
+        $('#familia_select').select2({
+            placeholder: "Seleccionar Familia (Opcional)",
+            allowClear: true,
+            width: '100%'
+        }).on('select2:select select2:unselect', function (e) {
             this.dispatchEvent(new Event('change', { bubbles: true }));
         });
 
-        initSearchableSelect('#conyuge_select', 'Buscar conyuge por nombre, DPI o telefono...');
+        $('#conyuge_select').select2({
+            placeholder: "Seleccionar Cónyuge (Opcional)",
+            allowClear: true,
+            width: '100%'
+        });
     });
 </script>
 @endpush

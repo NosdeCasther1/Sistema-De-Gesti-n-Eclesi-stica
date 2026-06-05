@@ -83,17 +83,33 @@
         box-shadow: var(--shadow-md) !important;
         z-index: 9999 !important;
     }
-    .select2-container--default .select2-results__option--highlighted[aria-selected] {
-        background-color: #2563eb !important;
+    .select2-container .select2-results__option--highlighted:not([aria-selected="true"]):not([aria-selected=true]):not(.select2-results__option--selected) {
+        background-color: #f1f5f9 !important; /* slate-100 */
+        color: #1e293b !important; /* slate-800 */
+        border-radius: 8px !important;
+    }
+    .dark .select2-container .select2-results__option--highlighted:not([aria-selected="true"]):not([aria-selected=true]):not(.select2-results__option--selected),
+    [data-theme='dark'] .select2-container .select2-results__option--highlighted:not([aria-selected="true"]):not([aria-selected=true]):not(.select2-results__option--selected) {
+        background-color: #334155 !important; /* slate-700 */
+        color: #ffffff !important;
+    }
+    .select2-container .select2-results__option--highlighted[aria-selected="true"],
+    .select2-container .select2-results__option--highlighted[aria-selected=true],
+    .select2-container .select2-results__option--highlighted.select2-results__option--selected {
+        background-color: #2563eb !important; /* blue-600 */
         color: #ffffff !important;
         border-radius: 8px !important;
     }
     .select2-container--default .select2-results__option {
         font-size: 0.75rem !important;
-        padding: 8px 12px !important;
+        padding: 10px 14px !important;
+        margin-bottom: 2px !important;
         color: var(--text-secondary) !important;
+        transition: all 0.2s ease !important;
     }
-    .select2-container--default .select2-results__option[aria-selected="true"] {
+    .select2-container .select2-results__option[aria-selected="true"],
+    .select2-container .select2-results__option[aria-selected=true],
+    .select2-container .select2-results__option--selected {
         background-color: #1e40af !important;   /* blue-800 – sólido, visible en ambos temas */
         color: #ffffff !important;
         font-weight: 700 !important;
@@ -105,7 +121,14 @@
         color: var(--text-main) !important;
         border-radius: 8px !important;
         font-size: 0.75rem !important;
-        padding: 6px 10px !important;
+        padding: 8px 12px !important;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+        transition: all 0.2s ease !important;
+    }
+    .select2-search__field:focus {
+        border-color: #3b82f6 !important;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2) !important;
+        outline: none !important;
     }
     .select2-container--default .select2-selection--single .select2-selection__placeholder {
         color: var(--text-muted) !important;
@@ -120,7 +143,7 @@
 @endsection
 
 @section('content')
-<div class="container-fluid py-8 px-4 max-w-5xl mx-auto">
+<div class="py-8 px-4 max-w-5xl mx-auto">
     <!-- Barra de Navegación / Regreso -->
     <div class="flex items-center justify-between mb-8 flex-wrap gap-4 border-b border-slate-200 dark:border-slate-800/80 pb-6">
         <div>

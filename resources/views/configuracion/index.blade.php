@@ -149,7 +149,7 @@
         this.confirmModal.buttonClass = buttonClass;
         this.confirmModal.open = true;
     }
-}" class="container-fluid py-6 px-4 max-w-7xl mx-auto">
+}" class="py-6 px-4 max-w-7xl mx-auto">
 
     {{-- Navegación Premium de Pestañas (Pills compactos y de alta densidad con Armadura Z-Index) --}}
     <nav class="relative z-20 flex flex-wrap gap-2 p-2 bg-slate-100/80 dark:bg-slate-800/60 backdrop-blur-md rounded-2xl border border-slate-200 dark:border-slate-700/80 mb-8 shadow-sm">
@@ -1629,8 +1629,8 @@
             
             reader.onload = function(e) {
                 preview.src = e.target.result;
-                preview.classList.remove('d-none', 'hidden');
-                if (placeholder) placeholder.classList.add('d-none', 'hidden');
+                preview.classList.remove('hidden');
+                if (placeholder) placeholder.classList.add('hidden');
             }
             
             reader.readAsDataURL(input.files[0]);
