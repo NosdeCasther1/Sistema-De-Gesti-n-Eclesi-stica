@@ -133,6 +133,21 @@
     .select2-container--default .select2-selection--single .select2-selection__placeholder {
         color: var(--text-muted) !important;
     }
+
+    /* Simetría: etiquetas e inputs del bloque ministerial */
+    .member-form-label {
+        min-height: 2.75rem;
+        display: flex;
+        align-items: flex-end;
+        line-height: 1.25;
+    }
+    .member-form-field input[type="date"],
+    .member-form-field input[type="text"] {
+        min-height: 2.75rem;
+    }
+    .member-baptism-card {
+        min-height: 3.5rem;
+    }
 </style>
 @endpush
 
@@ -418,31 +433,31 @@
                     </div>
 
                     {{-- FECHAS DE INTEGRACIÓN, CONVERSIÓN Y BAUTISMOS --}}
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                        <div>
-                            <label class="block text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">
-                                <i class="fas fa-heart text-rose-500 mr-1"></i> Lugar de Conversión
+                    <div class="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5 mb-6">
+                        <div class="member-form-field flex flex-col">
+                            <label class="member-form-label text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">
+                                <span><i class="fas fa-heart text-rose-500 mr-1"></i> Lugar de Conversión</span>
                             </label>
                             <input type="text" name="lugar_conversion" value="{{ old('lugar_conversion', $miembro->lugar_conversion) }}" placeholder="Ej: Iglesia Central, Campaña..."
                                    class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all shadow-sm">
                         </div>
-                        <div>
-                            <label class="block text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">
-                                <i class="fas fa-calendar-alt text-amber-500 mr-1"></i> Fecha de Conversión
+                        <div class="member-form-field flex flex-col">
+                            <label class="member-form-label text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">
+                                <span><i class="fas fa-calendar-alt text-amber-500 mr-1"></i> Fecha de Conversión</span>
                             </label>
                             <input type="date" name="fecha_conversion" value="{{ old('fecha_conversion', $miembro->fecha_conversion ? $miembro->fecha_conversion->format('Y-m-d') : '') }}"
                                    class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all shadow-sm">
                         </div>
-                        <div>
-                            <label class="block text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">
-                                <i class="fas fa-calendar-check text-emerald-500 mr-1"></i> Fecha de Integración
+                        <div class="member-form-field flex flex-col">
+                            <label class="member-form-label text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">
+                                <span><i class="fas fa-calendar-check text-emerald-500 mr-1"></i> Fecha de Integración</span>
                             </label>
                             <input type="date" name="fecha_integracion" value="{{ old('fecha_integracion', $miembro->fecha_integracion ? $miembro->fecha_integracion->format('Y-m-d') : '') }}"
                                    class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all shadow-sm">
                         </div>
-                        <div>
-                            <label class="block text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">
-                                <i class="fas fa-water text-blue-500 mr-1"></i> Fecha de Bautismo en Aguas
+                        <div class="member-form-field flex flex-col">
+                            <label class="member-form-label text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">
+                                <span><i class="fas fa-water text-blue-500 mr-1"></i> Fecha Bautismo en Aguas</span>
                             </label>
                             <input type="date" name="fecha_bautismo" value="{{ old('fecha_bautismo', $miembro->fecha_bautismo ? $miembro->fecha_bautismo->format('Y-m-d') : '') }}"
                                    class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all shadow-sm">
@@ -451,19 +466,19 @@
 
                     {{-- BAUTISMOS --}}
                     <div class="md:col-span-2 mb-6">
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div class="flex items-center p-3 border rounded-xl hover:bg-slate-50 dark:border-slate-700 dark:hover:bg-slate-800 transition-colors">
-                                <input id="bautizado_agua" name="bautizado_agua" type="checkbox" value="1" {{ old('bautizado_agua', $miembro->bautizado_agua) ? 'checked' : '' }} class="h-5 w-5 rounded border-slate-300 text-blue-600 focus:ring-blue-500">
-                                <label for="bautizado_agua" class="ml-3 block text-sm font-bold text-slate-700 dark:text-slate-300">
-                                    <i class="fas fa-water text-blue-500 mr-1"></i> Bautizado en Aguas
-                                </label>
-                            </div>
-                            <div class="flex items-center p-3 border rounded-xl hover:bg-slate-50 dark:border-slate-700 dark:hover:bg-slate-800 transition-colors">
-                                <input id="bautismo_espiritu_santo" name="bautismo_espiritu_santo" type="checkbox" value="1" {{ old('bautismo_espiritu_santo', $miembro->bautismo_espiritu_santo) ? 'checked' : '' }} class="h-5 w-5 rounded border-slate-300 text-amber-500 focus:ring-amber-500">
-                                <label for="bautismo_espiritu_santo" class="ml-3 block text-sm font-bold text-slate-700 dark:text-slate-300">
-                                    <i class="fas fa-fire text-amber-500 mr-1"></i> Bautismo en el Espíritu Santo
-                                </label>
-                            </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <label for="bautizado_agua" class="member-baptism-card flex items-center gap-3 w-full min-w-0 p-4 border border-slate-200 dark:border-slate-700 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors cursor-pointer">
+                                <input id="bautizado_agua" name="bautizado_agua" type="checkbox" value="1" {{ old('bautizado_agua', $miembro->bautizado_agua) ? 'checked' : '' }} class="h-5 w-5 shrink-0 rounded border-slate-300 text-blue-600 focus:ring-blue-500">
+                                <span class="text-xs font-bold text-slate-700 dark:text-slate-300 leading-snug min-w-0">
+                                    <i class="fas fa-water text-blue-500 mr-1.5"></i> Bautizado en Aguas
+                                </span>
+                            </label>
+                            <label for="bautismo_espiritu_santo" class="member-baptism-card flex items-center gap-3 w-full min-w-0 p-4 border border-slate-200 dark:border-slate-700 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors cursor-pointer">
+                                <input id="bautismo_espiritu_santo" name="bautismo_espiritu_santo" type="checkbox" value="1" {{ old('bautismo_espiritu_santo', $miembro->bautismo_espiritu_santo) ? 'checked' : '' }} class="h-5 w-5 shrink-0 rounded border-slate-300 text-amber-500 focus:ring-amber-500">
+                                <span class="text-xs font-bold text-slate-700 dark:text-slate-300 leading-snug min-w-0">
+                                    <i class="fas fa-fire text-amber-500 mr-1.5"></i> Bautismo Espíritu Santo
+                                </span>
+                            </label>
                         </div>
                     </div>
 
