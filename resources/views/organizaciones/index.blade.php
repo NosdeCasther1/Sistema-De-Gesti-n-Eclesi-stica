@@ -186,10 +186,10 @@ x-bind:class="procesando ? 'opacity-70 pointer-events-none' : ''">
 
                             {{-- FILA 1: Proyectar PIN + Cargar Boletas --}}
                             <div class="grid grid-cols-2 gap-2">
-                                <button type="button" @click="proyectarPin()" 
+                                <a href="{{ route('elecciones.proyector.pin', $eleccionActiva->id) }}" target="_blank"
                                         class="w-full py-3 bg-slate-700 hover:bg-slate-600 text-white font-bold rounded-xl text-xs transition-all flex items-center justify-center gap-2 shadow-sm active:scale-[0.98]">
                                     <i class="fa-solid fa-display"></i> Proyectar PIN
-                                </button>
+                                </a>
                                 <button type="button" @click="mostrarModalManuales = true" 
                                         class="w-full py-3 border font-bold rounded-xl text-xs transition-all flex items-center justify-center gap-2 hover:opacity-90 active:scale-[0.98]"
                                         style="background-color: var(--bg-body); color: var(--text-main); border-color: var(--border-color);">
@@ -240,11 +240,11 @@ x-bind:class="procesando ? 'opacity-70 pointer-events-none' : ''">
                                 style="background-color: var(--bg-body); color: var(--text-main); border-color: var(--border-color);">
                             <i class="fa-solid fa-user-pen text-indigo-500"></i> Gestionar Candidatos
                         </button>
-                        <button type="button" @click="iniciarProyeccion()" 
+                        <a href="{{ route('elecciones.live', $eleccionActiva->id) }}" target="_blank"
                                 class="w-full py-2.5 border font-bold rounded-xl text-xs transition-all flex items-center justify-center gap-2 hover:opacity-90 active:scale-[0.98]"
                                 style="background-color: var(--bg-body); color: var(--text-main); border-color: var(--border-color);">
                             <i class="fa-solid fa-circle-play text-emerald-500"></i> Proyectar Resultados
-                        </button>
+                        </a>
                         <a href="{{ route('elecciones.reporte', $eleccionActiva->id) }}" target="_blank" 
                            class="w-full py-2.5 border font-bold rounded-xl text-xs transition-all flex items-center justify-center gap-2 hover:opacity-90 active:scale-[0.98]"
                            style="background-color: var(--bg-body); color: var(--text-main); border-color: var(--border-color);">
@@ -662,12 +662,17 @@ x-bind:class="procesando ? 'opacity-70 pointer-events-none' : ''">
         {{-- CONTENIDO CENTRAL --}}
         <div class="flex flex-col items-center justify-center h-full pt-20 pb-32 px-8">
 
-            @if(isset($eleccionActiva) && $eleccionActiva && $eleccionActiva->puesto_en_curso)
-                <p class="text-white/40 text-lg font-semibold uppercase tracking-[0.3em] mb-3">Ronda abierta — cargo de</p>
-                <h2 class="font-black uppercase tracking-tight mb-10 leading-none"
-                    style="font-size: clamp(2.5rem, 6vw, 5rem); color: #c4b5fd; text-shadow: 0 0 40px rgba(167,139,250,0.4);">
-                    {{ $eleccionActiva->puesto_en_curso }}
-                </h2>
+            @if(isset($eleccionActiva) && $eleccionActiva)
+                <h3 class="text-violet-300 font-black text-xl md:text-2xl tracking-widest uppercase mb-2" style="color: #c4b5fd !important; text-shadow: 0 2px 10px rgba(0,0,0,0.5);">
+                    {{ $eleccionActiva->titulo }}
+                </h3>
+                @if($eleccionActiva->puesto_en_curso)
+                    <p class="text-white/60 text-lg font-bold uppercase tracking-[0.3em] mb-3" style="color: rgba(255,255,255,0.8) !important;">Ronda abierta — cargo de</p>
+                    <h2 class="font-black uppercase tracking-tight mb-10 leading-none text-white"
+                        style="font-size: clamp(2.5rem, 6vw, 5rem); color: #ffffff !important; text-shadow: 0 0 40px rgba(167,139,250,0.8) !important;">
+                        {{ $eleccionActiva->puesto_en_curso }}
+                    </h2>
+                @endif
             @endif
 
             {{-- Contenedor del PIN --}}

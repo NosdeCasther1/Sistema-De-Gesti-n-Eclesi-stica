@@ -155,7 +155,7 @@
                         <li class="nav-item">
                             @php $isActive = request()->is('organizaciones*'); @endphp
                             <a href="{{ route('organizaciones.index') }}" class="{{ $baseClasses }} {{ $isActive ? $activeClasses : $inactiveClasses }}">
-                                <i class="fas fa-sitemap text-lg {{ $isActive ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-400 dark:text-slate-500' }}"></i> <span>Organizaciones</span>
+                                <i class="fas fa-sitemap text-lg {{ $isActive ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-400 dark:text-slate-500' }}"></i> <span>Organizaciones / Votaciones</span>
                             </a>
                         </li>
                         @endif

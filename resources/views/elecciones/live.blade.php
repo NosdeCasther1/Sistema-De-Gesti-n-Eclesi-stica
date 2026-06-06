@@ -31,9 +31,15 @@
                     <p class="text-lg text-slate-400 font-medium">{{ $eleccion->titulo }}</p>
                 </div>
             </div>
-            <div class="text-right bg-slate-950 p-4 px-6 rounded-2xl border border-slate-800 shadow-inner">
-                <span class="block text-5xl font-black text-white tracking-tight" x-text="totalVotos">0</span>
-                <span class="text-xs font-bold text-indigo-300 uppercase tracking-widest">Total Votos Emitidos</span>
+            <div class="flex items-center gap-4">
+                <button @click="toggleFullscreen()" class="px-4 py-3 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white rounded-2xl font-bold transition-all border border-slate-700 shadow flex items-center justify-center group" title="Pantalla Completa">
+                    <i class="fa-solid fa-expand text-lg group-hover:scale-110 transition-transform" x-show="!isFullscreen"></i>
+                    <i class="fa-solid fa-compress text-lg group-hover:scale-90 transition-transform" x-show="isFullscreen" x-cloak></i>
+                </button>
+                <div class="text-right bg-slate-950 p-4 px-6 rounded-2xl border border-slate-800 shadow-inner">
+                    <span class="block text-5xl font-black text-white tracking-tight" x-text="totalVotos">0</span>
+                    <span class="text-xs font-bold text-indigo-300 uppercase tracking-widest">Total Votos Emitidos</span>
+                </div>
             </div>
         </div>
 
@@ -122,10 +128,40 @@
                 totalVotos: 0,
                 candidatos: [],
                 pollingInterval: null,
+                isFullscreen: false,
 
                 init() {
                     this.fetchData();
                     this.pollingInterval = setInterval(() => this.fetchData(), 2500);
+
+                    document.addEventListener('fullscreenchange', () => {
+                        this.isFullscreen = !!document.fullscreenElement;
+                    });
+                },
+
+                toggleFullscreen() {
+                    let docElm = document.documentElement;
+                    if (!document.fullscreenElement && !document.mozFullScreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement) {
+                        if (docElm.requestFullscreen) {
+                            docElm.requestFullscreen();
+                        } else if (docElm.mozRequestFullScreen) {
+                            docElm.mozRequestFullScreen();
+                        } else if (docElm.webkitRequestFullScreen) {
+                            docElm.webkitRequestFullScreen();
+                        } else if (docElm.msRequestFullscreen) {
+                            docElm.msRequestFullscreen();
+                        }
+                    } else {
+                        if (document.exitFullscreen) {
+                            document.exitFullscreen();
+                        } else if (document.mozCancelFullScreen) {
+                            document.mozCancelFullScreen();
+                        } else if (document.webkitExitFullscreen) {
+                            document.webkitExitFullscreen();
+                        } else if (document.msExitFullscreen) {
+                            document.msExitFullscreen();
+                        }
+                    }
                 },
 
                 async fetchData() {

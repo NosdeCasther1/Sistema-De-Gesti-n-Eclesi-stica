@@ -141,6 +141,7 @@ Route::get('comunicaciones/whatsapp', [\App\Http\Controllers\WhatsappController:
 // Dashboard and related routes
     Route::get('/elecciones/{eleccion}/live', [App\Http\Controllers\EleccionController::class, 'liveScreen'])->name('elecciones.live');
     Route::get('/elecciones/{eleccion}/live-data', [App\Http\Controllers\EleccionController::class, 'liveData'])->name('elecciones.live.data');
+    Route::get('/elecciones/{eleccion}/pin', [App\Http\Controllers\ProyectorController::class, 'pinScreen'])->name('elecciones.proyector.pin');
     
     // Reportes de Votaciones y Elecciones
     Route::get('/reportes/votaciones/{eleccion}/escrutinio', [\App\Http\Controllers\ReporteController::class, 'reportarVotacionesEscrutinio'])->name('reportes.votaciones.escrutinio');

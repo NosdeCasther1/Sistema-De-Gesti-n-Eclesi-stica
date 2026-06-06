@@ -692,6 +692,18 @@
             border-left: 3px solid var(--fc-event-border-color, #4f46e5) !important;
         }
     }
+
+    /* --- SOBRESCRIBIR EVENTOS TIPO "DOT" PARA MODO OSCURO (ALTA ESPECIFICIDAD) --- */
+    .dark .fc-daygrid-dot-event:not(.fc-list-event) .fc-event-main,
+    .dark .fc-daygrid-dot-event:not(.fc-list-event) .fc-event-title,
+    .dark .fc-daygrid-dot-event:not(.fc-list-event) .fc-event-time,
+    .dark .fc-event:not(.fc-daygrid-block-event):not(.fc-h-event):not(.fc-list-event) .fc-event-main,
+    .dark .fc-event:not(.fc-daygrid-block-event):not(.fc-h-event):not(.fc-list-event) .fc-event-title,
+    .dark .fc-event:not(.fc-daygrid-block-event):not(.fc-h-event):not(.fc-list-event) .fc-event-time {
+        color: var(--fc-event-text-color-dark, #f8fafc) !important;
+        font-weight: 700 !important;
+        text-shadow: 0 1px 2px rgba(0,0,0,0.5) !important;
+    }
 </style>
 @endpush
 
@@ -1003,7 +1015,7 @@
                     var baseColor = info.event.backgroundColor.toLowerCase();
                     info.el.style.setProperty('--fc-event-border-color', baseColor, 'important');
                     info.el.style.setProperty('--fc-event-bg-color', baseColor, 'important');
-                    info.el.style.setProperty('--fc-event-bg-color-alpha', baseColor + '1e', 'important'); // ~12% opacity (1e in hex is 30/255)
+                    info.el.style.setProperty('--fc-event-bg-color-alpha', baseColor + '25', 'important'); // ~15% opacity
                     
                     var textColors = {
                         '#3b82f6': '#1d4ed8', // Servicio (Azul oscuro)
@@ -1011,8 +1023,16 @@
                         '#f59e0b': '#92400e', // Reunión (Miel/marrón)
                         '#8b5cf6': '#5b21b6'  // Especial (Púrpura oscuro)
                     };
+                    var lightTextColors = {
+                        '#3b82f6': '#93c5fd', // Servicio (Azul claro)
+                        '#10b981': '#6ee7b7', // Célula (Verde claro)
+                        '#f59e0b': '#fcd34d', // Reunión (Ámbar claro)
+                        '#8b5cf6': '#c4b5fd'  // Especial (Púrpura claro)
+                    };
                     var textColor = textColors[baseColor] || '#1e293b';
+                    var darkTextColor = lightTextColors[baseColor] || '#f8fafc';
                     info.el.style.setProperty('--fc-event-text-color', textColor, 'important');
+                    info.el.style.setProperty('--fc-event-text-color-dark', darkTextColor, 'important');
                 }
             }
         });
